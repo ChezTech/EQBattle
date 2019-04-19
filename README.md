@@ -1,0 +1,2 @@
+# EQBattle
+EverQuest log parser
