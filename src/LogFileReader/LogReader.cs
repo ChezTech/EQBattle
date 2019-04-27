@@ -41,7 +41,7 @@ namespace LogFileReader
 
         public void StopReading()
         {
-            _fsw.EnableRaisingEvents = false;
+            StopWatching();
         }
 
         private void OpenFileToRead()
@@ -68,6 +68,11 @@ namespace LogFileReader
         private void StartWatching()
         {
             _fsw.EnableRaisingEvents = true;
+        }
+
+        private void StopWatching()
+        {
+            _fsw.EnableRaisingEvents = false;
         }
 
         private void RaiseReadLine(string logLine)
