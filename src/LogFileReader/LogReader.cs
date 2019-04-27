@@ -10,6 +10,7 @@ namespace LogFileReader
 
         FileSystemWatcher _fsw = new FileSystemWatcher();
         AutoResetEvent _readEvent = new AutoResetEvent(false);
+        bool _cancelRequested = false;
 
         public FileInfo LogFile { get; set; }
 
@@ -35,12 +36,14 @@ namespace LogFileReader
 
         public void StartReading()
         {
+            _cancelRequested = false;
             StartWatching();
             OpenFileToRead();
         }
 
         public void StopReading()
         {
+            _cancelRequested = true;
             StopWatching();
         }
 
@@ -53,7 +56,7 @@ namespace LogFileReader
             using (var sr = new StreamReader(fs))
             {
                 string logLine;
-                while (true)
+                while (!_cancelRequested)
                 {
                     logLine = sr.ReadLine();
 
