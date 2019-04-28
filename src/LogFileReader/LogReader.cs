@@ -33,6 +33,7 @@ namespace LogFileReader
         }
 
         public event EventHandler<LineReadArgs> LineRead;
+        public event EventHandler EoFReached;
 
         public void StartReading()
         {
@@ -63,7 +64,10 @@ namespace LogFileReader
                     if (logLine != null)
                         RaiseReadLine(logLine);
                     else
+                    {
+                        RaiseEof();
                         _readEvent.WaitOne(1000);
+                    }
                 }
             }
         }
@@ -80,8 +84,12 @@ namespace LogFileReader
 
         private void RaiseReadLine(string logLine)
         {
-            var args = new LineReadArgs(logLine);
-            LineRead?.Invoke(this, args);
+            LineRead?.Invoke(this, new LineReadArgs(logLine));
+        }
+
+        private void RaiseEof()
+        {
+            EoFReached?.Invoke(this, new EventArgs());
         }
 
         #region IDisposable Support
