@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EqbConsole", "EqbConsole\Eq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineParser", "LineParser\LineParser.csproj", "{91E80133-D998-4408-927C-D26351ECA72F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{D127BE1C-B4A0-4ADE-8D88-0389FDB0FE12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineParserTests", "UnitTests\LineParserTests\LineParserTests.csproj", "{4E633AD0-9996-49FF-95D1-8EA923A0DA99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +31,16 @@ Global
 		{91E80133-D998-4408-927C-D26351ECA72F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91E80133-D998-4408-927C-D26351ECA72F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91E80133-D998-4408-927C-D26351ECA72F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E633AD0-9996-49FF-95D1-8EA923A0DA99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E633AD0-9996-49FF-95D1-8EA923A0DA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E633AD0-9996-49FF-95D1-8EA923A0DA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E633AD0-9996-49FF-95D1-8EA923A0DA99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4E633AD0-9996-49FF-95D1-8EA923A0DA99} = {D127BE1C-B4A0-4ADE-8D88-0389FDB0FE12}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3FCC3215-8A61-46CB-87E4-6E4627DBD56E}
