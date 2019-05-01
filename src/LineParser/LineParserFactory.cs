@@ -5,7 +5,7 @@ namespace LineParser
 {
     public class LineParserFactory
     {
-        public LineDatum ParseLine(string logLine)
+        public LogDatum ParseLine(string logLine)
         {
             return null;
         }

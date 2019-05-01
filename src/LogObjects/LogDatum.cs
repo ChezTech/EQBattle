@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LogObjects
 {
-    public class LineDatum
+    public class LogDatum
     {
         // This should be constant.
         // Q: What about log files in other languages/locales?
@@ -19,7 +19,7 @@ namespace LogObjects
         public int LineNumber { get; private set; }
 
 
-        public LineDatum(string logLine, int lineNumber = -1, string currentZone = null)
+        public LogDatum(string logLine, int lineNumber = -1, string currentZone = null)
         {
             RawLogLine = logLine;
             LineNumber = lineNumber;
