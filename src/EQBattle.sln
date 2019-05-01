@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogObjectsTests", "UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizObjects", "BizObjects\BizObjects.csproj", "{12FB6473-3678-4658-AFA0-EF6102727E43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizObjectsTest", "UnitTests\BizObjectsTest\BizObjectsTest.csproj", "{64BB3FA3-C835-4244-A8BF-30987792AC49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizObjectsTests", "UnitTests\BizObjectsTests\BizObjectsTests.csproj", "{64BB3FA3-C835-4244-A8BF-30987792AC49}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogObjects", "LogObjects\LogObjects.csproj", "{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}"
 EndProject
