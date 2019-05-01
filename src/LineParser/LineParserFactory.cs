@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogObjects;
+using System;
 
 namespace LineParser
 {
