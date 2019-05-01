@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace LogObjects
 {
@@ -15,15 +13,13 @@ namespace LogObjects
         public string RawLogLine { get; private set; }
         public DateTime LogTime { get; private set; }
         public string LogMessage { get; private set; }
-        public string Zone { get; private set; }
         public int LineNumber { get; private set; }
 
 
-        public LogDatum(string logLine, int lineNumber = -1, string currentZone = null)
+        public LogDatum(string logLine, int lineNumber = -1)
         {
             RawLogLine = logLine;
             LineNumber = lineNumber;
-            Zone = currentZone;
 
             LogMessage = RawLogLine.Substring(MessageStart);
             LogTime = GetTime();
