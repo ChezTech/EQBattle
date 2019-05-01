@@ -1,13 +1,17 @@
-﻿using LogObjects;
+﻿using BizObjects;
+using LogObjects;
 using System;
 
 namespace LineParser
 {
     public class LineParserFactory
     {
-        public LogDatum ParseLine(string logLine)
+        // If we parse a Zone object, save that info here
+        private static Zone CurrentZone = null;
+
+        public Line ParseLine(LogDatum logLine)
         {
-            return null;
+            return new Unknown(logLine, CurrentZone);
         }
     }
 }
