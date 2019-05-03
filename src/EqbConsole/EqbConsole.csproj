@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LineParser\LineParser.csproj" />
     <ProjectReference Include="..\LogFileReader\LogFileReader.csproj" />
+    <ProjectReference Include="..\LogObjects\LogObjects.csproj" />
   </ItemGroup>
 
 </Project>
