@@ -50,7 +50,7 @@ namespace BizObjects.Parsers
             if (i >= 0)
             {
                 defender = logDatum.LogMessage.Substring(i + YourKill.Length + 1).Trim(' ', '!', '.');
-                attacker = "You";
+                attacker = Attack.You;
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
             }
@@ -67,7 +67,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(YourDeath);
             if (i >= 0)
             {
-                defender = "You";
+                defender = Attack.You;
                 attacker = logDatum.LogMessage.Substring(i + YourDeath.Length + 1).Trim(' ', '!', '.');
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
@@ -86,7 +86,7 @@ namespace BizObjects.Parsers
             if (i >= 0)
             {
                 defender = logDatum.LogMessage.Substring(i + SomeoneDied.Length + 1).Trim(' ', '!', '.');
-                attacker = "Unknown";
+                attacker = Attack.Unknown;
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
             }
