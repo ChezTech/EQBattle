@@ -1,4 +1,5 @@
 ﻿using BizObjects;
+using BizObjects.Parsers;
 using LogObjects;
 using System;
 
@@ -9,6 +10,8 @@ namespace LineParser
         // If we parse a Zone object, save that info here
         private static Zone CurrentZone = null;
         private Publisher _publisher;
+
+        private KillParser _killParser = new KillParser();
 
         public LineParserFactory(Publisher publisher)
         {
@@ -25,6 +28,10 @@ namespace LineParser
 
         private Line FigureOutLineDatum(LogDatum logLine)
         {
+            Line lineEntry;
+            if (_killParser.TryParse(logLine, out lineEntry))
+                return lineEntry;
+
             return new Unknown(logLine, CurrentZone);
         }
     }
