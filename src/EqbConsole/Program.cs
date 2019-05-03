@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using BizObjects;
+using BizObjects.Parsers;
 using LineParser;
 using LogFileReader;
 using LogObjects;
@@ -27,6 +28,7 @@ namespace EqbConsole
         private Program()
         {
             _parser = new LineParserFactory(_publisher);
+            _parser.AddParser(new KillParser());
 
             _publisher.LineCreated += x => _lineCollection.Add(x);
             _publisher.UnknownCreated += x => _unknownCollection.Add(x);

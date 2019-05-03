@@ -2,6 +2,8 @@
 using BizObjects.Parsers;
 using LogObjects;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LineParser
 {
@@ -9,9 +11,10 @@ namespace LineParser
     {
         // If we parse a Zone object, save that info here
         private static Zone CurrentZone = null;
-        private Publisher _publisher;
 
-        private KillParser _killParser = new KillParser();
+        private IList<IParser> _parsers = new List<IParser>();
+
+        private Publisher _publisher;
 
         public LineParserFactory(Publisher publisher)
         {
@@ -28,11 +31,25 @@ namespace LineParser
 
         private Line FigureOutLineDatum(LogDatum logLine)
         {
-            Line lineEntry;
-            if (_killParser.TryParse(logLine, out lineEntry))
-                return lineEntry;
+            // Need to figure out what to do if there are multiple parsers that can parse a line.
+            // Should we take the first, a priority number?
+            // I would like to automatically adjust the order of the parsers such that the ones that usually parse a line are evaluated first (assuming evaluation stops with the first match)
 
-            return new Unknown(logLine, CurrentZone);
+            IList<Line> parsedLines = new List<Line>();
+            foreach (var parser in _parsers)
+            {
+                if (parser.TryParse(logLine, out Line lineEntry))
+                    parsedLines.Add(lineEntry);
+            }
+
+            return parsedLines
+                .DefaultIfEmpty(new Unknown(logLine, CurrentZone))
+                .FirstOrDefault();
+        }
+
+        public void AddParser(IParser parser)
+        {
+            _parsers.Add(parser);
         }
     }
 }
