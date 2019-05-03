@@ -32,7 +32,7 @@ namespace BizObjects.Parsers
             if (i >= 0)
             {
                 defender = logDatum.LogMessage.Substring(0, i - 1).Trim(' ', '!', '.');
-                attacker = logDatum.LogMessage.Substring(i + OtherDeath.Length).Trim(' ', '!', '.');
+                attacker = logDatum.LogMessage.Substring(i + OtherDeath.Length + 1).Trim(' ', '!', '.');
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
             }
@@ -49,7 +49,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(YourKill);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(i + OtherDeath.Length).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(i + YourKill.Length + 1).Trim(' ', '!', '.');
                 attacker = "You";
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
@@ -68,7 +68,7 @@ namespace BizObjects.Parsers
             if (i >= 0)
             {
                 defender = "You";
-                attacker = logDatum.LogMessage.Substring(i + OtherDeath.Length).Trim(' ', '!', '.');
+                attacker = logDatum.LogMessage.Substring(i + YourDeath.Length + 1).Trim(' ', '!', '.');
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
             }
@@ -85,7 +85,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(SomeoneDied);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(i + OtherDeath.Length).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(i + SomeoneDied.Length + 1).Trim(' ', '!', '.');
                 attacker = "Unknown";
                 lineEntry = new Kill(logDatum, attacker, defender);
                 return true;
