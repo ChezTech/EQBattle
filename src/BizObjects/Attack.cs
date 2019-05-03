@@ -5,7 +5,7 @@ namespace BizObjects
 {
     public class Attack : Line
     {
-        public Attack(LogDatum logLine, Zone zone = null) : base(logLine, zone)
+        public Attack(LogDatum logLine, string attacker, string defender, Zone zone = null) : base(logLine, zone)
         {
         }
 
