@@ -8,6 +8,7 @@ namespace LineParser
         public event Action<Line> LineCreated;
         public event Action<Unknown> UnknownCreated;
         public event Action<Attack> AttackCreated;
+        public event Action<Kill> KillCreated;
 
         public void RaiseCreated(Line o)
         {
@@ -22,6 +23,11 @@ namespace LineParser
         public void RaiseCreated(Attack o)
         {
             AttackCreated?.Invoke(o);
+        }
+
+        public void RaiseCreated(Kill o)
+        {
+            KillCreated?.Invoke(o);
         }
     }
 }

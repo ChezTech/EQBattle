@@ -17,6 +17,7 @@ namespace EqbConsole
         private List<Line> _lineCollection = new List<Line>();
         private List<Unknown> _unknownCollection = new List<Unknown>();
         private List<Attack> _attackCollection = new List<Attack>();
+        private List<Kill> _killCollection = new List<Kill>();
 
         static void Main(string[] args)
         {
@@ -30,6 +31,7 @@ namespace EqbConsole
             _publisher.LineCreated += x => _lineCollection.Add(x);
             _publisher.UnknownCreated += x => _unknownCollection.Add(x);
             _publisher.AttackCreated += x => _attackCollection.Add(x);
+            _publisher.KillCreated += x => _killCollection.Add(x);
         }
 
         private void RunProgram()
@@ -61,6 +63,13 @@ namespace EqbConsole
             Console.WriteLine("Line collection count: {0}", _lineCollection.Count);
             Console.WriteLine("Unknown collection count: {0}", _unknownCollection.Count);
             Console.WriteLine("Attack collection count: {0}", _attackCollection.Count);
+            Console.WriteLine("Kill collection count: {0}", _killCollection.Count);
+
+            Console.WriteLine("===== Kills ======");
+            foreach (var item in _killCollection)
+            {
+                Console.WriteLine("Kill: '{0}' killed '{1}'", item.Attacker, item.Defender);
+            }
         }
     }
 }
