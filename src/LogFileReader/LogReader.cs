@@ -66,7 +66,8 @@ namespace LogFileReader
                     else
                     {
                         RaiseEof();
-                        _readEvent.WaitOne(1000);
+                        if (!_cancelRequested)
+                            _readEvent.WaitOne(1000);
                     }
                 }
             }
