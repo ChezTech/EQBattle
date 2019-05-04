@@ -21,6 +21,8 @@ namespace LineParser
 
         private Publisher _publisher;
 
+        public event Action<Unknown> UnknownCreated;
+
         public LineParserFactory(Publisher publisher)
         {
             _publisher = publisher;
