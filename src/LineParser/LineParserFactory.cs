@@ -19,24 +19,9 @@ namespace LineParser
 
         private IList<ParserAction> _parsers = new List<ParserAction>();
 
-        private Publisher _publisher;
-
         public event Action<Unknown> UnknownCreated;
 
-        public LineParserFactory(Publisher publisher)
-        {
-            _publisher = publisher;
-        }
-
         public ILine ParseLine(LogDatum logLine)
-        {
-            var lineEntry = FigureOutLineDatum(logLine);
-            _publisher.RaiseCreated((dynamic)lineEntry);
-
-            return lineEntry;
-        }
-
-        private ILine FigureOutLineDatum(LogDatum logLine)
         {
             // Need to figure out what to do if there are multiple parsers that can parse a line.
             // Should we take the first, a priority number?

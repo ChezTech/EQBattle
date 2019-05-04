@@ -13,7 +13,6 @@ namespace EqbConsole
     {
         private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
 
-        private Publisher _publisher = new Publisher();
         private LineParserFactory _parser;
         private List<ILine> _lineCollection = new List<ILine>();
         private List<Unknown> _unknownCollection = new List<Unknown>();
@@ -27,15 +26,10 @@ namespace EqbConsole
 
         private Program()
         {
-            _parser = new LineParserFactory(_publisher);
-            _parser.UnknownCreated += x => { };
-            _parser.AddParser(new KillParser(), x => { Console.WriteLine(x.ToString()); });
-            _parser.AddParser(new HitParser(), x => { });
-
-            _publisher.LineCreated += x => _lineCollection.Add(x);
-            _publisher.UnknownCreated += x => _unknownCollection.Add(x);
-            _publisher.AttackCreated += x => _attackCollection.Add(x);
-            _publisher.KillCreated += x => _killCollection.Add(x);
+            _parser = new LineParserFactory();
+            _parser.UnknownCreated += x => { _unknownCollection.Add(x); };
+            _parser.AddParser(new KillParser(), x => { _killCollection.Add((dynamic)x); });
+            _parser.AddParser(new HitParser(), x => { _attackCollection.Add((dynamic)x); });
         }
 
         private void RunProgram()
@@ -72,7 +66,7 @@ namespace EqbConsole
             Console.WriteLine("===== Kills ======");
             foreach (var item in _killCollection)
             {
-                Console.WriteLine("Kill: '{0}' killed '{1}'", item.Attacker, item.Defender);
+                Console.WriteLine(item);
             }
         }
     }
