@@ -3,7 +3,6 @@ using BizObjects.Parsers;
 using LogObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace LineParser
 {
@@ -12,7 +11,7 @@ namespace LineParser
         // If we parse a Zone object, save that info here
         private static Zone CurrentZone = null;
 
-        private IList<IParser> _parsers = new List<IParser>();
+        private IList<Tuple<IParser, Action<ILine>>> _parsers = new List<Tuple<IParser, Action<ILine>>>();
 
         private Publisher _publisher;
 
@@ -35,21 +34,22 @@ namespace LineParser
             // Should we take the first, a priority number?
             // I would like to automatically adjust the order of the parsers such that the ones that usually parse a line are evaluated first (assuming evaluation stops with the first match)
 
-            IList<ILine> parsedLines = new List<ILine>();
+            // We're just taking the first valid parsed line here
             foreach (var parser in _parsers)
             {
-                if (parser.TryParse(logLine, out ILine lineEntry))
-                    parsedLines.Add(lineEntry);
+                if (parser.Item1.TryParse(logLine, out ILine lineEntry))
+                {
+                    parser.Item2(lineEntry);
+                    return lineEntry;
+                }
             }
 
-            return parsedLines
-                .DefaultIfEmpty(new Unknown(logLine, CurrentZone))
-                .FirstOrDefault();
+            return new Unknown(logLine, CurrentZone);
         }
 
-        public void AddParser(IParser parser)
+        public void AddParser(IParser parser, Action<ILine> createAction)
         {
-            _parsers.Add(parser);
+            _parsers.Add(new Tuple<IParser, Action<ILine>>(parser, createAction));
         }
     }
 }
