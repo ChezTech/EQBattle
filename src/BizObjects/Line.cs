@@ -4,7 +4,7 @@ using System;
 
 namespace BizObjects
 {
-    public abstract class Line
+    public abstract class Line : ILine
     {
         public DateTime Time { get { return LogLine.LogTime; } }
         public LogDatum LogLine { get; private set; }
