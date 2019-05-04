@@ -11,7 +11,13 @@ namespace LineParser
         // If we parse a Zone object, save that info here
         private static Zone CurrentZone = null;
 
-        private IList<Tuple<IParser, Action<ILine>>> _parsers = new List<Tuple<IParser, Action<ILine>>>();
+        private class ParserAction
+        {
+            public IParser Parser { get; set; }
+            public Action<ILine> OnCreated { get; set; }
+        }
+
+        private IList<ParserAction> _parsers = new List<ParserAction>();
 
         private Publisher _publisher;
 
@@ -37,9 +43,9 @@ namespace LineParser
             // We're just taking the first valid parsed line here
             foreach (var parser in _parsers)
             {
-                if (parser.Item1.TryParse(logLine, out ILine lineEntry))
+                if (parser.Parser.TryParse(logLine, out ILine lineEntry))
                 {
-                    parser.Item2(lineEntry);
+                    parser.OnCreated(lineEntry);
                     return lineEntry;
                 }
             }
@@ -49,7 +55,7 @@ namespace LineParser
 
         public void AddParser(IParser parser, Action<ILine> createAction)
         {
-            _parsers.Add(new Tuple<IParser, Action<ILine>>(parser, createAction));
+            _parsers.Add(new ParserAction() {Parser = parser, OnCreated = createAction });
         }
     }
 }
