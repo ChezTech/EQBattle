@@ -29,6 +29,7 @@ namespace EqbConsole
         {
             _parser = new LineParserFactory(_publisher);
             _parser.AddParser(new KillParser());
+            _parser.AddParser(new HitParser());
 
             _publisher.LineCreated += x => _lineCollection.Add(x);
             _publisher.UnknownCreated += x => _unknownCollection.Add(x);
