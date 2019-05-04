@@ -52,7 +52,9 @@ namespace LineParser
                 }
             }
 
-            return new Unknown(logLine, CurrentZone);
+            var unknownLine = new Unknown(logLine, CurrentZone);
+            UnknownCreated?.Invoke(unknownLine);
+            return unknownLine;
         }
 
         public void AddParser(IParser parser, Action<ILine> createAction)
