@@ -13,7 +13,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:33 2019] You punch a cliknar adept for 1277 points of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out Line lineEntry);
+            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -32,7 +32,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Sat Apr 10 21:49:26 2004] You bash a Witness of Hate informer for 1 point of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out Line lineEntry);
+            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -51,7 +51,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:34 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)");
 
-            var result = new HitParser().TryParse(logDatum, out Line lineEntry);
+            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);

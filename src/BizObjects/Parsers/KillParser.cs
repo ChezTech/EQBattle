@@ -9,7 +9,7 @@ namespace BizObjects.Parsers
         private const string YourDeath = "You have been slain by"; // [Fri May 16 20:23:52 2003] You have been slain by Sontalak!
         private const string SomeoneDied = "died"; // [Sat May 17 17:46:01 2003] A Razorfiend Subduer died.
 
-        public bool TryParse(LogDatum logDatum, out Line lineEntry)
+        public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
             if (TryParseOtherDeath(logDatum, out lineEntry))
                 return true;
@@ -22,7 +22,7 @@ namespace BizObjects.Parsers
             return false;
         }
 
-        private bool TryParseOtherDeath(LogDatum logDatum, out Line lineEntry)
+        private bool TryParseOtherDeath(LogDatum logDatum, out ILine lineEntry)
         {
             lineEntry = null;
             string attacker;
@@ -40,7 +40,7 @@ namespace BizObjects.Parsers
             return false;
         }
 
-        private bool TryParseYourKill(LogDatum logDatum, out Line lineEntry)
+        private bool TryParseYourKill(LogDatum logDatum, out ILine lineEntry)
         {
             lineEntry = null;
             string attacker;
@@ -58,7 +58,7 @@ namespace BizObjects.Parsers
             return false;
         }
 
-        private bool TryParseYourDeath(LogDatum logDatum, out Line lineEntry)
+        private bool TryParseYourDeath(LogDatum logDatum, out ILine lineEntry)
         {
             lineEntry = null;
             string attacker;
@@ -76,7 +76,7 @@ namespace BizObjects.Parsers
             return false;
         }
 
-        private bool TryParseSomeoneDied(LogDatum logDatum, out Line lineEntry)
+        private bool TryParseSomeoneDied(LogDatum logDatum, out ILine lineEntry)
         {
             lineEntry = null;
             string attacker;

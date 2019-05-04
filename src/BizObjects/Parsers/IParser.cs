@@ -4,6 +4,6 @@ namespace BizObjects.Parsers
 {
     public interface IParser
     {
-        bool TryParse(LogDatum logDatum, out Line lineEntry);
+        bool TryParse(LogDatum logDatum, out ILine lineEntry);
     }
 }

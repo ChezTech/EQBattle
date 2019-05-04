@@ -21,7 +21,7 @@ namespace LineParser
             _publisher = publisher;
         }
 
-        public Line ParseLine(LogDatum logLine)
+        public ILine ParseLine(LogDatum logLine)
         {
             var lineEntry = FigureOutLineDatum(logLine);
             _publisher.RaiseCreated((dynamic)lineEntry);
@@ -29,16 +29,16 @@ namespace LineParser
             return lineEntry;
         }
 
-        private Line FigureOutLineDatum(LogDatum logLine)
+        private ILine FigureOutLineDatum(LogDatum logLine)
         {
             // Need to figure out what to do if there are multiple parsers that can parse a line.
             // Should we take the first, a priority number?
             // I would like to automatically adjust the order of the parsers such that the ones that usually parse a line are evaluated first (assuming evaluation stops with the first match)
 
-            IList<Line> parsedLines = new List<Line>();
+            IList<ILine> parsedLines = new List<ILine>();
             foreach (var parser in _parsers)
             {
-                if (parser.TryParse(logLine, out Line lineEntry))
+                if (parser.TryParse(logLine, out ILine lineEntry))
                     parsedLines.Add(lineEntry);
             }
 

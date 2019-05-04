@@ -15,7 +15,7 @@ namespace EqbConsole
 
         private Publisher _publisher = new Publisher();
         private LineParserFactory _parser;
-        private List<Line> _lineCollection = new List<Line>();
+        private List<ILine> _lineCollection = new List<ILine>();
         private List<Unknown> _unknownCollection = new List<Unknown>();
         private List<Attack> _attackCollection = new List<Attack>();
         private List<Kill> _killCollection = new List<Kill>();

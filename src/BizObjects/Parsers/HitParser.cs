@@ -37,14 +37,14 @@ namespace BizObjects.Parsers
             RxYouHit = new Regex(@"(You) \b(\w+)\b (.*) for (\d+) points? of( (.*))? damage( by (.*))?\.( \((.*)\))?", RegexOptions.Compiled);
         }
 
-        public bool TryParse(LogDatum logDatum, out Line lineEntry)
+        public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
             if (TryParseYouHit(logDatum, out lineEntry))
                 return true;
             return false;
         }
 
-        private bool TryParseYouHit(LogDatum logDatum, out Line lineEntry)
+        private bool TryParseYouHit(LogDatum logDatum, out ILine lineEntry)
         {
             var match = RxYouHit.Match(logDatum.LogMessage);
 
