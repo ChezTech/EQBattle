@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using BizObjects;
 using BizObjects.Parsers;
 using LineParser;
@@ -16,7 +17,7 @@ namespace EqbConsole
         private LineParserFactory _parser;
         private List<ILine> _lineCollection = new List<ILine>();
         private List<Unknown> _unknownCollection = new List<Unknown>();
-        private List<Attack> _attackCollection = new List<Attack>();
+        private List<Hit> _hitCollection = new List<Hit>();
         private List<Kill> _killCollection = new List<Kill>();
 
         static void Main(string[] args)
@@ -29,7 +30,7 @@ namespace EqbConsole
             _parser = new LineParserFactory();
             _parser.UnknownCreated += x => { _unknownCollection.Add(x); };
             _parser.AddParser(new KillParser(), x => { _killCollection.Add((dynamic)x); });
-            _parser.AddParser(new HitParser(), x => { _attackCollection.Add((dynamic)x); });
+            _parser.AddParser(new HitParser(), x => { _hitCollection.Add((dynamic)x); });
         }
 
         private void RunProgram()
@@ -60,7 +61,7 @@ namespace EqbConsole
             Console.WriteLine("Line count: {0}", lineCount);
             Console.WriteLine("Line collection count: {0}", _lineCollection.Count);
             Console.WriteLine("Unknown collection count: {0}", _unknownCollection.Count);
-            Console.WriteLine("Attack collection count: {0}", _attackCollection.Count);
+            Console.WriteLine("Attack collection count: {0}", _hitCollection.Count);
             Console.WriteLine("Kill collection count: {0}", _killCollection.Count);
 
             Console.WriteLine("===== Kills ======");
@@ -68,6 +69,18 @@ namespace EqbConsole
             {
                 Console.WriteLine(item);
             }
+
+            Console.WriteLine("===== Attacks ======");
+            Console.WriteLine("Total: {0}", _hitCollection.Sum(x => x.Damage));
+            Console.WriteLine("You: {0}  Ouch: {1}",
+                _hitCollection.Where(x => x.Attacker == Attack.You).Sum(x => x.Damage), 
+                _hitCollection.Where(x => x.Defender == Attack.You).Sum(x => x.Damage));
+            Console.WriteLine("Pet: {0}  Ouch: {1}",
+                _hitCollection.Where(x => x.Attacker == "Khadaji" && x.IsPet).Sum(x => x.Damage),
+                _hitCollection.Where(x => x.Defender == "Khadaji" && x.IsPet).Sum(x => x.Damage));
+            Console.WriteLine("Mob: {0}  Ouch: {1}",
+                _hitCollection.Where(x => x.Attacker == "a cliknar adept").Sum(x => x.Damage),
+                _hitCollection.Where(x => x.Defender == "a cliknar adept").Sum(x => x.Damage));
         }
     }
 }
