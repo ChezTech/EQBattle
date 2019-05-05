@@ -5,7 +5,7 @@ namespace BizObjects
 {
     public class Kill : Attack
     {
-        public Kill(LogDatum logLine, string attacker, string defender, Zone zone = null) : base(logLine, attacker, defender, zone)
+        public Kill(LogDatum logLine, string attacker, string defender, bool isPet = false, Zone zone = null) : base(logLine, attacker, defender, isPet, zone)
         {
         }
 

@@ -8,10 +8,11 @@ namespace BizObjects
         public const string You = "You";
         public const string Unknown = "Unknown";
 
-        public Attack(LogDatum logLine, string attacker, string defender, Zone zone = null) : base(logLine, zone)
+        public Attack(LogDatum logLine, string attacker, string defender, bool isPet = false, Zone zone = null) : base(logLine, zone)
         {
             Attacker = ReplaceCommon(attacker);
             Defender = ReplaceCommon(defender);
+            IsPet = isPet;
         }
 
         private string ReplaceCommon(string name)
@@ -22,5 +23,6 @@ namespace BizObjects
 
         public string Attacker { get; private set; }
         public string Defender { get; private set; }
+        public bool IsPet { get; private set; }
     }
 }
