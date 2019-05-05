@@ -10,8 +10,14 @@ namespace BizObjects
 
         public Attack(LogDatum logLine, string attacker, string defender, Zone zone = null) : base(logLine, zone)
         {
-            Attacker = attacker;
-            Defender = defender;
+            Attacker = ReplaceCommon(attacker);
+            Defender = ReplaceCommon(defender);
+        }
+
+        private string ReplaceCommon(string name)
+        {
+            return name
+                .Replace("A ", "a "); // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
         }
 
         public string Attacker { get; private set; }
