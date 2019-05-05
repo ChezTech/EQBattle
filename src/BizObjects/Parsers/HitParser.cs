@@ -8,24 +8,11 @@ namespace BizObjects.Parsers
 {
     public class HitParser : IParser
     {
-
-
-
-
-
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:33 2019] You kick a cliknar adept for 1016 points of damage.
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:33 2019] You punch a cliknar adept for 1277 points of damage.
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:34 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:36 2019] A cliknar adept is burned by YOUR flames for 896 points of non-melee damage.
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:36 2019] A cliknar adept pierces YOU for 865 points of damage. (Strikethrough)
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:36 2019] YOU are pierced by a cliknar adept's thorns for 70 points of non-melee damage!
-        //private const string zzzz = ""; // [Fri Apr 26 09:26:37 2019] You strike a cliknar adept for 1219 points of damage.
-
-
         private readonly Regex RxYouHit; // https://regex101.com/r/tall6K/1
         private readonly Regex RxOtherHitsYou; // https://regex101.com/r/OqdZme/2
         private readonly Regex RxYourDamageShield; // https://regex101.com/r/7iMeAc/1
         private readonly Regex RxDamageShieldOnYou; // https://regex101.com/r/jMfkL3/1
+        private readonly Regex RxPet; // https://regex101.com/r/DHZqDT/1
 
 
         //private readonly IList<string> VerbList = new List<string>() {
@@ -41,6 +28,9 @@ namespace BizObjects.Parsers
             RxOtherHitsYou = new Regex(@"(.*) \b(\w+)\b YOU for (\d+) points? of( (.*))? damage\.( \((.*)\))?", RegexOptions.Compiled);
             RxYourDamageShield = new Regex(@"(.*) is (.*) by (.*) (.*) for (\d+) points of (.*) damage.", RegexOptions.Compiled);
             RxDamageShieldOnYou = new Regex(@"(.*) are (.*) by (.*)'s (.*) for (\d+) points of (.*) damage!", RegexOptions.Compiled);
+
+            // Note: possesive is written using a back-tick, *not* an apostrophe (as should be)
+            RxPet = new Regex(@"(.*)`s pet \b(\w+)\b (.*) for (\d+) points? of( (.*))? damage( by (.*))?\.( \((.*)\))?", RegexOptions.Compiled);
         }
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
@@ -52,6 +42,8 @@ namespace BizObjects.Parsers
             if (TryParseYourDamageShield(logDatum, out lineEntry))
                 return true;
             if (TryParseDamageShieldOnYou(logDatum, out lineEntry))
+                return true;
+            if (TryParsePet(logDatum, out lineEntry))
                 return true;
             return false;
         }
@@ -147,5 +139,30 @@ namespace BizObjects.Parsers
 
             return true;
         }
+
+        private bool TryParsePet(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxPet.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            var attacker = match.Groups[1].Value;
+            var isPet = true;
+            var attackVerb = match.Groups[2].Value;
+            var defender = match.Groups[3].Value;
+            var damage = int.Parse(match.Groups[4].Value);
+            var damageType = match.Groups[6].Success ? match.Groups[6].Value : null;
+            var damageBy = match.Groups[8].Success ? match.Groups[8].Value : null;
+            var damageQualifier = match.Groups[10].Success ? match.Groups[10].Value : null;
+
+            lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier, isPet);
+
+            return true;
+        }
+
     }
 }

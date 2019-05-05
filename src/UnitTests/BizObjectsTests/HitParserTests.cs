@@ -121,5 +121,45 @@ namespace BizObjectsTests
             Assert.IsNull(hitEntry.DamageBy);
             Assert.AreEqual("Strikethrough", hitEntry.DamageQualifier);
         }
+
+        [TestMethod]
+        public void YourPetHitsOther()
+        {
+            var logDatum = new LogDatum("[Fri Apr 26 09:25:47 2019] Khadaji`s pet hits a cliknar adept for 597 points of damage.");
+
+            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(lineEntry is Hit);
+            var hitEntry = lineEntry as Hit;
+            Assert.AreEqual("Khadaji", hitEntry.Attacker);
+            Assert.IsTrue(hitEntry.IsPet);
+            Assert.AreEqual("a cliknar adept", hitEntry.Defender);
+            Assert.AreEqual(597, hitEntry.Damage);
+            Assert.AreEqual("hits", hitEntry.AttackVerb);
+            Assert.IsNull(hitEntry.DamageType);
+            Assert.IsNull(hitEntry.DamageBy);
+            Assert.IsNull(hitEntry.DamageQualifier);
+        }
+
+        [TestMethod]
+        public void OtherHitsOther()
+        {
+            var logDatum = new LogDatum("[Sat May 17 15:28:23 2003] Zangum slashes A Razorfiend Subduer for 14 points of damage.");
+
+            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(lineEntry is Hit);
+            var hitEntry = lineEntry as Hit;
+            Assert.AreEqual("Zangum", hitEntry.Attacker);
+            Assert.AreEqual("A Razorfiend Subduer", hitEntry.Defender);
+            Assert.AreEqual(14, hitEntry.Damage);
+            Assert.AreEqual("slashes", hitEntry.AttackVerb);
+            Assert.IsNull(hitEntry.DamageType);
+            Assert.IsNull(hitEntry.DamageBy);
+            Assert.IsNull(hitEntry.DamageQualifier);
+        }
+
     }
 }
