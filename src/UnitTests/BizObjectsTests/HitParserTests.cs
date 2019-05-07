@@ -87,7 +87,7 @@ namespace BizObjectsTests
         [TestMethod]
         public void DamageShieldOnYou()
         {
-            var logDatum = new LogDatum("[Fri Apr 26 09:26:36 2019] c");
+            var logDatum = new LogDatum("[Fri Apr 26 09:26:36 2019] YOU are pierced by a cliknar adept's thorns for 70 points of non-melee damage!");
 
             var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
 
