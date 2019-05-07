@@ -8,12 +8,14 @@ namespace BizObjectsTests
     [TestClass]
     public class HitParserTests
     {
+        private HitParser _parser = new HitParser();
+
         [TestMethod]
         public void YouAttackOtherSimple()
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:33 2019] You punch a cliknar adept for 1277 points of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -32,7 +34,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Sat Apr 10 21:49:26 2004] You bash a Witness of Hate informer for 1 point of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -51,7 +53,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:34 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -70,7 +72,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:36 2019] A cliknar adept is burned by YOUR flames for 896 points of non-melee damage.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -89,7 +91,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:36 2019] YOU are pierced by a cliknar adept's thorns for 70 points of non-melee damage!");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -108,7 +110,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:26:36 2019] A cliknar adept pierces YOU for 865 points of damage. (Strikethrough)");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -127,7 +129,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Fri Apr 26 09:25:47 2019] Khadaji`s pet hits a cliknar adept for 597 points of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -147,7 +149,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Sat Mar 30 08:49:07 2019] A cliknar hunter pierces Khadaji`s pet for 2035 points of damage. (Riposte)");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -166,7 +168,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Sat May 17 15:28:23 2003] Zangum slashes A Razorfiend Subduer for 14 points of damage.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
@@ -185,7 +187,7 @@ namespace BizObjectsTests
         {
             var logDatum = new LogDatum("[Sat Mar 30 08:48:54 2019] Khadaji hit a cliknar hunter for 388 points of poison damage by Strike of Venom IV.");
 
-            var result = new HitParser().TryParse(logDatum, out ILine lineEntry);
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
