@@ -6,6 +6,7 @@
         Backstab,
         Bash,
         Bite,
+        Burn,
         Claw,
         Crush,
         Frenzy,
