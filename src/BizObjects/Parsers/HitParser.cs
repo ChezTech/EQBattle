@@ -8,22 +8,20 @@ namespace BizObjects.Parsers
 {
     public class HitParser : IParser
     {
+        private readonly Regex RxHit;
+        private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
+
         private readonly Regex RxYouHit; // https://regex101.com/r/tall6K/1
         private readonly Regex RxOtherHitsYou; // https://regex101.com/r/OqdZme/2
         private readonly Regex RxYourDamageShield; // https://regex101.com/r/7iMeAc/1
         private readonly Regex RxDamageShieldOnYou; // https://regex101.com/r/jMfkL3/1
         private readonly Regex RxPet; // https://regex101.com/r/DHZqDT/1
 
-
-        //private readonly IList<string> VerbList = new List<string>() {
-        //    "hit", "hits",
-        //    "pierce", "pierces",
-        //    "kick", "kicks",
-        //    "strike", "strikes"
-        //};
-
         public HitParser()
         {
+            string verbs = string.Join('|', new AttackTypeConverter().Names);
+            RxHit = new Regex(regexHit.Replace("**verbs**", verbs), RegexOptions.Compiled);
+
             RxYouHit = new Regex(@"(You) \b(\w+)\b (.*) for (\d+) points? of( (.*))? damage( by (.*))?\.( \((.*)\))?", RegexOptions.Compiled);
             RxOtherHitsYou = new Regex(@"(.*) \b(\w+)\b YOU for (\d+) points? of( (.*))? damage\.( \((.*)\))?", RegexOptions.Compiled);
             RxYourDamageShield = new Regex(@"(.*) is (.*) by (.*) (.*) for (\d+) points of (.*) damage.", RegexOptions.Compiled);
@@ -35,17 +33,42 @@ namespace BizObjects.Parsers
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
-            if (TryParseYouHit(logDatum, out lineEntry))
+            if (TryParseHit(logDatum, out lineEntry))
                 return true;
-            if (TryParseOtherHitsYou(logDatum, out lineEntry))
-                return true;
-            if (TryParseYourDamageShield(logDatum, out lineEntry))
-                return true;
-            if (TryParseDamageShieldOnYou(logDatum, out lineEntry))
-                return true;
-            if (TryParsePet(logDatum, out lineEntry))
-                return true;
+
+            //if (TryParseYouHit(logDatum, out lineEntry))
+            //    return true;
+            //if (TryParseOtherHitsYou(logDatum, out lineEntry))
+            //    return true;
+            //if (TryParseYourDamageShield(logDatum, out lineEntry))
+            //    return true;
+            //if (TryParseDamageShieldOnYou(logDatum, out lineEntry))
+            //    return true;
+            //if (TryParsePet(logDatum, out lineEntry))
+            //    return true;
             return false;
+        }
+        private bool TryParseHit(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxHit.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            var attacker = match.Groups[1].Value;
+            var attackVerb = match.Groups[2].Value;
+            var defender = match.Groups[3].Value;
+            var damage = int.Parse(match.Groups[4].Value);
+            var damageType = match.Groups[5].Success ? match.Groups[5].Value : null;
+            var damageBy = match.Groups[6].Success ? match.Groups[6].Value : null;
+            var damageQualifier = match.Groups[7].Success ? match.Groups[7].Value : null;
+
+            lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier);
+
+            return true;
         }
 
         private bool TryParseYouHit(LogDatum logDatum, out ILine lineEntry)
