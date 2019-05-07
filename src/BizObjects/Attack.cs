@@ -9,11 +9,13 @@ namespace BizObjects
     {
         public const string You = "You";
         public const string Unknown = "Unknown";
+        private string _attacker;
+        private string _defender;
 
         public Attack(LogDatum logLine, string attacker, string defender, bool isPet = false, Zone zone = null) : base(logLine, zone)
         {
-            Attacker = ReplaceCommon(attacker);
-            Defender = ReplaceCommon(defender);
+            Attacker = attacker;
+            Defender = defender;
             IsPet = isPet;
         }
 
@@ -24,8 +26,8 @@ namespace BizObjects
                 .Replace("A ", "a "); // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
         }
 
-        public string Attacker { get; private set; }
-        public string Defender { get; private set; }
+        public string Attacker { get => _attacker; private set => _attacker = ReplaceCommon(value); }
+        public string Defender { get => _defender; private set => _defender = ReplaceCommon(value); }
         public AttackType Type { get; private set; }
         public bool IsPet { get; private set; }
     }
