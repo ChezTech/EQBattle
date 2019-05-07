@@ -23,7 +23,9 @@ namespace BizObjects
         {
             return name
                 .Replace("YOU", You)
-                .Replace("A ", "a "); // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
+                .Replace("YOUR", You)
+                .Replace("A ", "a ") // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
+                .Replace("An", "an");
         }
 
         public string Attacker { get => _attacker; private set => _attacker = ReplaceCommon(value); }
