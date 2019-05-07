@@ -22,10 +22,14 @@ namespace BizObjects
         private string ReplaceCommon(string name)
         {
             return name
-                .Replace("YOU", You)
                 .Replace("YOUR", You)
+                .Replace("YOU", You)
+                .Replace("You", You) // This sets us up to changing what the 'You' property actually points to (once we can figure out the character's actual name)
                 .Replace("A ", "a ") // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
-                .Replace("An", "an");
+                .Replace("An ", "an ")
+                // .Replace("`s", "") // backtick: better regex? (E.g. "Bob`s pet kicked ....", "Joe kicked Bob`s pet ....")
+                .Replace("'s", "") // apostrophe: Can we replace this by a better Regex? (E.g. "... pierced by a monster's thorns...")
+                ;
         }
 
         public string Attacker { get => _attacker; private set => _attacker = ReplaceCommon(value); }
