@@ -85,7 +85,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(SomeoneDied);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(i + SomeoneDied.Length + 1).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(0, i - 1).Trim(' ', '!', '.');
                 attacker = Attack.Unknown;
                 lineEntry = new Kill(logDatum, attacker, defender, "died");
                 return true;
