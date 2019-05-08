@@ -21,8 +21,8 @@ namespace LogObjects
             RawLogLine = logLine ?? string.Empty;
             LineNumber = lineNumber;
 
-            LogMessage = RawLogLine.Length > MessageStart ? RawLogLine.Substring(MessageStart) : string.Empty;
             LogTime = GetTime();
+            LogMessage = GetMessage();
         }
 
         private DateTime GetTime()
@@ -39,9 +39,20 @@ namespace LogObjects
             }
             catch
             {
-                LogMessage = string.Empty; // Not the greatest of places to override this (essentially a side-effect), but we really only want to do it in this case
                 return DateTime.MinValue;
             }
+        }
+
+        private string GetMessage()
+        {
+            // This is a little annoying to have to check this each time and to have to ensure that the LogTime is set before we try to set the LogMessage
+            if (LogTime == DateTime.MinValue)
+                return string.Empty;
+
+            if (RawLogLine.Length <= MessageStart)
+                return string.Empty;
+
+            return RawLogLine.Substring(MessageStart);
         }
     }
 }
