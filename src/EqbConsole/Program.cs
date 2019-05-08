@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using BizObjects;
 using LineParser;
 using LineParser.Parsers;
@@ -12,7 +14,8 @@ namespace EqbConsole
 {
     class Program
     {
-        private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
+        //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
+        private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test_medium.txt";
         //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
 
         private LineParserFactory _parser;
@@ -20,6 +23,8 @@ namespace EqbConsole
         private List<Unknown> _unknownCollection = new List<Unknown>();
         private List<Hit> _hitCollection = new List<Hit>();
         private List<Kill> _killCollection = new List<Kill>();
+
+        private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
         static void Main(string[] args)
         {
@@ -42,6 +47,28 @@ namespace EqbConsole
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
+            var parseElapsed = sw.Elapsed;
+
+
+            Task.Run(() =>
+            {
+                while (!_jobQueueLogLines.IsCompleted)
+                {
+                    try
+                    {
+                        var logLine = _jobQueueLogLines.Take();
+                        _parser.ParseLine(logLine);
+
+                        if (logLine.LineNumber % 10000 == 0)
+                            Console.WriteLine("Parsed {0} lines...", logLine.LineNumber);
+                    }
+                    catch (InvalidOperationException) { }
+                }
+                parseElapsed = sw.Elapsed;
+
+                Console.WriteLine("Done parsing.");
+                Console.WriteLine();
+            });
 
             using (LogReader logReader = new LogReader(logPath))
             {
@@ -49,18 +76,26 @@ namespace EqbConsole
                 {
                     lineCount++;
                     var logLine = new LogDatum(e.LogLine, lineCount);
-                    // Add this to a job queue
-
-                    _parser.ParseLine(logLine);
+                    _jobQueueLogLines.Add(logLine);
                 };
                 logReader.EoFReached += (s, e) => { logReader.StopReading(); };
                 logReader.StartReading();
             }
+            _jobQueueLogLines.CompleteAdding();
 
-            sw.Stop();
+            var readElapsed = sw.Elapsed;
 
-            Console.WriteLine("Elapsed: {0}", sw.Elapsed);
-            Console.WriteLine("Line count: {0}", lineCount);
+            // Keep the console window open while the
+            // consumer thread completes its output.
+            Console.WriteLine("Press any key to halt parsing. Wait for the 'done' message to finish");
+            Console.ReadKey(true);
+
+
+            Console.WriteLine("Read Elapsed: {0}", readElapsed);
+            Console.WriteLine("Parse Elapsed: {0}", parseElapsed);
+            Console.WriteLine("Line count: {0:N0}", lineCount);
+            Console.WriteLine("Job Queue: {0:N0}", _jobQueueLogLines.Count);
+
             Console.WriteLine("Line collection count: {0}", _lineCollection.Count);
             Console.WriteLine("Unknown collection count: {0}", _unknownCollection.Count);
             Console.WriteLine("Attack collection count: {0}", _hitCollection.Count);
