@@ -47,5 +47,13 @@ namespace BizObjectsTest
             var c = new Character("An awakened citizen");
             Assert.AreEqual("an awakened citizen", c.Name);
         }
+
+        [TestMethod]
+        public void ConvertPossesive()
+        {
+            // A master hunter is pierced by Movanna's thorns for 826 points of non-melee damage.
+            var c = new Character("Movanna's");
+            Assert.AreEqual("Movanna", c.Name);
+        }
     }
 }
