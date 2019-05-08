@@ -1,7 +1,7 @@
 ﻿using BizObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BizObjectsTest
+namespace BizObjectsTests
 {
     [TestClass]
     public class AttackTests
