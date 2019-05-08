@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace BizObjectsTest
 {
     [TestClass]
-    class AttackTests
+    public class AttackTests
     {
         [TestMethod]
         public void VerifyAttacker()
