@@ -13,6 +13,7 @@ namespace EqbConsole
     class Program
     {
         private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
+        //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
 
         private LineParserFactory _parser;
         private List<ILine> _lineCollection = new List<ILine>();
@@ -22,7 +23,8 @@ namespace EqbConsole
 
         static void Main(string[] args)
         {
-            new Program().RunProgram();
+            var logPath = args.Length > 0 ? args[0] : LogFilePathName;
+            new Program().RunProgram(logPath);
         }
 
         private Program()
@@ -33,15 +35,15 @@ namespace EqbConsole
             _parser.AddParser(new HitParser(), x => { _hitCollection.Add((dynamic)x); });
         }
 
-        private void RunProgram()
+        private void RunProgram(string logPath)
         {
-            Console.WriteLine("Reading log file: {0}", LogFilePathName);
+            Console.WriteLine("Reading log file: {0}", logPath);
 
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
 
-            using (LogReader logReader = new LogReader(LogFilePathName))
+            using (LogReader logReader = new LogReader(logPath))
             {
                 logReader.LineRead += (s, e) =>
                 {
@@ -64,21 +66,15 @@ namespace EqbConsole
             Console.WriteLine("Attack collection count: {0}", _hitCollection.Count);
             Console.WriteLine("Kill collection count: {0}", _killCollection.Count);
 
-            Console.WriteLine("===== Kills ======");
-            foreach (var item in _killCollection)
-            {
-                Console.WriteLine(item);
-            }
-
             Console.WriteLine("===== Attacks ======");
-            Console.WriteLine("Total: {0}", _hitCollection.Sum(x => x.Damage));
-            Console.WriteLine("You: {0}  Ouch: {1}",
-                _hitCollection.Where(x => x.Attacker == Attack.You).Sum(x => x.Damage), 
+            Console.WriteLine("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
+            Console.WriteLine("You: {0:N0}  Ouch: {1:N0}",
+                _hitCollection.Where(x => x.Attacker == Attack.You).Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender == Attack.You).Sum(x => x.Damage));
-            Console.WriteLine("Pet: {0}  Ouch: {1}",
+            Console.WriteLine("Pet: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker == "Khadaji" && x.IsPet).Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender == "Khadaji" && x.IsPet).Sum(x => x.Damage));
-            Console.WriteLine("Mob: {0}  Ouch: {1}",
+            Console.WriteLine("Mob: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker == "a cliknar adept").Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender == "a cliknar adept").Sum(x => x.Damage));
         }
