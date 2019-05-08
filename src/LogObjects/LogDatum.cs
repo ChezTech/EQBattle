@@ -18,10 +18,10 @@ namespace LogObjects
 
         public LogDatum(string logLine, int lineNumber = -1)
         {
-            RawLogLine = logLine;
+            RawLogLine = logLine ?? string.Empty;
             LineNumber = lineNumber;
 
-            LogMessage = RawLogLine.Substring(MessageStart);
+            LogMessage = RawLogLine.Length > MessageStart ? RawLogLine.Substring(MessageStart) : string.Empty;
             LogTime = GetTime();
         }
 
@@ -31,8 +31,17 @@ namespace LogObjects
             // [Sat Apr 20 19:23:28 2019]
 
             //int length = RawLogLine.IndexOf(']') - 1;
-            var datePortion = RawLogLine.Substring(1, DateLength);
-            return DateTime.ParseExact(datePortion, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InstalledUICulture);
+
+            try
+            {
+                var datePortion = RawLogLine.Substring(1, DateLength);
+                return DateTime.ParseExact(datePortion, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.InstalledUICulture);
+            }
+            catch
+            {
+                LogMessage = string.Empty; // Not the greatest of places to override this (essentially a side-effect), but we really only want to do it in this case
+                return DateTime.MinValue;
+            }
         }
     }
 }
