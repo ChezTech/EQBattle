@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BizObjects\BizObjects.csproj" />
     <ProjectReference Include="..\..\LogObjects\LogObjects.csproj" />
+    <ProjectReference Include="..\..\LineParser\LineParser.csproj" />
   </ItemGroup>
 
 </Project>

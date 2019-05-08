@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using BizObjects;
-using BizObjects.Parsers;
 using LineParser;
+using LineParser.Parsers;
 using LogFileReader;
 using LogObjects;
 

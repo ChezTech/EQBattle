@@ -1,6 +1,7 @@
-﻿using LogObjects;
+﻿using BizObjects;
+using LogObjects;
 
-namespace BizObjects.Parsers
+namespace LineParser.Parsers
 {
     public interface IParser
     {

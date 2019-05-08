@@ -1,5 +1,5 @@
 ﻿using BizObjects;
-using BizObjects.Parsers;
+using LineParser.Parsers;
 using LogObjects;
 using System;
 using System.Collections.Generic;

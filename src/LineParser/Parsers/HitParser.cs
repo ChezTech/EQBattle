@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using BizObjects;
 using LogObjects;
 
-namespace BizObjects.Parsers
+namespace LineParser.Parsers
 {
     public class HitParser : IParser
     {
