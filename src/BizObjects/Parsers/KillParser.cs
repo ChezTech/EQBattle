@@ -4,10 +4,10 @@ namespace BizObjects.Parsers
 {
     public class KillParser : IParser
     {
-        private const string OtherDeath = "has been slain by";
-        private const string YourKill = "You have slain";
-        private const string YourDeath = "You have been slain by";
-        private const string SomeoneDied = "died";
+        private const string OtherDeath = " has been slain by ";
+        private const string YourKill = "You have slain ";
+        private const string YourDeath = "You have been slain by ";
+        private const string SomeoneDied = " died.";
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
@@ -31,8 +31,8 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(OtherDeath);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(0, i - 1).Trim(' ', '!', '.');
-                attacker = logDatum.LogMessage.Substring(i + OtherDeath.Length + 1).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(0, i);
+                attacker = logDatum.LogMessage.Substring(i + OtherDeath.Length, logDatum.LogMessage.Length - i - OtherDeath.Length - 1);
                 lineEntry = new Kill(logDatum, attacker, defender, "slain");
                 return true;
             }
@@ -49,7 +49,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(YourKill);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(i + YourKill.Length + 1).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(i + YourKill.Length, logDatum.LogMessage.Length - i - YourKill.Length - 1);
                 attacker = Attack.You;
                 lineEntry = new Kill(logDatum, attacker, defender, "slain");
                 return true;
@@ -68,7 +68,7 @@ namespace BizObjects.Parsers
             if (i >= 0)
             {
                 defender = Attack.You;
-                attacker = logDatum.LogMessage.Substring(i + YourDeath.Length + 1).Trim(' ', '!', '.');
+                attacker = logDatum.LogMessage.Substring(i + YourDeath.Length, logDatum.LogMessage.Length - i - YourDeath.Length - 1);
                 lineEntry = new Kill(logDatum, attacker, defender, "slain");
                 return true;
             }
@@ -85,7 +85,7 @@ namespace BizObjects.Parsers
             int i = logDatum.LogMessage.IndexOf(SomeoneDied);
             if (i >= 0)
             {
-                defender = logDatum.LogMessage.Substring(0, i - 1).Trim(' ', '!', '.');
+                defender = logDatum.LogMessage.Substring(0, i);
                 attacker = Attack.Unknown;
                 lineEntry = new Kill(logDatum, attacker, defender, "died");
                 return true;
