@@ -69,14 +69,14 @@ namespace EqbConsole
             Console.WriteLine("===== Attacks ======");
             Console.WriteLine("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
             Console.WriteLine("You: {0:N0}  Ouch: {1:N0}",
-                _hitCollection.Where(x => x.Attacker == Attack.You).Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender == Attack.You).Sum(x => x.Damage));
+                _hitCollection.Where(x => x.Attacker.Name == Attack.You).Sum(x => x.Damage),
+                _hitCollection.Where(x => x.Defender.Name == Attack.You).Sum(x => x.Damage));
             Console.WriteLine("Pet: {0:N0}  Ouch: {1:N0}",
-                _hitCollection.Where(x => x.Attacker == "Khadaji" && x.IsPet).Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender == "Khadaji" && x.IsPet).Sum(x => x.Damage));
+                _hitCollection.Where(x => x.Attacker.Name == "Khadaji" && x.Attacker.IsPet).Sum(x => x.Damage),
+                _hitCollection.Where(x => x.Defender.Name == "Khadaji" && x.Defender.IsPet).Sum(x => x.Damage));
             Console.WriteLine("Mob: {0:N0}  Ouch: {1:N0}",
-                _hitCollection.Where(x => x.Attacker == "a cliknar adept").Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender == "a cliknar adept").Sum(x => x.Damage));
+                _hitCollection.Where(x => x.Attacker.Name == "a cliknar adept").Sum(x => x.Damage),
+                _hitCollection.Where(x => x.Defender.Name == "a cliknar adept").Sum(x => x.Damage));
         }
     }
 }
