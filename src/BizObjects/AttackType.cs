@@ -13,6 +13,7 @@
         Gore,
         Hit,
         Kick,
+        Kill,
         Maul,
         Pierce,
         Punch,
