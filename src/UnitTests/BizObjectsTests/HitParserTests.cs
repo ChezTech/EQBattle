@@ -23,7 +23,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(1277, hitEntry.Damage);
-            Assert.AreEqual("punch", hitEntry.AttackVerb);
+            Assert.AreEqual("punch", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -42,7 +42,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
             Assert.AreEqual("a Witness of Hate informer", hitEntry.Defender.Name);
             Assert.AreEqual(1, hitEntry.Damage);
-            Assert.AreEqual("bash", hitEntry.AttackVerb);
+            Assert.AreEqual("bash", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -61,7 +61,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(1180, hitEntry.Damage);
-            Assert.AreEqual("hit", hitEntry.AttackVerb);
+            Assert.AreEqual("hit", hitEntry.Verb);
             Assert.AreEqual("chromatic", hitEntry.DamageType);
             Assert.AreEqual("Lynx Maw", hitEntry.DamageBy);
             Assert.AreEqual("Critical", hitEntry.DamageQualifier);
@@ -80,7 +80,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(896, hitEntry.Damage);
-            Assert.AreEqual("burned", hitEntry.AttackVerb);
+            Assert.AreEqual("burned", hitEntry.Verb);
             Assert.AreEqual("non-melee", hitEntry.DamageType);
             Assert.AreEqual("flames", hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -99,7 +99,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Defender.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Attacker.Name);
             Assert.AreEqual(70, hitEntry.Damage);
-            Assert.AreEqual("pierced", hitEntry.AttackVerb);
+            Assert.AreEqual("pierced", hitEntry.Verb);
             Assert.AreEqual("non-melee", hitEntry.DamageType);
             Assert.AreEqual("thorns", hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -118,7 +118,7 @@ namespace BizObjectsTests
             Assert.AreEqual(Attack.You, hitEntry.Defender.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Attacker.Name);
             Assert.AreEqual(865, hitEntry.Damage);
-            Assert.AreEqual("pierces", hitEntry.AttackVerb);
+            Assert.AreEqual("pierces", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.AreEqual("Strikethrough", hitEntry.DamageQualifier);
@@ -138,7 +138,7 @@ namespace BizObjectsTests
             Assert.IsTrue(hitEntry.Attacker.IsPet);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(597, hitEntry.Damage);
-            Assert.AreEqual("hits", hitEntry.AttackVerb);
+            Assert.AreEqual("hits", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -158,7 +158,7 @@ namespace BizObjectsTests
             Assert.AreEqual("Khadaji", hitEntry.Defender.Name);
             Assert.IsTrue(hitEntry.Defender.IsPet);
             Assert.AreEqual(2035, hitEntry.Damage);
-            Assert.AreEqual("pierces", hitEntry.AttackVerb);
+            Assert.AreEqual("pierces", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.AreEqual("Riposte", hitEntry.DamageQualifier);
@@ -177,7 +177,7 @@ namespace BizObjectsTests
             Assert.AreEqual("Zangum", hitEntry.Attacker.Name);
             Assert.AreEqual("a Razorfiend Subduer", hitEntry.Defender.Name);
             Assert.AreEqual(14, hitEntry.Damage);
-            Assert.AreEqual("slashes", hitEntry.AttackVerb);
+            Assert.AreEqual("slashes", hitEntry.Verb);
             Assert.IsNull(hitEntry.DamageType);
             Assert.IsNull(hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
@@ -196,7 +196,7 @@ namespace BizObjectsTests
             Assert.AreEqual("Khadaji", hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar hunter", hitEntry.Defender.Name);
             Assert.AreEqual(388, hitEntry.Damage);
-            Assert.AreEqual("hit", hitEntry.AttackVerb);
+            Assert.AreEqual("hit", hitEntry.Verb);
             Assert.AreEqual("poison", hitEntry.DamageType);
             Assert.AreEqual("Strike of Venom IV", hitEntry.DamageBy);
             Assert.IsNull(hitEntry.DamageQualifier);
