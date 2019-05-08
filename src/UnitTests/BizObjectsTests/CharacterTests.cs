@@ -11,6 +11,7 @@ namespace BizObjectsTest
         {
             var c = new Character("Khadaji");
             Assert.AreEqual("Khadaji", c.Name);
+            Assert.IsFalse(c.IsPet);
         }
 
         [TestMethod]
@@ -18,6 +19,7 @@ namespace BizObjectsTest
         {
             var c = new Character("YOU");
             Assert.AreEqual("You", c.Name);
+            Assert.IsFalse(c.IsPet);
         }
 
         [TestMethod]
@@ -32,6 +34,7 @@ namespace BizObjectsTest
         {
             var c = new Character("A Razorfiend Subduer");
             Assert.AreEqual("a Razorfiend Subduer", c.Name);
+            Assert.IsFalse(c.IsPet);
         }
 
         [TestMethod]
@@ -54,6 +57,23 @@ namespace BizObjectsTest
             // A master hunter is pierced by Movanna's thorns for 826 points of non-melee damage.
             var c = new Character("Movanna's");
             Assert.AreEqual("Movanna", c.Name);
+        }
+
+        [TestMethod]
+        public void ConvertPetBackTickPossesive()
+        {
+            // Khadaji`s pet hits a master hunter for 668 points of damage.
+            var c = new Character("Khadaji`s pet");
+            Assert.AreEqual("Khadaji", c.Name);
+        }
+
+        [TestMethod]
+        public void DetectPetCharacter()
+        {
+            // Khadaji`s pet hits a master hunter for 668 points of damage.
+            var c = new Character("Khadaji`s pet");
+            Assert.AreEqual("Khadaji", c.Name);
+            Assert.IsTrue(c.IsPet);
         }
     }
 }
