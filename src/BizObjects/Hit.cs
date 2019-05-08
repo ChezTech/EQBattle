@@ -5,7 +5,7 @@ namespace BizObjects
 {
     public class Hit : Attack
     {
-        public Hit(LogDatum logLine, string attacker, string defender, string attackVerb, int damage, string damageType, string damageBy, string damageQualifier, bool isPet = false, Zone zone = null) : base(logLine, attacker, defender, isPet, zone)
+        public Hit(LogDatum logLine, string attacker, string defender, string attackVerb, int damage, string damageType, string damageBy, string damageQualifier, Zone zone = null) : base(logLine, attacker, defender, zone)
         {
             AttackVerb = attackVerb;
             Damage = damage;
