@@ -10,10 +10,10 @@ namespace LogObjects
         private const int DateLength = 24;
         private const int MessageStart = 27;
 
-        public string RawLogLine { get; private set; }
-        public DateTime LogTime { get; private set; }
-        public string LogMessage { get; private set; }
-        public int LineNumber { get; private set; }
+        public string RawLogLine { get; }
+        public DateTime LogTime { get; }
+        public string LogMessage { get; }
+        public int LineNumber { get; }
 
 
         public LogDatum(string logLine, int lineNumber = -1)

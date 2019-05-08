@@ -10,11 +10,11 @@ namespace BizObjects
         {
         }
 
-        public string Healer { get; private set; }
-        public string Patient { get; private set; }
-        public int Amount { get; private set; }
-        public int OverAmount { get; private set; }
-        public string SpellName { get; private set; }
+        public string Healer { get; }
+        public string Patient { get; }
+        public int Amount { get; }
+        public int OverAmount { get; }
+        public string SpellName { get; }
 
     }
 }

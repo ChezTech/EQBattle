@@ -7,8 +7,8 @@ namespace BizObjects
     public abstract class Line : ILine
     {
         public DateTime Time { get { return LogLine.LogTime; } }
-        public LogDatum LogLine { get; private set; }
-        public Zone Zone { get; private set; }
+        public LogDatum LogLine { get; }
+        public Zone Zone { get; }
 
         public Line(LogDatum logLine, Zone zone = null)
         {

@@ -14,10 +14,10 @@ namespace BizObjects
             DamageQualifier = damageQualifier;
         }
 
-        public string AttackVerb { get; private set; }
-        public int Damage { get; private set; }
-        public string DamageType { get; private set; }
-        public string DamageBy { get; private set; }
-        public string DamageQualifier { get; private set; }
+        public string AttackVerb { get; }
+        public int Damage { get; }
+        public string DamageType { get; }
+        public string DamageBy { get; }
+        public string DamageQualifier { get; }
     }
 }

@@ -8,6 +8,6 @@ namespace BizObjects
         public Zone(LogDatum logLine, Zone zone = null) : base(logLine, zone)
         {
         }
-        public string Name { get; private set; }
+        public string Name { get; }
     }
 }

@@ -16,6 +16,6 @@ namespace BizObjects
 
         public Character Attacker { get; }
         public Character Defender { get; }
-        public AttackType Type { get; private set; }
+        public AttackType Type { get; }
     }
 }
