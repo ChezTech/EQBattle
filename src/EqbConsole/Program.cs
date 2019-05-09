@@ -31,7 +31,8 @@ namespace EqbConsole
         static void Main(string[] args)
         {
             var logPath = args.Length > 0 ? args[0] : LogFilePathName;
-            new Program().RunProgram(logPath);
+            var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
+            new Program().RunProgram(logPath, numberOfParsers);
         }
 
         private Program()
@@ -43,30 +44,23 @@ namespace EqbConsole
             _parser.AddParser(new MissParser(), x => { _missCollection.Enqueue((dynamic)x); });
         }
 
-        private void RunProgram(string logPath)
+        private void RunProgram(string logPath, int numberOfParsers)
         {
-            WriteMessage("Starting EQBattle");
+            WriteMessage("Starting EQBattle with {0} parsers", numberOfParsers);
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
-            var parseElapsed = sw.Elapsed;
             var readElapsed = sw.Elapsed;
 
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
-            Task.Run(() => parseElapsed = ParseLines(sw));
+            var parserTasks = new List<Task>();
+
+            for (int i = 0; i < numberOfParsers; i++)
+                parserTasks.Add(Task.Run(() => ParseLines()));
 
             Task.Run(() => readElapsed = ReadLines(logPath, out lineCount, sw));
 
-            // Keep the console window open while the
-            // consumer thread completes its output.
-            WriteMessage("Press any key to halt parsing. Wait for the 'done' message to finish");
-            Console.ReadKey(true);
-
+            Task.WaitAll(parserTasks.ToArray());
+            var parseElapsed = sw.Elapsed;
 
             WriteMessage("Read Elapsed: {0}", readElapsed);
             WriteMessage("Parse Elapsed: {0}", parseElapsed);
@@ -92,9 +86,8 @@ namespace EqbConsole
                 _hitCollection.Where(x => x.Defender.Name == "a cliknar adept").Sum(x => x.Damage));
         }
 
-        private TimeSpan ParseLines(Stopwatch sw)
+        private void ParseLines()
         {
-            TimeSpan parseElapsed;
             WriteMessage("Starting to parse lines...");
             while (!_jobQueueLogLines.IsCompleted)
             {
@@ -103,16 +96,11 @@ namespace EqbConsole
                     var logLine = _jobQueueLogLines.Take();
                     _parser.ParseLine(logLine);
 
-                    if (logLine.LineNumber % 10000 == 0)
-                        WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
+                    // if (logLine.LineNumber % 10000 == 0)
+                    //     WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
                 }
                 catch (InvalidOperationException) { }
             }
-            parseElapsed = sw.Elapsed;
-
-            WriteMessage("Done parsing lines.");
-            WriteMessage("");
-            return parseElapsed;
         }
 
         private TimeSpan ReadLines(string logPath, out int lineCount, Stopwatch sw)
