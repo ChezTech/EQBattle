@@ -44,48 +44,14 @@ namespace EqbConsole
 
         private void RunProgram(string logPath)
         {
-            Console.WriteLine("Reading log file: {0}", logPath);
-
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
             var parseElapsed = sw.Elapsed;
-
-
-            Task.Run(() =>
-            {
-                while (!_jobQueueLogLines.IsCompleted)
-                {
-                    try
-                    {
-                        var logLine = _jobQueueLogLines.Take();
-                        _parser.ParseLine(logLine);
-
-                        if (logLine.LineNumber % 10000 == 0)
-                            Console.WriteLine("Parsed {0} lines...", logLine.LineNumber);
-                    }
-                    catch (InvalidOperationException) { }
-                }
-                parseElapsed = sw.Elapsed;
-
-                Console.WriteLine("Done parsing.");
-                Console.WriteLine();
-            });
-
-            using (LogReader logReader = new LogReader(logPath))
-            {
-                logReader.LineRead += (s, e) =>
-                {
-                    lineCount++;
-                    var logLine = new LogDatum(e.LogLine, lineCount);
-                    _jobQueueLogLines.Add(logLine);
-                };
-                logReader.EoFReached += (s, e) => { logReader.StopReading(); };
-                logReader.StartReading();
-            }
-            _jobQueueLogLines.CompleteAdding();
-
             var readElapsed = sw.Elapsed;
+
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => readElapsed = ReadLines(logPath, out lineCount, sw));
 
             // Keep the console window open while the
             // consumer thread completes its output.
@@ -115,6 +81,52 @@ namespace EqbConsole
             Console.WriteLine("Mob: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == "a cliknar adept").Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender.Name == "a cliknar adept").Sum(x => x.Damage));
+        }
+
+        private TimeSpan ParseLines(Stopwatch sw)
+        {
+            TimeSpan parseElapsed;
+            System.Console.WriteLine("Starting to parse lines...");
+            while (!_jobQueueLogLines.IsCompleted)
+            {
+                try
+                {
+                    var logLine = _jobQueueLogLines.Take();
+                    _parser.ParseLine(logLine);
+
+                    if (logLine.LineNumber % 10000 == 0)
+                        Console.WriteLine("Parsed {0:N0} lines...", logLine.LineNumber);
+                }
+                catch (InvalidOperationException) { }
+            }
+            parseElapsed = sw.Elapsed;
+
+            Console.WriteLine("Done parsing lines.");
+            Console.WriteLine();
+            return parseElapsed;
+        }
+
+        private TimeSpan ReadLines(string logPath, out int lineCount, Stopwatch sw)
+        {
+            Console.WriteLine("Reading log file: {0}", logPath);
+
+            int count = 0;
+            using (LogReader logReader = new LogReader(logPath))
+            {
+                logReader.LineRead += (s, e) =>
+                {
+                    count++;
+                    var logLine = new LogDatum(e.LogLine, count);
+                    _jobQueueLogLines.Add(logLine);
+                };
+                logReader.EoFReached += (s, e) => { logReader.StopReading(); };
+                logReader.StartReading();
+            }
+            _jobQueueLogLines.CompleteAdding();
+            lineCount = count;
+
+            Console.WriteLine("Done reading log file");
+            return sw.Elapsed;
         }
     }
 }
