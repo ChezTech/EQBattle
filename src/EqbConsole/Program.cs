@@ -20,11 +20,11 @@ namespace EqbConsole
         //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
 
         private LineParserFactory _parser;
-        private List<ILine> _lineCollection = new List<ILine>();
-        private List<Unknown> _unknownCollection = new List<Unknown>();
-        private List<Hit> _hitCollection = new List<Hit>();
-        private List<Kill> _killCollection = new List<Kill>();
-        private List<Miss> _missCollection = new List<Miss>();
+        private ConcurrentQueue<ILine> _lineCollection = new ConcurrentQueue<ILine>();
+        private ConcurrentQueue<Unknown> _unknownCollection = new ConcurrentQueue<Unknown>();
+        private ConcurrentQueue<Hit> _hitCollection = new ConcurrentQueue<Hit>();
+        private ConcurrentQueue<Kill> _killCollection = new ConcurrentQueue<Kill>();
+        private ConcurrentQueue<Miss> _missCollection = new ConcurrentQueue<Miss>();
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
@@ -37,10 +37,10 @@ namespace EqbConsole
         private Program()
         {
             _parser = new LineParserFactory();
-            _parser.UnknownCreated += x => { _unknownCollection.Add(x); };
-            _parser.AddParser(new KillParser(), x => { _killCollection.Add((dynamic)x); });
-            _parser.AddParser(new HitParser(), x => { _hitCollection.Add((dynamic)x); });
-            _parser.AddParser(new MissParser(), x => { _missCollection.Add((dynamic)x); });
+            _parser.UnknownCreated += x => { _unknownCollection.Enqueue(x); };
+            _parser.AddParser(new KillParser(), x => { _killCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new HitParser(), x => { _hitCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new MissParser(), x => { _missCollection.Enqueue((dynamic)x); });
         }
 
         private void RunProgram(string logPath)
@@ -53,6 +53,13 @@ namespace EqbConsole
             var readElapsed = sw.Elapsed;
 
             Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+            Task.Run(() => parseElapsed = ParseLines(sw));
+
             Task.Run(() => readElapsed = ReadLines(logPath, out lineCount, sw));
 
             // Keep the console window open while the
