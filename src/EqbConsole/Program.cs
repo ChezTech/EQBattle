@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using BizObjects;
 using LineParser;
@@ -44,6 +45,7 @@ namespace EqbConsole
 
         private void RunProgram(string logPath)
         {
+            WriteMessage("Starting EQBattle");
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
@@ -55,30 +57,30 @@ namespace EqbConsole
 
             // Keep the console window open while the
             // consumer thread completes its output.
-            Console.WriteLine("Press any key to halt parsing. Wait for the 'done' message to finish");
+            WriteMessage("Press any key to halt parsing. Wait for the 'done' message to finish");
             Console.ReadKey(true);
 
 
-            Console.WriteLine("Read Elapsed: {0}", readElapsed);
-            Console.WriteLine("Parse Elapsed: {0}", parseElapsed);
-            Console.WriteLine("Line count: {0:N0}", lineCount);
-            Console.WriteLine("Job Queue: {0:N0}", _jobQueueLogLines.Count);
+            WriteMessage("Read Elapsed: {0}", readElapsed);
+            WriteMessage("Parse Elapsed: {0}", parseElapsed);
+            WriteMessage("Line count: {0:N0}", lineCount);
+            WriteMessage("Job Queue: {0:N0}", _jobQueueLogLines.Count);
 
-            Console.WriteLine("Line collection count: {0}", _lineCollection.Count);
-            Console.WriteLine("Unknown collection count: {0}", _unknownCollection.Count);
-            Console.WriteLine("Attack collection count: {0}", _hitCollection.Count);
-            Console.WriteLine("Kill collection count: {0}", _killCollection.Count);
-            Console.WriteLine("Miss collection count: {0}", _missCollection.Count);
+            WriteMessage("Line collection count: {0}", _lineCollection.Count);
+            WriteMessage("Unknown collection count: {0}", _unknownCollection.Count);
+            WriteMessage("Attack collection count: {0}", _hitCollection.Count);
+            WriteMessage("Kill collection count: {0}", _killCollection.Count);
+            WriteMessage("Miss collection count: {0}", _missCollection.Count);
 
-            Console.WriteLine("===== Attacks ======");
-            Console.WriteLine("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
-            Console.WriteLine("You: {0:N0}  Ouch: {1:N0}",
+            WriteMessage("===== Attacks ======");
+            WriteMessage("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
+            WriteMessage("You: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == Attack.You).Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender.Name == Attack.You).Sum(x => x.Damage));
-            Console.WriteLine("Pet: {0:N0}  Ouch: {1:N0}",
+            WriteMessage("Pet: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == "Khadaji" && x.Attacker.IsPet).Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender.Name == "Khadaji" && x.Defender.IsPet).Sum(x => x.Damage));
-            Console.WriteLine("Mob: {0:N0}  Ouch: {1:N0}",
+            WriteMessage("Mob: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == "a cliknar adept").Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender.Name == "a cliknar adept").Sum(x => x.Damage));
         }
@@ -86,7 +88,7 @@ namespace EqbConsole
         private TimeSpan ParseLines(Stopwatch sw)
         {
             TimeSpan parseElapsed;
-            System.Console.WriteLine("Starting to parse lines...");
+            WriteMessage("Starting to parse lines...");
             while (!_jobQueueLogLines.IsCompleted)
             {
                 try
@@ -95,20 +97,20 @@ namespace EqbConsole
                     _parser.ParseLine(logLine);
 
                     if (logLine.LineNumber % 10000 == 0)
-                        Console.WriteLine("Parsed {0:N0} lines...", logLine.LineNumber);
+                        WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
                 }
                 catch (InvalidOperationException) { }
             }
             parseElapsed = sw.Elapsed;
 
-            Console.WriteLine("Done parsing lines.");
-            Console.WriteLine();
+            WriteMessage("Done parsing lines.");
+            WriteMessage("");
             return parseElapsed;
         }
 
         private TimeSpan ReadLines(string logPath, out int lineCount, Stopwatch sw)
         {
-            Console.WriteLine("Reading log file: {0}", logPath);
+            WriteMessage("Reading log file: {0}", logPath);
 
             int count = 0;
             using (LogReader logReader = new LogReader(logPath))
@@ -125,8 +127,13 @@ namespace EqbConsole
             _jobQueueLogLines.CompleteAdding();
             lineCount = count;
 
-            Console.WriteLine("Done reading log file");
+            WriteMessage("Done reading log file");
             return sw.Elapsed;
+        }
+
+        private void WriteMessage(string format, params object[] args)
+        {
+            Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
         }
     }
 }
