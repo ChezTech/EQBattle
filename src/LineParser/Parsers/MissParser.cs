@@ -45,6 +45,16 @@ namespace LineParser.Parsers
             var defense = match.Groups[3].Value;
             var qualifier = match.Groups[4].Success ? match.Groups[4].Value : null;
 
+            // Check to see if a defender did some defense: "a gnome servant dodges"
+            if (defense.StartsWith(defender))
+            {
+                defense = defense.Substring(defender.Length + 1);
+
+                // Further check to see if it was the defender's skin: "a telmira disciple's magical skin absorbs the blow"
+                if (defense.StartsWith("s "))
+                    defense = defense.Substring(2);
+            }
+
             lineEntry = new Miss(logDatum, attacker, defender, attackVerb, defense, qualifier);
 
             return true;
