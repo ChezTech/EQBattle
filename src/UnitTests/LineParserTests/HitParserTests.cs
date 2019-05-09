@@ -202,5 +202,25 @@ namespace BizObjectsTests
             Assert.IsNull(hitEntry.DamageQualifier);
         }
 
+        [TestMethod]
+        public void OtherHitsOtherMultipleQualifiers()
+        {
+            var logDatum = new LogDatum("[Fri Apr 12 18:23:12 2019] A lavakin hits Khadaji`s pet for 1284 points of damage. (Riposte Strikethrough)");
+
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(lineEntry is Hit);
+            var hitEntry = lineEntry as Hit;
+            Assert.AreEqual("a lavakin", hitEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Defender.Name);
+            Assert.IsTrue(hitEntry.Defender.IsPet);
+            Assert.AreEqual(1284, hitEntry.Damage);
+            Assert.AreEqual("hits", hitEntry.Verb);
+            Assert.AreEqual(AttackType.Hit, hitEntry.Type);
+            Assert.IsNull(hitEntry.DamageType);
+            Assert.IsNull(hitEntry.DamageBy);
+            Assert.AreEqual("Riposte Strikethrough", hitEntry.DamageQualifier); // TODO: make into enum flags
+        }
     }
 }
