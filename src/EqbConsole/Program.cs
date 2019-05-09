@@ -23,6 +23,7 @@ namespace EqbConsole
         private List<Unknown> _unknownCollection = new List<Unknown>();
         private List<Hit> _hitCollection = new List<Hit>();
         private List<Kill> _killCollection = new List<Kill>();
+        private List<Miss> _missCollection = new List<Miss>();
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
@@ -38,6 +39,7 @@ namespace EqbConsole
             _parser.UnknownCreated += x => { _unknownCollection.Add(x); };
             _parser.AddParser(new KillParser(), x => { _killCollection.Add((dynamic)x); });
             _parser.AddParser(new HitParser(), x => { _hitCollection.Add((dynamic)x); });
+            _parser.AddParser(new MissParser(), x => { _missCollection.Add((dynamic)x); });
         }
 
         private void RunProgram(string logPath)
@@ -100,6 +102,7 @@ namespace EqbConsole
             Console.WriteLine("Unknown collection count: {0}", _unknownCollection.Count);
             Console.WriteLine("Attack collection count: {0}", _hitCollection.Count);
             Console.WriteLine("Kill collection count: {0}", _killCollection.Count);
+            Console.WriteLine("Miss collection count: {0}", _missCollection.Count);
 
             Console.WriteLine("===== Attacks ======");
             Console.WriteLine("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
