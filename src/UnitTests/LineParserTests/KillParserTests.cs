@@ -3,7 +3,7 @@ using LineParser.Parsers;
 using LogObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BizObjectsTests
+namespace LineParserTests
 {
     [TestClass]
     public class KillParserTests
