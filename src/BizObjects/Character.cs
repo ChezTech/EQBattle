@@ -27,6 +27,7 @@ namespace BizObjects
             return name
                 .Replace("YOUR", You)
                 .Replace("YOU", You)
+                .Replace("you", You)
                 .Replace("You", You) // This sets us up to changing what the 'You' property actually points to (once we can figure out the character's actual name)
                 .Replace("A ", "a ") // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
                 .Replace("An ", "an ")
