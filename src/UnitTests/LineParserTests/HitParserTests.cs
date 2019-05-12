@@ -222,5 +222,14 @@ namespace LineParserTests
             Assert.IsNull(hitEntry.DamageBy);
             Assert.AreEqual("Riposte Strikethrough", hitEntry.DamageQualifier); // TODO: make into enum flags
         }
+
+
+        // [Sat Mar 30 07:37:19 2019] Bealica hit a cliknar hunter for 6426 points of magic damage by Pure Wildmagic.
+        // [Sat Mar 30 07:37:22 2019] Bealica hit a cliknar hunter for 4513 points of fire damage by Chaos Combustion.
+        // [Sat Mar 30 07:40:13 2019] Bealica hit a cliknar hunter for 11481 points of cold damage by Glacial Cascade.
+        // [Sat Mar 30 07:37:24 2019] Khadaji hit a cliknar hunter for 1148 points of magic damage by Demon Crusher.
+        // [Sat Mar 30 07:37:21 2019] A cliknar hunter has taken 11494 damage from Nectar of the Slitheren by Khronick. (Critical)
+        // [Tue Apr 02 22:36:18 2019] A sporali disciple has taken 1969 damage from Breath of Queen Malarian by Khronick.
+
     }
 }
