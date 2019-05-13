@@ -17,16 +17,18 @@ namespace BizObjectsTests
         [TestMethod]
         public void ConvertUppercaseYou()
         {
+            // Done in the YouResolver class called via parsers
             var c = new Character("YOU");
-            Assert.AreEqual("You", c.Name);
+            Assert.AreEqual("YOU", c.Name);
             Assert.IsFalse(c.IsPet);
         }
 
         [TestMethod]
         public void ConvertYour()
         {
+            // Done in the YouResolver class called via parsers
             var c = new Character("YOUR");
-            Assert.AreEqual("You", c.Name);
+            Assert.AreEqual("YOUR", c.Name);
         }
 
         [TestMethod]

@@ -14,8 +14,11 @@ namespace LineParser.Parsers
         private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
 
-        public HitParser()
+        private readonly YouResolver YouAre;
+
+        public HitParser(YouResolver youAre)
         {
+            YouAre = youAre;
             string verbs = string.Join('|', new AttackTypeConverter().Names);
             RxHit = new Regex(regexHit.Replace("**verbs**", verbs), RegexOptions.Compiled);
             RxDamageShield = new Regex(regexDamageShield.Replace("**verbs**", verbs), RegexOptions.Compiled);
@@ -50,7 +53,7 @@ namespace LineParser.Parsers
             var damageBy = match.Groups[6].Success ? match.Groups[6].Value : null;
             var damageQualifier = match.Groups[7].Success ? match.Groups[7].Value : null;
 
-            lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier);
+            lineEntry = new Hit(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), attackVerb, damage, damageType, damageBy, damageQualifier);
 
             return true;
         }
@@ -73,7 +76,7 @@ namespace LineParser.Parsers
             var damageBy = match.Groups[4].Value;
             string damageQualifier = null;
 
-            lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier);
+            lineEntry = new Hit(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), YouAre.WhoAreYou(attackVerb), damage, damageType, damageBy, damageQualifier);
 
             return true;
         }

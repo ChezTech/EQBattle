@@ -19,6 +19,7 @@ namespace EqbConsole
         private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test_medium.txt";
         //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
 
+        private YouResolver _youAre;
         private LineParserFactory _parser;
         private ConcurrentQueue<ILine> _lineCollection = new ConcurrentQueue<ILine>();
         private ConcurrentQueue<Unknown> _unknownCollection = new ConcurrentQueue<Unknown>();
@@ -33,22 +34,26 @@ namespace EqbConsole
         {
             var logPath = args.Length > 0 ? args[0] : LogFilePathName;
             var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
-            new Program().RunProgram(logPath, numberOfParsers);
+            new Program(logPath).RunProgram(logPath, numberOfParsers);
         }
 
-        private Program()
+        private Program(string logPath)
         {
+            _youAre = new YouResolver(WhoseLogFile(logPath));
+            WriteMessage("You are: {0}", _youAre.Name);
+
             _parser = new LineParserFactory();
             _parser.UnknownCreated += x => { _unknownCollection.Enqueue(x); };
-            _parser.AddParser(new KillParser(), x => { _killCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new HitParser(), x => { _hitCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new MissParser(), x => { _missCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new HealParser(), x => { _healCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new KillParser(_youAre), x => { _killCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new HitParser(_youAre), x => { _hitCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new MissParser(_youAre), x => { _missCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new HealParser(_youAre), x => { _healCollection.Enqueue((dynamic)x); });
         }
 
         private void RunProgram(string logPath, int numberOfParsers)
         {
             WriteMessage("Starting EQBattle with {0} parsers", numberOfParsers);
+
             var lineCount = 0;
 
             var sw = Stopwatch.StartNew();
@@ -77,17 +82,47 @@ namespace EqbConsole
             WriteMessage("Heal collection count: {0}", _healCollection.Count);
 
             WriteMessage("===== Attacks ======");
-            WriteMessage("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
-            WriteMessage("You: {0:N0}  Ouch: {1:N0}  Heals: {2:N0}",
-                _hitCollection.Where(x => x.Attacker.Name == Attack.You).Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender.Name == Attack.You).Sum(x => x.Damage),
-                _healCollection.Where(x => x.Patient.Name == Attack.You || x.Patient.Name == "Khadaji").Sum(x => x.Amount));
-            WriteMessage("Pet: {0:N0}  Ouch: {1:N0}",
-                _hitCollection.Where(x => x.Attacker.Name == "Khadaji" && x.Attacker.IsPet).Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender.Name == "Khadaji" && x.Defender.IsPet).Sum(x => x.Damage));
-            WriteMessage("Mob: {0:N0}  Ouch: {1:N0}",
-                _hitCollection.Where(x => x.Attacker.Name == "a cliknar adept").Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender.Name == "a cliknar adept").Sum(x => x.Damage));
+            WriteMessage("Total damage: {0:N0}", _hitCollection.Sum(x => x.Damage));
+            DumpStatsForCharacter("Khadaji");
+            DumpStatsForCharacter("Khadaji", charOnly: true);
+            DumpStatsForCharacter("Khadaji", isPet: true);
+            DumpStatsForCharacter("Khadaji", negative: true);
+        }
+
+        private void DumpStatsForCharacter(string name, bool charOnly = false, bool isPet = false, bool negative = false)
+        {
+            Func<Character, bool> fCharAndPet = x => x.Name == name;
+            Func<Character, bool> fCharOnly = x => x.Name == name && !x.IsPet;
+            Func<Character, bool> fPpetOnly = x => x.Name == name && x.IsPet;
+            Func<Character, bool> fNegativeChar = x => x.Name != name;
+
+            Func<Character, bool> fToUse = fCharAndPet;
+            if (charOnly)
+                fToUse = fCharOnly;
+            if (isPet)
+                fToUse = fPpetOnly;
+            if (negative)
+                fToUse = fNegativeChar;
+
+            WriteMessage("{0,-15} : Yeet {1,12:N0}  Ouch: {2,12:N0}  Heals: {3,12:N0}",
+                name,
+                _hitCollection.Where(x => fToUse(x.Attacker)).Sum(x => x.Damage),
+                _hitCollection.Where(x => fToUse(x.Defender)).Sum(x => x.Damage),
+                _healCollection.Where(x => fToUse(x.Patient)).Sum(x => x.Amount));
+        }
+
+        private string WhoseLogFile(string logPath)
+        {
+            // Log file has standard name format: 'eqlog_<charName>_<serverName>.txt'
+            var firstUnder = logPath.IndexOf('_');
+            if (firstUnder == -1)
+                return null;
+
+            var secondUnder = logPath.IndexOf('_', firstUnder + 1);
+            if (secondUnder == -1)
+                return null;
+
+            return logPath.Substring(firstUnder + 1, secondUnder - firstUnder - 1);
         }
 
         private void ParseLines()

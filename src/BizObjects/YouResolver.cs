@@ -8,7 +8,7 @@ namespace BizObjects
     {
         public const string You = "You";
 
-        public string Name { get; } = You;
+        public string Name { get; }
 
         public YouResolver(string name = You)
         {

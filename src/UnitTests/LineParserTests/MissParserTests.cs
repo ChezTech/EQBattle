@@ -8,7 +8,7 @@ namespace LineParserTests
     [TestClass]
     public class MissParserTests
     {
-        private MissParser _parser = new MissParser();
+        private MissParser _parser = new MissParser(new YouResolver("Khadaji"));
 
         [TestMethod]
         public void YouMissSimple()
@@ -20,7 +20,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
-            Assert.AreEqual(Attack.You, entry.Attacker.Name);
+            Assert.AreEqual("Khadaji", entry.Attacker.Name);
             Assert.AreEqual("a gnome servant", entry.Defender.Name);
             Assert.AreEqual("crush", entry.Verb);
             Assert.AreEqual(AttackType.Crush, entry.Type);
@@ -38,7 +38,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
-            Assert.AreEqual(Attack.You, entry.Attacker.Name);
+            Assert.AreEqual("Khadaji", entry.Attacker.Name);
             Assert.AreEqual("a gnome servant", entry.Defender.Name);
             Assert.AreEqual("crush", entry.Verb);
             Assert.AreEqual(AttackType.Crush, entry.Type);
@@ -56,7 +56,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
-            Assert.AreEqual(Attack.You, entry.Attacker.Name);
+            Assert.AreEqual("Khadaji", entry.Attacker.Name);
             Assert.AreEqual("a bellikos recruiter", entry.Defender.Name);
             Assert.AreEqual("crush", entry.Verb);
             Assert.AreEqual(AttackType.Crush, entry.Type);
@@ -74,7 +74,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
-            Assert.AreEqual(Attack.You, entry.Attacker.Name);
+            Assert.AreEqual("Khadaji", entry.Attacker.Name);
             Assert.AreEqual("a gnome servant", entry.Defender.Name);
             Assert.AreEqual("strike", entry.Verb);
             Assert.AreEqual(AttackType.Strike, entry.Type);
@@ -92,7 +92,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
-            Assert.AreEqual(Attack.You, entry.Attacker.Name);
+            Assert.AreEqual("Khadaji", entry.Attacker.Name);
             Assert.AreEqual("a telmira disciple", entry.Defender.Name);
             Assert.AreEqual("kick", entry.Verb);
             Assert.AreEqual(AttackType.Kick, entry.Type);
@@ -111,7 +111,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
             Assert.AreEqual("a lavakin", entry.Attacker.Name);
-            Assert.AreEqual(Attack.You, entry.Defender.Name);
+            Assert.AreEqual("Khadaji", entry.Defender.Name);
             Assert.AreEqual("hit", entry.Verb);
             Assert.AreEqual(AttackType.Hit, entry.Type);
             Assert.AreEqual("misses", entry.DefenseType);
@@ -129,7 +129,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
             Assert.AreEqual("a lavakin", entry.Attacker.Name);
-            Assert.AreEqual(Attack.You, entry.Defender.Name);
+            Assert.AreEqual("Khadaji", entry.Defender.Name);
             Assert.AreEqual("hit", entry.Verb);
             Assert.AreEqual(AttackType.Hit, entry.Type);
             Assert.AreEqual("riposte", entry.DefenseType);
@@ -147,7 +147,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
             Assert.AreEqual("a genati", entry.Attacker.Name);
-            Assert.AreEqual(Attack.You, entry.Defender.Name);
+            Assert.AreEqual("Khadaji", entry.Defender.Name);
             Assert.AreEqual("smash", entry.Verb);
             Assert.AreEqual(AttackType.Smash, entry.Type);
             Assert.AreEqual("misses", entry.DefenseType);
@@ -165,7 +165,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Miss);
             var entry = lineEntry as Miss;
             Assert.AreEqual("a lavakin", entry.Attacker.Name);
-            Assert.AreEqual(Attack.You, entry.Defender.Name);
+            Assert.AreEqual("Khadaji", entry.Defender.Name);
             Assert.AreEqual("hit", entry.Verb);
             Assert.AreEqual(AttackType.Hit, entry.Type);
             Assert.AreEqual("magical skin absorbs the blow", entry.DefenseType);

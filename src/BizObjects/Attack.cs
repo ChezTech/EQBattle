@@ -5,7 +5,6 @@ namespace BizObjects
 {
     public class Attack : Line
     {
-        public const string You = "You";
         public const string Unknown = "Unknown";
 
         private static AttackTypeConverter ATConverter = new AttackTypeConverter(); // TODO: DI this

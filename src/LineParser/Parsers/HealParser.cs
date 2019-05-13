@@ -12,8 +12,11 @@ namespace LineParser.Parsers
         private readonly Regex RxHeal;
         private readonly string rgexHeal = @"(.+\. )?(.+) healed (.*?)( over time)? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/eBfX2c/2
 
-        public HealParser()
+        private readonly YouResolver YouAre;
+
+        public HealParser(YouResolver youAre)
         {
+            YouAre = youAre;
             RxHeal = new Regex(rgexHeal, RegexOptions.Compiled);
         }
 
@@ -43,7 +46,7 @@ namespace LineParser.Parsers
             var spellName = match.Groups[7].Value;
             var qualifier = match.Groups[8].Success ? match.Groups[8].Value : null;
 
-            lineEntry = new Heal(logDatum, healer, patient, amount, maxAmount, spellName, isHot, qualifier);
+            lineEntry = new Heal(logDatum, YouAre.WhoAreYou(healer), YouAre.WhoAreYou(patient), amount, maxAmount, spellName, isHot, qualifier);
 
             return true;
         }

@@ -8,7 +8,7 @@ namespace LineParserTests
     [TestClass]
     public class HealParserTests
     {
-        private HealParser _parser = new HealParser();
+        private HealParser _parser = new HealParser(new YouResolver("Khadaji"));
 
         [TestMethod]
         public void YouGotHealedMaxed()
@@ -21,7 +21,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Heal);
             var entry = lineEntry as Heal;
             Assert.AreEqual("Movanna", entry.Healer.Name);
-            Assert.AreEqual(Character.You, entry.Patient.Name);
+            Assert.AreEqual("Khadaji", entry.Patient.Name);
             Assert.AreEqual(22144, entry.Amount);
             Assert.AreEqual(23333, entry.MaxAmount);
             Assert.AreEqual("Zealous Light", entry.SpellName);
@@ -40,7 +40,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Heal);
             var entry = lineEntry as Heal;
             Assert.AreEqual("Movanna", entry.Healer.Name);
-            Assert.AreEqual(Character.You, entry.Patient.Name);
+            Assert.AreEqual("Khadaji", entry.Patient.Name);
             Assert.AreEqual(7296, entry.Amount);
             Assert.AreEqual(-1, entry.MaxAmount);
             Assert.AreEqual("Healing Splash", entry.SpellName);
@@ -58,7 +58,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Heal);
             var entry = lineEntry as Heal;
-            Assert.AreEqual(Character.You, entry.Healer.Name);
+            Assert.AreEqual("Khadaji", entry.Healer.Name);
             Assert.AreEqual("Khadaji", entry.Patient.Name);
             Assert.AreEqual(483, entry.Amount);
             Assert.AreEqual(-1, entry.MaxAmount);
@@ -78,7 +78,7 @@ namespace LineParserTests
             Assert.IsTrue(lineEntry is Heal);
             var entry = lineEntry as Heal;
             Assert.AreEqual("Khronick", entry.Healer.Name);
-            Assert.AreEqual(Character.You, entry.Patient.Name);
+            Assert.AreEqual("Khadaji", entry.Patient.Name);
             Assert.AreEqual(1518, entry.Amount);
             Assert.AreEqual(-1, entry.MaxAmount);
             Assert.AreEqual("Healing Counterbias Effect", entry.SpellName);

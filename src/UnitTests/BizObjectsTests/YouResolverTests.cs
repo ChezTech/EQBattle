@@ -68,5 +68,26 @@ namespace BizObjectsTests
             var yr = new YouResolver("Khadaji");
             Assert.AreEqual("Healyougood", yr.WhoAreYou("Healyougood"));
         }
+
+        [TestMethod]
+        public void VerifyNoName()
+        {
+            var yr = new YouResolver();
+            Assert.AreEqual("You", yr.Name);
+        }
+
+        [TestMethod]
+        public void VerifyNoNameYouLowercase()
+        {
+            var yr = new YouResolver();
+            Assert.AreEqual("You", yr.WhoAreYou("you"));
+        }
+
+        [TestMethod]
+        public void VerifyNoNameYourUppercase()
+        {
+            var yr = new YouResolver();
+            Assert.AreEqual("You", yr.WhoAreYou("YOUR"));
+        }
     }
 }

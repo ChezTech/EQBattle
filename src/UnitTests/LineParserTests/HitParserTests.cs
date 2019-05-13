@@ -8,7 +8,7 @@ namespace LineParserTests
     [TestClass]
     public class HitParserTests
     {
-        private HitParser _parser = new HitParser();
+        private HitParser _parser = new HitParser(new YouResolver("Khadaji"));
 
         [TestMethod]
         public void YouAttackOtherSimple()
@@ -20,7 +20,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(1277, hitEntry.Damage);
             Assert.AreEqual("punch", hitEntry.Verb);
@@ -39,7 +39,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Attacker.Name);
             Assert.AreEqual("a Witness of Hate informer", hitEntry.Defender.Name);
             Assert.AreEqual(1, hitEntry.Damage);
             Assert.AreEqual("bash", hitEntry.Verb);
@@ -58,7 +58,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(1180, hitEntry.Damage);
             Assert.AreEqual("hit", hitEntry.Verb);
@@ -77,7 +77,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Defender.Name);
             Assert.AreEqual(896, hitEntry.Damage);
             Assert.AreEqual("burned", hitEntry.Verb);
@@ -96,7 +96,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Defender.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Defender.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Attacker.Name);
             Assert.AreEqual(70, hitEntry.Damage);
             Assert.AreEqual("pierced", hitEntry.Verb);
@@ -115,7 +115,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Hit);
             var hitEntry = lineEntry as Hit;
-            Assert.AreEqual(Attack.You, hitEntry.Defender.Name);
+            Assert.AreEqual("Khadaji", hitEntry.Defender.Name);
             Assert.AreEqual("a cliknar adept", hitEntry.Attacker.Name);
             Assert.AreEqual(865, hitEntry.Damage);
             Assert.AreEqual("pierces", hitEntry.Verb);

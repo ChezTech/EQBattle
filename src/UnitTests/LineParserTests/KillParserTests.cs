@@ -8,7 +8,7 @@ namespace LineParserTests
     [TestClass]
     public class KillParserTests
     {
-        private KillParser _parser = new KillParser();
+        private KillParser _parser = new KillParser(new YouResolver("Khadaji"));
 
         [TestMethod]
         public void YouKilledSomething()
@@ -20,7 +20,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Kill);
             var killEntry = lineEntry as Kill;
-            Assert.AreEqual(Attack.You, killEntry.Attacker.Name);
+            Assert.AreEqual("Khadaji", killEntry.Attacker.Name);
             Assert.AreEqual("a cliknar adept", killEntry.Defender.Name);
             Assert.AreEqual("slain", killEntry.Verb);
             Assert.AreEqual(AttackType.Kill, killEntry.Type);
@@ -36,7 +36,7 @@ namespace LineParserTests
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Kill);
             var killEntry = lineEntry as Kill;
-            Assert.AreEqual(Attack.You, killEntry.Defender.Name);
+            Assert.AreEqual("Khadaji", killEntry.Defender.Name);
             Assert.AreEqual("Sontalak", killEntry.Attacker.Name);
             Assert.AreEqual("slain", killEntry.Verb);
             Assert.AreEqual(AttackType.Kill, killEntry.Type);

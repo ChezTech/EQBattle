@@ -8,12 +8,13 @@ namespace BizObjectsTests
     [TestClass]
     public class FighterTests
     {
-        private HitParser _hitParser = new HitParser();
+        private static readonly YouResolver YouAre = new YouResolver("Khadaji");
+        private HitParser _hitParser = new HitParser(YouAre);
 
         [TestMethod]
         public void CreateFighterWithCharacter()
         {
-            var pc = new Character("Khadaji");
+            var pc = new Character(YouAre.Name);
             var fighter = new Fighter(pc);
 
             Assert.IsNotNull(fighter);
@@ -23,7 +24,7 @@ namespace BizObjectsTests
         [TestMethod]
         public void FighterDamaage()
         {
-            var pc = new Character("You");
+            var pc = new Character(YouAre.Name);
             var fighter = new Fighter(pc);
 
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:44 2019] You kick a cliknar adept for 2894 points of damage."), out ILine line);

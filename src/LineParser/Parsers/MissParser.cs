@@ -14,8 +14,11 @@ namespace LineParser.Parsers
         private readonly string regexYouMiss = @"You try to (.*?) (.+), but (.+)[!](?: \((.+)\))?"; // https://regex101.com/r/qwjLjz/2
         private readonly string regexOtherMiss = @"(.+) tries to (.*?) (.+), but (?:YOU |YOUR )?(.+)[!](?: \((.+)\))?"; // https://regex101.com/r/qwjLjz/2
 
-        public MissParser()
+        private readonly YouResolver YouAre;
+
+        public MissParser(YouResolver youAre)
         {
+            YouAre = youAre;
             RxYouMiss = new Regex(regexYouMiss, RegexOptions.Compiled);
             RxOtherMiss = new Regex(regexOtherMiss, RegexOptions.Compiled);
         }
@@ -39,7 +42,7 @@ namespace LineParser.Parsers
                 return false;
             }
 
-            var attacker = Attack.You;
+            var attacker = YouAre.Name;
             var attackVerb = match.Groups[1].Value;
             var defender = match.Groups[2].Value;
             var defense = match.Groups[3].Value;
@@ -47,7 +50,7 @@ namespace LineParser.Parsers
 
             defense = ModifyDefense(defender, defense);
 
-            lineEntry = new Miss(logDatum, attacker, defender, attackVerb, defense, qualifier);
+            lineEntry = new Miss(logDatum, attacker, YouAre.WhoAreYou(defender), attackVerb, defense, qualifier);
 
             return true;
         }
@@ -70,7 +73,7 @@ namespace LineParser.Parsers
 
             defense = ModifyDefense(defender, defense);
 
-            lineEntry = new Miss(logDatum, attacker, defender, attackVerb, defense, qualifier);
+            lineEntry = new Miss(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), attackVerb, defense, qualifier);
 
             return true;
         }
