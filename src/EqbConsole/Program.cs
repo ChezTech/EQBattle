@@ -25,6 +25,7 @@ namespace EqbConsole
         private ConcurrentQueue<Hit> _hitCollection = new ConcurrentQueue<Hit>();
         private ConcurrentQueue<Kill> _killCollection = new ConcurrentQueue<Kill>();
         private ConcurrentQueue<Miss> _missCollection = new ConcurrentQueue<Miss>();
+        private ConcurrentQueue<Heal> _healCollection = new ConcurrentQueue<Heal>();
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
@@ -42,6 +43,7 @@ namespace EqbConsole
             _parser.AddParser(new KillParser(), x => { _killCollection.Enqueue((dynamic)x); });
             _parser.AddParser(new HitParser(), x => { _hitCollection.Enqueue((dynamic)x); });
             _parser.AddParser(new MissParser(), x => { _missCollection.Enqueue((dynamic)x); });
+            _parser.AddParser(new HealParser(), x => { _healCollection.Enqueue((dynamic)x); });
         }
 
         private void RunProgram(string logPath, int numberOfParsers)
@@ -72,12 +74,14 @@ namespace EqbConsole
             WriteMessage("Attack collection count: {0}", _hitCollection.Count);
             WriteMessage("Kill collection count: {0}", _killCollection.Count);
             WriteMessage("Miss collection count: {0}", _missCollection.Count);
+            WriteMessage("Heal collection count: {0}", _healCollection.Count);
 
             WriteMessage("===== Attacks ======");
             WriteMessage("Total: {0:N0}", _hitCollection.Sum(x => x.Damage));
-            WriteMessage("You: {0:N0}  Ouch: {1:N0}",
+            WriteMessage("You: {0:N0}  Ouch: {1:N0}  Heals: {2:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == Attack.You).Sum(x => x.Damage),
-                _hitCollection.Where(x => x.Defender.Name == Attack.You).Sum(x => x.Damage));
+                _hitCollection.Where(x => x.Defender.Name == Attack.You).Sum(x => x.Damage),
+                _healCollection.Where(x => x.Patient.Name == Attack.You || x.Patient.Name == "Khadaji").Sum(x => x.Amount));
             WriteMessage("Pet: {0:N0}  Ouch: {1:N0}",
                 _hitCollection.Where(x => x.Attacker.Name == "Khadaji" && x.Attacker.IsPet).Sum(x => x.Damage),
                 _hitCollection.Where(x => x.Defender.Name == "Khadaji" && x.Defender.IsPet).Sum(x => x.Damage));
