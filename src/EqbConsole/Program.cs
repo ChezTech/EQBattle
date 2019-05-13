@@ -96,16 +96,26 @@ namespace EqbConsole
             Func<Character, bool> fPpetOnly = x => x.Name == name && x.IsPet;
             Func<Character, bool> fNegativeChar = x => x.Name != name;
 
+            var nameTitle = name;
             Func<Character, bool> fToUse = fCharAndPet;
             if (charOnly)
+            {
                 fToUse = fCharOnly;
+                nameTitle = string.Format("{0} only", name);
+            }
             if (isPet)
+            {
                 fToUse = fPpetOnly;
+                nameTitle = string.Format("{0}'s pet", name);
+            }
             if (negative)
+            {
                 fToUse = fNegativeChar;
+                nameTitle = string.Format("Not {0}", name);
+            }
 
             WriteMessage("{0,-15} : Yeet {1,12:N0}  Ouch: {2,12:N0}  Heals: {3,12:N0}",
-                name,
+                nameTitle,
                 _hitCollection.Where(x => fToUse(x.Attacker)).Sum(x => x.Damage),
                 _hitCollection.Where(x => fToUse(x.Defender)).Sum(x => x.Damage),
                 _healCollection.Where(x => fToUse(x.Patient)).Sum(x => x.Amount));
