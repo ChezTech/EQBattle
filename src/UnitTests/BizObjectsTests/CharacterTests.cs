@@ -81,11 +81,19 @@ namespace BizObjectsTests
 
 
         [TestMethod]
-        public void EnsureEquality()
+        public void EnsureObjectEquality()
         {
             var c1 = new Character("Khadaji");
             var c2 = new Character("Khadaji");
-            Assert.AreEqual(c1, c2);
+            Assert.AreEqual(c1, c2, "Object .Equals()");
+        }
+
+        [TestMethod]
+        public void EnsureValueEquality()
+        {
+            var c1 = new Character("Khadaji");
+            var c2 = new Character("Khadaji");
+            Assert.IsTrue(c1 == c2, "Value equals ==");
         }
 
         [TestMethod]
