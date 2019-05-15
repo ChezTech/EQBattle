@@ -28,17 +28,17 @@ namespace BizObjectsTests
             var fighter = new Fighter(pc);
 
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:44 2019] You kick a cliknar adept for 2894 points of damage."), out ILine line);
-            fighter.AddHit(line as Hit);
+            fighter.AddOffense(line);
 
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:44 2019] You strike a cliknar adept for 601 points of damage. (Strikethrough)"), out line);
-            fighter.AddHit(line as Hit);
+            fighter.AddOffense(line);
 
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:50 2019] You punch a cliknar adept for 1092 points of damage."), out line);
-            fighter.AddHit(line as Hit);
+            fighter.AddOffense(line);
 
-            Assert.AreEqual(4587, fighter.GetCurrentDamageDealtByCharacter());
-            Assert.AreEqual(601, fighter.GetMinDamageDealtByCharacter());
-            Assert.AreEqual(2894, fighter.GetMaxDamageDealtByCharacter());
+            Assert.AreEqual(4587, fighter.OffensiveStatistics.TotalDamage);
+            Assert.AreEqual(601, fighter.OffensiveStatistics.MinHitDamage);
+            Assert.AreEqual(2894, fighter.OffensiveStatistics.MaxHitDamage);
         }
     }
 }
