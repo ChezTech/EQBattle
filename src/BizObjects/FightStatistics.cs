@@ -13,8 +13,7 @@ namespace BizObjects
         public int HitCount { get; }
         public int MissCount { get; }
         public double HitPercentage { get; }
-        public int HealAmount { get; }
-        public int HealMaxAmount { get; }
+        public int HealAmount { get => Lines.Where(x => x is Heal).Select(x => x as Heal).Sum(x => x.Amount); }
         public IDictionary<string, int> DamagePerType { get; }
         public IDictionary<string, int> HitsPerType { get; }
         public IDictionary<string, int> MissesPerType { get; }
