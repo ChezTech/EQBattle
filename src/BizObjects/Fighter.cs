@@ -16,6 +16,15 @@ namespace BizObjects
             Character = character;
         }
 
+        public void AddOffense(Attack line)
+        {
+        }
+
+        public void AddDefense(Attack line)
+        {
+        }
+
+
         public void AddHit(Hit hit)
         {
             Hits.Add(hit);
