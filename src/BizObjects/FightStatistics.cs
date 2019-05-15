@@ -8,6 +8,8 @@ namespace BizObjects
         public IList<ILine> Lines { get; } = new List<ILine>();
 
         public int TotalDamage { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Sum(x => x.Damage); }
+        public int MaxHitDamage { get; }
+        public int MinHitDamage { get; }
         public int HitCount { get; }
         public int MissCount { get; }
         public double HitPercentage { get; }
