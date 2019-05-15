@@ -10,30 +10,20 @@ namespace LineParserTests
     {
         private ZoneParser _parser = new ZoneParser();
 
-        [TestMethod]
-        public void YouEnteredZone()
+        [DataTestMethod]
+        [DataRow("[Sat Mar 30 10:42:39 2019] You have entered Arthicrex.", "Arthicrex")]
+        [DataRow("[Sat Mar 30 10:42:39 2019] You have entered Some Complex Zone Name.", "Some Complex Zone Name")]
+        // [DataRow("xxxxxx", "zzzzz")]
+        public void ZoneTets(string logLine, string zoneName)
         {
-            var logDatum = new LogDatum("[Sat Mar 30 10:42:39 2019] You have entered Arthicrex.");
+            var logDatum = new LogDatum(logLine);
 
             var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
             Assert.IsTrue(result);
             Assert.IsTrue(lineEntry is Zone);
             var entry = lineEntry as Zone;
-            Assert.AreEqual("Arthicrex", entry.Name);
-        }
-
-        [TestMethod][Ignore]
-        public void YouEnteredZoneComplexName()
-        {
-            var logDatum = new LogDatum("[Sat Mar 30 10:42:39 2019] You have entered xxxxxx xxxx xxxx.");
-
-            var result = _parser.TryParse(logDatum, out ILine lineEntry);
-
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Zone);
-            var entry = lineEntry as Zone;
-            Assert.AreEqual("zzzz", entry.Name);
+            Assert.AreEqual(zoneName, entry.Name);
         }
 
         [TestMethod]
