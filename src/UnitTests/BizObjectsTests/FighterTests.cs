@@ -33,7 +33,12 @@ namespace BizObjectsTests
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:44 2019] You strike a cliknar adept for 601 points of damage. (Strikethrough)"), out line);
             fighter.AddHit(line as Hit);
 
-            Assert.AreEqual(3495, fighter.GetCurrentDamageDealtByCharacter());
+            _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:50 2019] You punch a cliknar adept for 1092 points of damage."), out line);
+            fighter.AddHit(line as Hit);
+
+            Assert.AreEqual(4587, fighter.GetCurrentDamageDealtByCharacter());
+            Assert.AreEqual(601, fighter.GetMinDamageDealtByCharacter());
+            Assert.AreEqual(2894, fighter.GetMaxDamageDealtByCharacter());
         }
     }
 }

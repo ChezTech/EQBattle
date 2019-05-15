@@ -37,6 +37,20 @@ namespace BizObjects
                 .Sum(x => x.Damage);
         }
 
+        public int GetMinDamageDealtByCharacter()
+        {
+            return Hits
+                .Where(x => x.Attacker.Name == Character.Name && !x.Attacker.IsPet)
+                .Min(x => x.Damage);
+        }
+
+        public int GetMaxDamageDealtByCharacter()
+        {
+            return Hits
+                .Where(x => x.Attacker.Name == Character.Name && !x.Attacker.IsPet)
+                .Max(x => x.Damage);
+        }
+
         public int GetCurrentDamageDealtByPet()
         {
             return Hits
