@@ -1,6 +1,5 @@
 
 using System;
-using LogObjects;
 
 namespace BizObjects
 {
@@ -28,6 +27,18 @@ namespace BizObjects
                 .Replace("`s pet", "") // backtick: better regex? (E.g. "Bob`s pet kicked ....", "Joe kicked Bob`s pet ....")
                 .Replace("'s", "") // apostrophe: Can we replace this by a better Regex? (E.g. "... pierced by a monster's thorns...")
                 ;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Character character &&
+                   Name == character.Name &&
+                   IsPet == character.IsPet;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, IsPet);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BizObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BizObjectsTests
 {
@@ -76,6 +77,26 @@ namespace BizObjectsTests
             var c = new Character("Khadaji`s pet");
             Assert.AreEqual("Khadaji", c.Name);
             Assert.IsTrue(c.IsPet);
+        }
+
+
+        [TestMethod]
+        public void EnsureEquality()
+        {
+            var c1 = new Character("Khadaji");
+            var c2 = new Character("Khadaji");
+            Assert.AreEqual(c1, c2);
+        }
+
+        [TestMethod]
+        public void EnsureHashCodeDictionaryAdd()
+        {
+            var c1 = new Character("Khadaji");
+            var c2 = new Character("Khadaji");
+
+            var charDict = new Dictionary<Character, int>();
+            Assert.IsTrue(charDict.TryAdd(c1, 17));
+            Assert.IsFalse(charDict.TryAdd(c2, 19));
         }
     }
 }
