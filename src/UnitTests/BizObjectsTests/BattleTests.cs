@@ -59,12 +59,12 @@ namespace BizObjectsTests
             Assert.AreEqual(4507, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.TotalDamage);
             Assert.AreEqual(11481, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.TotalDamage);
             Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.TotalDamage);
-            // Assert.AreEqual(20094, battle.TotalDamageDealt);
+            Assert.AreEqual(20094, battle.OffensiveStatistics.TotalDamage);
 
             Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.TotalDamage);
             Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.TotalDamage);
             Assert.AreEqual(15988, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.TotalDamage);
-            // Assert.AreEqual(20094, battle.TotalDamageTaken);
+            Assert.AreEqual(20094, battle.DefensiveStatistics.TotalDamage);
         }
 
     }
