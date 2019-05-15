@@ -15,6 +15,7 @@ namespace BizObjects
 
         /// All damage dealt, from both PCs and NPCs (mercs + mobs)
         public int TotalDamageDealt { get => Fighters.Sum(x => x.TotalDamageDealt); }
+        public int TotalDamageTaken { get => Fighters.Sum(x => x.TotalDamageTaken); }
 
         public void AddLine(Attack line)
         {

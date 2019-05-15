@@ -13,9 +13,7 @@ namespace BizObjects
         public IList<ILine> Lines { get; } = new List<ILine>();
         // public int TotalDamageDealt { get => Hits.Sum(x => x.Damage); }
         public int TotalDamageDealt { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Attacker == Character).Sum(x => x.Damage); }
-        // public int TotalDamageDealt { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Attacker.Equals(Character)).Sum(x => x.Damage); }
-
-        public int TotalDamageTaken { get => Hits.Sum(x => x.Damage); }
+        public int TotalDamageTaken { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Defender == Character).Sum(x => x.Damage); }
 
         public Fighter(Character character)
         {
