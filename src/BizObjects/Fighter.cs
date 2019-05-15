@@ -6,10 +6,16 @@ namespace BizObjects
     public class Fighter
     {
         public Character Character { get; }
-        public IList<Character> Pets { get; } = new List<Character>();
-        public IList<Character> Mercenaries { get; } = new List<Character>();
+        // public IList<Character> Pets { get; } = new List<Character>();
+        // public IList<Character> Mercenaries { get; } = new List<Character>();
         public IList<Hit> Hits { get; } = new List<Hit>();
         public IList<Miss> Misses { get; } = new List<Miss>();
+        public IList<ILine> Lines { get; } = new List<ILine>();
+        // public int TotalDamageDealt { get => Hits.Sum(x => x.Damage); }
+        public int TotalDamageDealt { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Attacker == Character).Sum(x => x.Damage); }
+        // public int TotalDamageDealt { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Attacker.Equals(Character)).Sum(x => x.Damage); }
+
+        public int TotalDamageTaken { get => Hits.Sum(x => x.Damage); }
 
         public Fighter(Character character)
         {
@@ -30,14 +36,20 @@ namespace BizObjects
             Hits.Add(hit);
         }
 
-        public void AddPet(Character pet)
+        public void AddLine(ILine line)
         {
-            Pets.Add(pet);
+            Lines.Add(line);
         }
-        public void AddMercenary(Character mercenary)
-        {
-            Mercenaries.Add(mercenary);
-        }
+
+
+        // public void AddPet(Character pet)
+        // {
+        //     Pets.Add(pet);
+        // }
+        // public void AddMercenary(Character mercenary)
+        // {
+        //     Mercenaries.Add(mercenary);
+        // }
 
         public int GetCurrentDamageDealtByCharacter()
         {
