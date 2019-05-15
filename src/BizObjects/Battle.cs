@@ -21,9 +21,11 @@ namespace BizObjects
         {
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker));
             attackChar.AddLine(line);
+            attackChar.AddOffense(line);
 
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender));
             defendChar.AddLine(line);
+            defendChar.AddDefense(line);
         }
 
         // public void AddLine(Hit line)

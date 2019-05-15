@@ -14,20 +14,13 @@ namespace BizObjects
         // public int TotalDamageDealt { get => Hits.Sum(x => x.Damage); }
         public int TotalDamageDealt { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Attacker == Character).Sum(x => x.Damage); }
         public int TotalDamageTaken { get => Lines.Where(x => x is Hit).Select(x => x as Hit).Where(x => x.Defender == Character).Sum(x => x.Damage); }
+        public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
+        public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
         public Fighter(Character character)
         {
             Character = character;
         }
-
-        public void AddOffense(Attack line)
-        {
-        }
-
-        public void AddDefense(Attack line)
-        {
-        }
-
 
         public void AddHit(Hit hit)
         {
@@ -38,6 +31,17 @@ namespace BizObjects
         {
             Lines.Add(line);
         }
+
+        public void AddOffense(Attack line)
+        {
+            OffensiveStatistics.AddLine(line);
+        }
+
+        public void AddDefense(Attack line)
+        {
+            DefensiveStatistics.AddLine(line);
+        }
+
 
 
         // public void AddPet(Character pet)
