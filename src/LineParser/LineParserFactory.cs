@@ -32,7 +32,7 @@ namespace LineParser
             {
                 if (parser.Parser.TryParse(logLine, out ILine lineEntry))
                 {
-                    parser.OnCreated(lineEntry);
+                    parser.OnCreated?.Invoke(lineEntry);
                     return lineEntry;
                 }
             }
