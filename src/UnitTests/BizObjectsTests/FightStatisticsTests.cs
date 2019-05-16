@@ -70,8 +70,8 @@ namespace BizObjectsTests
             Assert.AreEqual(2, fightStats.Damage.Count);
             Assert.AreEqual(0.666, fightStats.HitPercentage, 0.001);
 
-            Assert.AreEqual(5371, fightStats.Heals.Total);
-            Assert.AreEqual(2, fightStats.Heals.Count);
+            Assert.AreEqual(5371, fightStats.Heal.Total);
+            Assert.AreEqual(2, fightStats.Heal.Count);
 
             Assert.AreEqual(1, fightStats.Miss.Count);
             Assert.AreEqual(0, fightStats.Kill.Count);

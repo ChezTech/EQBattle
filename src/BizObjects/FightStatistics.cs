@@ -8,7 +8,7 @@ namespace BizObjects
         public FightStatistics()
         {
             Damage = new HitPointStatistics<Hit>(Lines, x => x.Damage);
-            Heals = new HitPointStatistics<Heal>(Lines, x => x.Amount);
+            Heal = new HitPointStatistics<Heal>(Lines, x => x.Amount);
             Miss = new CountStatistics<Miss>(Lines);
             Kill = new CountStatistics<Kill>(Lines);
         }
@@ -17,7 +17,7 @@ namespace BizObjects
 
 
         public HitPointStatistics<Hit> Damage { get; }
-        public HitPointStatistics<Heal> Heals { get; }
+        public HitPointStatistics<Heal> Heal { get; }
         public CountStatistics<Miss> Miss { get; }
         public CountStatistics<Kill> Kill { get; }
 
