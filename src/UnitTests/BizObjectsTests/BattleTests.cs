@@ -69,6 +69,8 @@ namespace BizObjectsTests
             Assert.AreEqual(5371, battle.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.HealAmount);
             Assert.AreEqual(2335, battle.Fighters.First(x => x.Character.Name == "Movanna").OffensiveStatistics.HealAmount);
             Assert.AreEqual(3036, battle.Fighters.First(x => x.Character.Name == "Khronick").OffensiveStatistics.HealAmount);
+            Assert.AreEqual(5371, battle.DefensiveStatistics.HealAmount);
+            Assert.AreEqual(5371, battle.OffensiveStatistics.HealAmount);
         }
     }
 }
