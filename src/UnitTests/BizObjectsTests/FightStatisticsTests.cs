@@ -49,5 +49,28 @@ namespace BizObjectsTests
             Assert.AreEqual(0, fightStats.KillCount);
             Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
         }
+
+        [TestMethod]
+        public void DefensiveStats()
+        {
+            var fightStats = new FightStatistics();
+
+            // Defensive LogLines only
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple punches YOU for 3241 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:50 2019] Movanna healed you over time for 2335 hit points by Elixir of the Ardent.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] A dwarf disciple punches YOU for 865 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:21 2019] Khronick healed you over time for 3036 hit points by Healing Counterbias Effect. (Critical)")));
+
+            Assert.AreEqual(4106, fightStats.TotalDamage);
+            Assert.AreEqual(3241, fightStats.MaxHitDamage);
+            Assert.AreEqual(865, fightStats.MinHitDamage);
+            Assert.AreEqual(2, fightStats.HitCount);
+            Assert.AreEqual(1, fightStats.MissCount);
+            Assert.AreEqual(0, fightStats.KillCount);
+            Assert.AreEqual(0.666, fightStats.HitPercentage, 0.001);
+            Assert.AreEqual(5371, fightStats.HealAmount);
+            Assert.AreEqual(2, fightStats.HealCount);
+        }
     }
 }

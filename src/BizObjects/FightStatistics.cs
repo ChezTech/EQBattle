@@ -15,6 +15,7 @@ namespace BizObjects
         public int KillCount { get => Lines.Where(x => x is Kill).Select(x => x as Kill).Count(); }
         public double HitPercentage { get => (double)HitCount / (HitCount + MissCount); }
         public int HealAmount { get => Lines.Where(x => x is Heal).Select(x => x as Heal).Sum(x => x.Amount); }
+        public int HealCount { get => Lines.Where(x => x is Heal).Count(); }
         public IDictionary<string, int> DamagePerType { get; }
         public IDictionary<string, int> HitsPerType { get; }
         public IDictionary<string, int> MissesPerType { get; }
