@@ -38,7 +38,7 @@ namespace LineParserTests
             Assert.AreEqual(healerName, entry.Healer.Name);
             Assert.AreEqual(patientName, entry.Patient.Name);
             Assert.AreEqual(amount, entry.Amount);
-            Assert.AreEqual(maxAmount, entry.MaxAmount);
+            Assert.AreEqual(maxAmount, entry.OverAmount);
             Assert.AreEqual(spellName, entry.SpellName);
             Assert.AreEqual(isHot, entry.isHealOverTime);
             Assert.AreEqual(qualifier, entry.Qualifier);

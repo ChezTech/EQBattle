@@ -11,7 +11,7 @@ namespace BizObjects
         public Character Healer { get; }
         public Character Patient { get; }
         public int Amount { get; }
-        public int MaxAmount { get; }
+        public int OverAmount { get; }
         public string SpellName { get; }
         public bool isHealOverTime { get; }
         public string Qualifier { get; }
@@ -21,7 +21,7 @@ namespace BizObjects
             Healer = new Character(healer);
             Patient = new Character(patient == Itself ? healer : patient);
             Amount = amount;
-            MaxAmount = maxAmount;
+            OverAmount = maxAmount;
             SpellName = spellName;
             isHealOverTime = isHot;
             Qualifier = qualifier;
