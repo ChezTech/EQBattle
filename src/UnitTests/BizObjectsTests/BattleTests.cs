@@ -71,6 +71,13 @@ namespace BizObjectsTests
             Assert.AreEqual(3036, battle.Fighters.First(x => x.Character.Name == "Khronick").OffensiveStatistics.HealAmount);
             Assert.AreEqual(5371, battle.DefensiveStatistics.HealAmount);
             Assert.AreEqual(5371, battle.OffensiveStatistics.HealAmount);
+
+            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.KillCount);
+            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.KillCount);
+            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.KillCount);
+            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.KillCount);
+            Assert.AreEqual(1, battle.OffensiveStatistics.KillCount);
+            Assert.AreEqual(1, battle.OffensiveStatistics.KillCount);
         }
     }
 }

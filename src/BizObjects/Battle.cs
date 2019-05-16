@@ -39,15 +39,6 @@ namespace BizObjects
             DefensiveStatistics.AddLine(line);
         }
 
-        // public void AddLine(Kill line)
-        // {
-        //     var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker));
-        //     attackChar.AddOffense(line);
-
-        //     var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender));
-        //     defendChar.AddDefense(line);
-        // }
-
         // public void AddLine(Zone line) { }
         // public void AddLine(Chat line) { }
 
