@@ -72,12 +72,12 @@ namespace BizObjectsTests
             Assert.AreEqual(5371, battle.DefensiveStatistics.Heals.Total);
             Assert.AreEqual(5371, battle.OffensiveStatistics.Heals.Total);
 
-            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.KillCount);
-            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.KillCount);
-            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.KillCount);
-            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.KillCount);
-            Assert.AreEqual(1, battle.OffensiveStatistics.KillCount);
-            Assert.AreEqual(1, battle.OffensiveStatistics.KillCount);
+            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Kill.Count);
+            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Kill.Count);
+            Assert.AreEqual(1, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Kill.Count);
+            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Kill.Count);
+            Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
+            Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
         }
     }
 }

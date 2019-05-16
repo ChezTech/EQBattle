@@ -9,6 +9,8 @@ namespace BizObjects
         {
             Damage = new HitPointStatistics<Hit>(Lines, x => x.Damage);
             Heals = new HitPointStatistics<Heal>(Lines, x => x.Amount);
+            Miss = new CountStatistics<Miss>(Lines);
+            Kill = new CountStatistics<Kill>(Lines);
         }
 
         public IList<ILine> Lines { get; } = new List<ILine>();
@@ -16,11 +18,11 @@ namespace BizObjects
 
         public HitPointStatistics<Hit> Damage { get; }
         public HitPointStatistics<Heal> Heals { get; }
+        public CountStatistics<Miss> Miss { get; }
+        public CountStatistics<Kill> Kill { get; }
 
 
-        public int MissCount { get => Lines.Where(x => x is Miss).Count(); }
-        public int KillCount { get => Lines.Where(x => x is Kill).Select(x => x as Kill).Count(); }
-        public double HitPercentage { get => (double)Damage.Count / (Damage.Count + MissCount); }
+        public double HitPercentage { get => (double)Damage.Count / (Damage.Count + Miss.Count); }
         public IDictionary<string, int> DamagePerType { get; }
         public IDictionary<string, int> HitsPerType { get; }
         public IDictionary<string, int> MissesPerType { get; }

@@ -48,8 +48,8 @@ namespace BizObjectsTests
             Assert.AreEqual(901.4, fightStats.Damage.Average, 0.01);
             Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
 
-            Assert.AreEqual(1, fightStats.MissCount);
-            Assert.AreEqual(0, fightStats.KillCount);
+            Assert.AreEqual(1, fightStats.Miss.Count);
+            Assert.AreEqual(0, fightStats.Kill.Count);
         }
 
         [TestMethod]
@@ -73,8 +73,8 @@ namespace BizObjectsTests
             Assert.AreEqual(5371, fightStats.Heals.Total);
             Assert.AreEqual(2, fightStats.Heals.Count);
 
-            Assert.AreEqual(1, fightStats.MissCount);
-            Assert.AreEqual(0, fightStats.KillCount);
+            Assert.AreEqual(1, fightStats.Miss.Count);
+            Assert.AreEqual(0, fightStats.Kill.Count);
         }
     }
 }
