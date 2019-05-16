@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 
 namespace BizObjects
 {
@@ -30,44 +31,26 @@ namespace BizObjects
         }
 
         #region Equality
-        // public override bool Equals(object obj)
-        // {
-        //     return obj is Character character &&
-        //            Name == character.Name &&
-        //            IsPet == character.IsPet;
-        // }
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Character);
+        }
 
-        // public bool Equals(Character other)
-        // {
-        //     return Name == other.Name &&
-        //            IsPet == other.IsPet;
-        // }
+        public bool Equals(Character other)
+        {
+            return other != null &&
+                   Name == other.Name &&
+                   IsPet == other.IsPet;
+        }
 
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, IsPet);
         }
 
-
-
-        public override bool Equals(object other)
-        {
-            return Equals(other as Character);
-        }
-
-
-        // https://stackoverflow.com/a/4420958
-        public bool Equals(Character other)
-        {
-            if ((object)other == null)
-                return false;
-            return Name == other.Name &&
-                       IsPet == other.IsPet;
-        }
-
         public static bool operator ==(Character left, Character right)
         {
-            return object.Equals(left, right);
+            return EqualityComparer<Character>.Default.Equals(left, right);
         }
 
         public static bool operator !=(Character left, Character right)
@@ -75,6 +58,5 @@ namespace BizObjects
             return !(left == right);
         }
         #endregion
-
     }
 }
