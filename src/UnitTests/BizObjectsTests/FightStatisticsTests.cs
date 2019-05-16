@@ -41,13 +41,15 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
 
-            Assert.AreEqual(4507, fightStats.TotalDamage);
-            Assert.AreEqual(3041, fightStats.MaxHitDamage);
-            Assert.AreEqual(2, fightStats.MinHitDamage);
-            Assert.AreEqual(5, fightStats.HitCount);
+            Assert.AreEqual(4507, fightStats.Damage.Total);
+            Assert.AreEqual(3041, fightStats.Damage.Max);
+            Assert.AreEqual(2, fightStats.Damage.Min);
+            Assert.AreEqual(5, fightStats.Damage.Count);
+            Assert.AreEqual(901.4, fightStats.Damage.Average, 0.01);
+            Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
+
             Assert.AreEqual(1, fightStats.MissCount);
             Assert.AreEqual(0, fightStats.KillCount);
-            Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
         }
 
         [TestMethod]
@@ -62,15 +64,17 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] A dwarf disciple punches YOU for 865 points of damage.")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:21 2019] Khronick healed you over time for 3036 hit points by Healing Counterbias Effect. (Critical)")));
 
-            Assert.AreEqual(4106, fightStats.TotalDamage);
-            Assert.AreEqual(3241, fightStats.MaxHitDamage);
-            Assert.AreEqual(865, fightStats.MinHitDamage);
-            Assert.AreEqual(2, fightStats.HitCount);
+            Assert.AreEqual(4106, fightStats.Damage.Total);
+            Assert.AreEqual(3241, fightStats.Damage.Max);
+            Assert.AreEqual(865, fightStats.Damage.Min);
+            Assert.AreEqual(2, fightStats.Damage.Count);
+            Assert.AreEqual(0.666, fightStats.HitPercentage, 0.001);
+
+            Assert.AreEqual(5371, fightStats.Heals.Total);
+            Assert.AreEqual(2, fightStats.Heals.Count);
+
             Assert.AreEqual(1, fightStats.MissCount);
             Assert.AreEqual(0, fightStats.KillCount);
-            Assert.AreEqual(0.666, fightStats.HitPercentage, 0.001);
-            Assert.AreEqual(5371, fightStats.HealAmount);
-            Assert.AreEqual(2, fightStats.HealCount);
         }
     }
 }

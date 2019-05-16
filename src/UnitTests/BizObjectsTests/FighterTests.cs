@@ -36,9 +36,9 @@ namespace BizObjectsTests
             _hitParser.TryParse(new LogDatum("[Fri Apr 26 09:25:50 2019] You punch a cliknar adept for 1092 points of damage."), out line);
             fighter.AddOffense(line);
 
-            Assert.AreEqual(4587, fighter.OffensiveStatistics.TotalDamage);
-            Assert.AreEqual(601, fighter.OffensiveStatistics.MinHitDamage);
-            Assert.AreEqual(2894, fighter.OffensiveStatistics.MaxHitDamage);
+            Assert.AreEqual(4587, fighter.OffensiveStatistics.Damage.Total);
+            Assert.AreEqual(601, fighter.OffensiveStatistics.Damage.Min);
+            Assert.AreEqual(2894, fighter.OffensiveStatistics.Damage.Max);
         }
     }
 }
