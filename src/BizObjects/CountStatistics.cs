@@ -3,13 +3,14 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public class CountStatistics<T>
+    public class CountStatistics<T> where T : class
     {
-        public CountStatistics(IList<ILine> lines)
+        public CountStatistics(IEnumerable<ILine> lines)
         {
-            Lines = lines;
+            // This is a lazy evaluation, which means it'll be re-evaluated each time it's called, which is what we want.
+            Lines = lines.Where(x => x is T).Select(x => x as T);
         }
-        public int Count { get => Lines.Where(x => x is T).Count(); }
-        public IList<ILine> Lines { get; }
+        public int Count { get => Lines.Count(); }
+        public IEnumerable<T> Lines { get; }
     }
 }
