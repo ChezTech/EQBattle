@@ -10,6 +10,31 @@ namespace LineParserTests
     {
         private HitParser _parser = new HitParser(new YouResolver("Khadaji"));
 
+        [DataTestMethod]
+        [DataRow("[Fri Apr 26 09:26:33 2019] You punch a cliknar adept for 1277 points of damage.", "Khadaji", false, "a cliknar adept", false, 1277, "punch", AttackType.Punch, null, null, null)]
+
+        public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
+        {
+            var logDatum = new LogDatum(logLine);
+
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(lineEntry is Hit);
+            var hitEntry = lineEntry as Hit;
+            Assert.AreEqual(attacker, hitEntry.Attacker.Name);
+            Assert.AreEqual(isAttackerPet, hitEntry.Attacker.IsPet);
+            Assert.AreEqual(defender, hitEntry.Defender.Name);
+            Assert.AreEqual(isDefenderPet, hitEntry.Defender.IsPet);
+            Assert.AreEqual(damage, hitEntry.Damage);
+            Assert.AreEqual(verb, hitEntry.Verb);
+            Assert.AreEqual(attackType, hitEntry.Type);
+            Assert.AreEqual(type, hitEntry.DamageType);
+            Assert.AreEqual(by, hitEntry.DamageBy);
+            Assert.AreEqual(qualifier, hitEntry.DamageQualifier);
+        }
+
+
         [TestMethod]
         public void YouAttackOtherSimple()
         {
