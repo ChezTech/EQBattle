@@ -22,6 +22,12 @@ namespace LineParserTests
         [DataRow("[Sat May 17 15:28:23 2003] Zangum slashes A Razorfiend Subduer for 14 points of damage.", "Zangum", false, "a Razorfiend Subduer", false, 14, "slashes", AttackType.Slash, null, null, null)]
         [DataRow("[Sat Mar 30 08:48:54 2019] Khadaji hit a cliknar hunter for 388 points of poison damage by Strike of Venom IV.", "Khadaji", false, "a cliknar hunter", false, 388, "hit", AttackType.Hit, "poison", "Strike of Venom IV", null)]
         [DataRow("[Fri Apr 12 18:23:12 2019] A lavakin hits Khadaji`s pet for 1284 points of damage. (Riposte Strikethrough)", "a lavakin", false, "Khadaji", true, 1284, "hits", AttackType.Hit, null, null, "Riposte Strikethrough")]
+        [DataRow("[Sat Mar 30 07:37:19 2019] Bealica hit a cliknar hunter for 6426 points of magic damage by Pure Wildmagic.", "Bealica", false, "a cliknar hunter", false, 6426, "hit", AttackType.Hit, "magic", "Pure Wildmagic", null)]
+        [DataRow("[Sat Mar 30 07:37:22 2019] Bealica hit a cliknar hunter for 4513 points of fire damage by Chaos Combustion.", "Bealica", false, "a cliknar hunter", false, 4513, "hit", AttackType.Hit, "fire", "Chaos Combustion", null)]
+        [DataRow("[Sat Mar 30 07:40:13 2019] Bealica hit a cliknar hunter for 11481 points of cold damage by Glacial Cascade.", "Bealica", false, "a cliknar hunter", false, 11481, "hit", AttackType.Hit, "cold", "Glacial Cascade", null)]
+        [DataRow("[Sat Mar 30 07:37:24 2019] Khadaji hit a cliknar hunter for 1148 points of magic damage by Demon Crusher.", "Khadaji", false, "a cliknar hunter", false, 1148, "hit", AttackType.Hit, "magic", "Demon Crusher", null)]
+        // [DataRow("[Sat Mar 30 07:37:21 2019] A cliknar hunter has taken 11494 damage from Nectar of the Slitheren by Khronick. (Critical)", "Khronick", false, "a cliknar hunter", false, 11494, "zzz", AttackType.Unknown, null, "Nectar of the Slitheren", "Critical")]
+        // [DataRow("[Tue Apr 02 22:36:18 2019] A sporali disciple has taken 1969 damage from Breath of Queen Malarian by Khronick.", "Khronick", false, "a sporali disciple", false, 1969, "zzzzz", AttackType.Unknown, null, "Breath of Queen Malarian", null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
@@ -44,13 +50,5 @@ namespace LineParserTests
             Assert.AreEqual(by, hitEntry.DamageBy, string.Format("Failing line: {0}", logLine));
             Assert.AreEqual(qualifier, hitEntry.DamageQualifier, string.Format("Failing line: {0}", logLine));
         }
-
-        // [Sat Mar 30 07:37:19 2019] Bealica hit a cliknar hunter for 6426 points of magic damage by Pure Wildmagic.
-        // [Sat Mar 30 07:37:22 2019] Bealica hit a cliknar hunter for 4513 points of fire damage by Chaos Combustion.
-        // [Sat Mar 30 07:40:13 2019] Bealica hit a cliknar hunter for 11481 points of cold damage by Glacial Cascade.
-        // [Sat Mar 30 07:37:24 2019] Khadaji hit a cliknar hunter for 1148 points of magic damage by Demon Crusher.
-        // [Sat Mar 30 07:37:21 2019] A cliknar hunter has taken 11494 damage from Nectar of the Slitheren by Khronick. (Critical)
-        // [Tue Apr 02 22:36:18 2019] A sporali disciple has taken 1969 damage from Breath of Queen Malarian by Khronick.
-
     }
 }
