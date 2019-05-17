@@ -51,6 +51,7 @@ namespace BizObjects
 
         public AttackType Convert(string hitTypeName)
         {
+            if (hitTypeName == null) return AttackType.Unknown;
             return _nameToTypeMap.TryGetValue(hitTypeName, out AttackType hitType) ? hitType : AttackType.Unknown;
         }
 

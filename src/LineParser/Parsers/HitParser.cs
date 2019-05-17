@@ -11,8 +11,10 @@ namespace LineParser.Parsers
     {
         private readonly Regex RxHit;
         private readonly Regex RxDamageShield;
+        private readonly Regex RxDot;
         private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
+        private readonly string regexDot = @"(.+) has taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/1
 
         private readonly YouResolver YouAre;
 
@@ -22,6 +24,7 @@ namespace LineParser.Parsers
             string verbs = string.Join('|', new AttackTypeConverter().Names);
             RxHit = new Regex(regexHit.Replace("**verbs**", verbs), RegexOptions.Compiled);
             RxDamageShield = new Regex(regexDamageShield.Replace("**verbs**", verbs), RegexOptions.Compiled);
+            RxDot = new Regex(regexDot, RegexOptions.Compiled);
         }
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
@@ -32,9 +35,12 @@ namespace LineParser.Parsers
 
             if (TryParseHit(logDatum, out lineEntry))
                 return true;
+            if (TryParseDot(logDatum, out lineEntry))
+                return true;
 
             return false;
         }
+
         private bool TryParseHit(LogDatum logDatum, out ILine lineEntry)
         {
             var match = RxHit.Match(logDatum.LogMessage);
@@ -77,6 +83,29 @@ namespace LineParser.Parsers
             string damageQualifier = null;
 
             lineEntry = new Hit(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), YouAre.WhoAreYou(attackVerb), damage, damageType, damageBy, damageQualifier);
+
+            return true;
+        }
+
+        private bool TryParseDot(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxDot.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            var attacker = match.Groups[4].Value;
+            string attackVerb = null; // DoT?
+            var defender = match.Groups[1].Value;
+            var damage = int.Parse(match.Groups[2].Value);
+            string damageType = null; // DoT ?
+            var damageBy = match.Groups[3].Value;
+            var damageQualifier = match.Groups[5].Success ? match.Groups[5].Value : null;
+
+            lineEntry = new Hit(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), attackVerb, damage, damageType, damageBy, damageQualifier);
 
             return true;
         }
