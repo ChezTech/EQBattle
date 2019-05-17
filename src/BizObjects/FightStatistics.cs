@@ -23,9 +23,19 @@ namespace BizObjects
 
 
         public double HitPercentage { get => (double)Damage.Count / (Damage.Count + Miss.Count); }
-        public IDictionary<string, int> DamagePerType { get; }
-        public IDictionary<string, int> HitsPerType { get; }
-        public IDictionary<string, int> MissesPerType { get; }
+
+        public IEnumerable<IGrouping<AttackType, Hit>> HitsPerType { get => Damage.Lines.GroupBy(x => x.Type); }
+        public IEnumerable<AttackType> HitTypes { get => HitsPerType.Select(x => x.Key); }
+        public HitPointStatistics<Hit> GetHitStatisticsForAttackType(AttackType attackType)
+        {
+            return new HitPointStatistics<Hit>(
+                HitsPerType
+                    .Where(x => x.Key == attackType)
+                    .SelectMany(x => x)
+                , z => z.Damage);
+        }
+        public IEnumerable<IGrouping<AttackType, Miss>> MissesPerType { get => Miss.Lines.GroupBy(x => x.Type); }
+        public IEnumerable<IGrouping<string, Heal>> HealsPerSpell { get => Heal.Lines.GroupBy(x => x.SpellName); }
 
         public void AddLine(ILine line)
         {

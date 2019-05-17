@@ -106,5 +106,56 @@ namespace BizObjectsTests
             Assert.AreEqual(1, fightStats.Miss.Count);
             Assert.AreEqual(0, fightStats.Kill.Count);
         }
+
+        [TestMethod]
+        public void HitTypeTests()
+        {
+            var fightStats = new FightStatistics();
+
+            // First part of the fight
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
+
+            var hitTypes = fightStats.HitsPerType;
+            Assert.AreEqual(3, hitTypes.Count());
+
+            Assert.IsTrue(fightStats.HitTypes.Contains(AttackType.Hit));
+            Assert.AreEqual(894, fightStats.GetHitStatisticsForAttackType(AttackType.Hit).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Pierce));
+            Assert.AreEqual(60, fightStats.GetHitStatisticsForAttackType(AttackType.Pierce).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Kick));
+            Assert.AreEqual(3041, fightStats.GetHitStatisticsForAttackType(AttackType.Kick).Total);
+
+            // Next part of the fight
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] You strike a dwarf disciple for 845 points of damage. (Strikethrough)")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] You strike a dwarf disciple for 475 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:53 2019] You crush a dwarf disciple for 2242 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:53 2019] You crush a dwarf disciple for 2256 points of damage. (Riposte Strikethrough)")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:54 2019] You kick a dwarf disciple for 1362 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:58 2019] You kick a dwarf disciple for 3185 points of damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:58 2019] You kick a dwarf disciple for 1025 points of damage.")));
+
+            Assert.AreEqual(5, hitTypes.Count());
+
+            Assert.IsTrue(fightStats.HitTypes.Contains(AttackType.Hit));
+            Assert.AreEqual(1406, fightStats.GetHitStatisticsForAttackType(AttackType.Hit).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Pierce));
+            Assert.AreEqual(60, fightStats.GetHitStatisticsForAttackType(AttackType.Pierce).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Kick));
+            Assert.AreEqual(8613, fightStats.GetHitStatisticsForAttackType(AttackType.Kick).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Strike));
+            Assert.AreEqual(1320, fightStats.GetHitStatisticsForAttackType(AttackType.Strike).Total);
+
+            Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Crush));
+            Assert.AreEqual(4498, fightStats.GetHitStatisticsForAttackType(AttackType.Crush).Total);
+        }
     }
 }
