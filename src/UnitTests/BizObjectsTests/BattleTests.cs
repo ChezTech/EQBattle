@@ -56,15 +56,15 @@ namespace BizObjectsTests
             Assert.IsTrue(chars.Any(x => x.Name == "Bealica"));
             Assert.IsTrue(chars.Any(x => x.Name == "a dwarf disciple"));
 
-            Assert.AreEqual(4507, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Damage.Total);
-            Assert.AreEqual(11481, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Damage.Total);
-            Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Damage.Total);
-            Assert.AreEqual(20094, battle.OffensiveStatistics.Damage.Total);
+            Assert.AreEqual(4507, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Hit.Total);
+            Assert.AreEqual(11481, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Hit.Total);
+            Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Hit.Total);
+            Assert.AreEqual(20094, battle.OffensiveStatistics.Hit.Total);
 
-            Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Damage.Total);
-            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Damage.Total);
-            Assert.AreEqual(15988, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Damage.Total);
-            Assert.AreEqual(20094, battle.DefensiveStatistics.Damage.Total);
+            Assert.AreEqual(4106, battle.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Hit.Total);
+            Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Hit.Total);
+            Assert.AreEqual(15988, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Hit.Total);
+            Assert.AreEqual(20094, battle.DefensiveStatistics.Hit.Total);
 
             Assert.AreEqual(5371, battle.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Heal.Total);
             Assert.AreEqual(2335, battle.Fighters.First(x => x.Character.Name == "Movanna").OffensiveStatistics.Heal.Total);

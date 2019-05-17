@@ -41,11 +41,11 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
 
-            Assert.AreEqual(4507, fightStats.Damage.Total);
-            Assert.AreEqual(3041, fightStats.Damage.Max);
-            Assert.AreEqual(2, fightStats.Damage.Min);
-            Assert.AreEqual(5, fightStats.Damage.Count);
-            Assert.AreEqual(901.4, fightStats.Damage.Average, 0.01);
+            Assert.AreEqual(4507, fightStats.Hit.Total);
+            Assert.AreEqual(3041, fightStats.Hit.Max);
+            Assert.AreEqual(2, fightStats.Hit.Min);
+            Assert.AreEqual(5, fightStats.Hit.Count);
+            Assert.AreEqual(901.4, fightStats.Hit.Average, 0.01);
             Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
 
             Assert.AreEqual(1, fightStats.Miss.Count);
@@ -62,8 +62,8 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)")));
 
-            Assert.AreEqual(3103, fightStats.Damage.Total);
-            Assert.AreEqual(3, fightStats.Damage.Count);
+            Assert.AreEqual(3103, fightStats.Hit.Total);
+            Assert.AreEqual(3, fightStats.Hit.Count);
             Assert.AreEqual(0, fightStats.Miss.Count);
 
             // Add some more lines
@@ -71,11 +71,11 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
 
-            Assert.AreEqual(4507, fightStats.Damage.Total);
-            Assert.AreEqual(3041, fightStats.Damage.Max);
-            Assert.AreEqual(2, fightStats.Damage.Min);
-            Assert.AreEqual(5, fightStats.Damage.Count);
-            Assert.AreEqual(901.4, fightStats.Damage.Average, 0.01);
+            Assert.AreEqual(4507, fightStats.Hit.Total);
+            Assert.AreEqual(3041, fightStats.Hit.Max);
+            Assert.AreEqual(2, fightStats.Hit.Min);
+            Assert.AreEqual(5, fightStats.Hit.Count);
+            Assert.AreEqual(901.4, fightStats.Hit.Average, 0.01);
             Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
 
             Assert.AreEqual(1, fightStats.Miss.Count);
@@ -94,10 +94,10 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] A dwarf disciple punches YOU for 865 points of damage.")));
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:21 2019] Khronick healed you over time for 3036 hit points by Healing Counterbias Effect. (Critical)")));
 
-            Assert.AreEqual(4106, fightStats.Damage.Total);
-            Assert.AreEqual(3241, fightStats.Damage.Max);
-            Assert.AreEqual(865, fightStats.Damage.Min);
-            Assert.AreEqual(2, fightStats.Damage.Count);
+            Assert.AreEqual(4106, fightStats.Hit.Total);
+            Assert.AreEqual(3241, fightStats.Hit.Max);
+            Assert.AreEqual(865, fightStats.Hit.Min);
+            Assert.AreEqual(2, fightStats.Hit.Count);
             Assert.AreEqual(0.666, fightStats.HitPercentage, 0.001);
 
             Assert.AreEqual(5371, fightStats.Heal.Total);

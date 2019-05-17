@@ -7,7 +7,7 @@ namespace BizObjects
     {
         public FightStatistics()
         {
-            Damage = new HitPointStatistics<Hit>(Lines, x => x.Damage);
+            Hit = new HitPointStatistics<Hit>(Lines, x => x.Damage);
             Heal = new HitPointStatistics<Heal>(Lines, x => x.Amount);
             Miss = new CountStatistics<Miss>(Lines);
             Kill = new CountStatistics<Kill>(Lines);
@@ -16,15 +16,15 @@ namespace BizObjects
         public IList<ILine> Lines { get; } = new List<ILine>();
 
 
-        public HitPointStatistics<Hit> Damage { get; }
+        public HitPointStatistics<Hit> Hit { get; }
         public HitPointStatistics<Heal> Heal { get; }
         public CountStatistics<Miss> Miss { get; }
         public CountStatistics<Kill> Kill { get; }
 
 
-        public double HitPercentage { get => (double)Damage.Count / (Damage.Count + Miss.Count); }
+        public double HitPercentage { get => (double)Hit.Count / (Hit.Count + Miss.Count); }
 
-        public IEnumerable<IGrouping<AttackType, Hit>> HitsPerType { get => Damage.Lines.GroupBy(x => x.Type); }
+        public IEnumerable<IGrouping<AttackType, Hit>> HitsPerType { get => Hit.Lines.GroupBy(x => x.Type); }
         public IEnumerable<AttackType> HitTypes { get => HitsPerType.Select(x => x.Key); }
         public HitPointStatistics<Hit> GetHitStatisticsForAttackType(AttackType attackType)
         {
