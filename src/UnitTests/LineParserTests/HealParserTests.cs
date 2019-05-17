@@ -19,7 +19,7 @@ namespace LineParserTests
         [DataRow("[Mon Mar 25 18:42:21 2019] Thomazz healed Velvytte over time for 2882 (43000) hit points by Hand of Piety XXXVII. (Critical)", "Thomazz", "Velvytte", 2882, 43000, "Hand of Piety XXXVII", true, "Critical")]
         [DataRow("[Mon Mar 25 18:51:05 2019] Tweedlede is strengthened by insistent spirits. Fincez healed Tweedlede for 5532 (5831) hit points by Wulthan Focusing Rk. II.", "Fincez", "Tweedlede", 5532, 5831, "Wulthan Focusing Rk. II", false, null)]
         [DataRow("[Mon Mar 25 19:29:35 2019] a clockwork soother CMXXI is surrounded by ardent armor. a clockwork soother CMXXI healed itself for 3594 (3821) hit points by Armor of the Ardent Rk. II.", "a clockwork soother CMXXI", "a clockwork soother CMXXI", 3594, 3821, "Armor of the Ardent Rk. II", false, null)]
-
+        [DataRow("[Mon Mar 25 19:52:35 2019] Jaminai feels the touch of resurgence. Jaminai healed herself for 1422 (8738) hit points by Word of Resurgence Rk. II.", "Jaminai", "Jaminai", 1422, 8738, "Word of Resurgence Rk. II", false, null)]
         // Old school log messages
         // [DataRow("[Tue Feb 25 18:51:03 2003] You have been healed for 938 points of damage.", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri Jun 13 23:39:32 2003] Saxstein has healed you for 1522 points of damage.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]

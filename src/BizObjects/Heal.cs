@@ -1,12 +1,13 @@
 ﻿
 
+using System.Collections.Generic;
 using LogObjects;
 
 namespace BizObjects
 {
     public class Heal : Line
     {
-        public const string Itself = "itself";
+        private readonly List<string> reflexivePronouns = new List<string>() { "himself", "herself", "itself" };
 
         public Character Healer { get; }
         public Character Patient { get; }
@@ -19,7 +20,7 @@ namespace BizObjects
         public Heal(LogDatum logLine, string healer, string patient, int amount, int maxAmount, string spellName, bool isHot, string qualifier, Zone zone = null) : base(logLine, zone)
         {
             Healer = new Character(healer);
-            Patient = new Character(patient == Itself ? healer : patient);
+            Patient = new Character(reflexivePronouns.Contains(patient) ? healer : patient);
             Amount = amount;
             OverAmount = maxAmount;
             SpellName = spellName;
