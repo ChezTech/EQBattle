@@ -48,13 +48,12 @@ namespace BizObjectsTests
             battle.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
             battle.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!")));
 
-            var chars = battle.Characters;
-            Assert.AreEqual(5, chars.Count);
-            Assert.IsTrue(chars.Any(x => x.Name == "Khadaji"));
-            Assert.IsTrue(chars.Any(x => x.Name == "Movanna"));
-            Assert.IsTrue(chars.Any(x => x.Name == "Khronick"));
-            Assert.IsTrue(chars.Any(x => x.Name == "Bealica"));
-            Assert.IsTrue(chars.Any(x => x.Name == "a dwarf disciple"));
+            Assert.AreEqual(5, battle.Fighters.Count);
+            Assert.IsTrue(battle.Fighters.Any(x => x.Character.Name == "Khadaji"));
+            Assert.IsTrue(battle.Fighters.Any(x => x.Character.Name == "Movanna"));
+            Assert.IsTrue(battle.Fighters.Any(x => x.Character.Name == "Khronick"));
+            Assert.IsTrue(battle.Fighters.Any(x => x.Character.Name == "Bealica"));
+            Assert.IsTrue(battle.Fighters.Any(x => x.Character.Name == "a dwarf disciple"));
 
             Assert.AreEqual(4507, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Hit.Total);
             Assert.AreEqual(11481, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Hit.Total);

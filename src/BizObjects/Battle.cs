@@ -7,7 +7,6 @@ namespace BizObjects
 {
     public class Battle
     {
-        public ICollection<Character> Characters { get { return _fighters.Keys; } }
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
         public IList<ILine> Lines { get; } = new List<ILine>();
         public string Zone { get; }
