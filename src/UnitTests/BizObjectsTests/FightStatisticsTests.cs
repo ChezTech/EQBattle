@@ -53,6 +53,36 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        public void ContinuedFight()
+        {
+            var fightStats = new FightStatistics();
+
+            // First part of the fith
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)")));
+
+            Assert.AreEqual(3103, fightStats.Damage.Total);
+            Assert.AreEqual(3, fightStats.Damage.Count);
+            Assert.AreEqual(0, fightStats.Miss.Count);
+
+            // Add some more lines
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:50 2019] You try to crush a dwarf disciple, but miss!")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
+
+            Assert.AreEqual(4507, fightStats.Damage.Total);
+            Assert.AreEqual(3041, fightStats.Damage.Max);
+            Assert.AreEqual(2, fightStats.Damage.Min);
+            Assert.AreEqual(5, fightStats.Damage.Count);
+            Assert.AreEqual(901.4, fightStats.Damage.Average, 0.01);
+            Assert.AreEqual(0.833, fightStats.HitPercentage, 0.001);
+
+            Assert.AreEqual(1, fightStats.Miss.Count);
+            Assert.AreEqual(0, fightStats.Kill.Count);
+        }
+
+        [TestMethod]
         public void DefensiveStats()
         {
             var fightStats = new FightStatistics();
