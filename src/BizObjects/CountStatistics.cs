@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public class CountStatistics<T> where T : class
+    public class CountStatistics<T> where T : class, ILine
     {
         public CountStatistics(IEnumerable<ILine> lines)
         {

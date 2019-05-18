@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public class HitPointStatistics<T> : CountStatistics<T> where T : class
+    public class HitPointStatistics<T> : CountStatistics<T> where T : class, ILine
     {
         public HitPointStatistics(IEnumerable<ILine> lines, Func<T, int> valueFunc) : base(lines)
         {
