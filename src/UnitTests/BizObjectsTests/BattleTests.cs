@@ -9,6 +9,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BizObjectsTests
 {
+    // Notes:
+    // https://forums.daybreakgames.com/eq/index.php?threads/dps-parsers.232663/
+    // https://github.com/rumstil
+
     [TestClass]
     public class BattleTests
     {
