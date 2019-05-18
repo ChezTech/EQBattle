@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using BizObjects;
@@ -156,6 +157,21 @@ namespace BizObjectsTests
 
             Assert.IsTrue(hitTypes.Select(x => x.Key).Contains(AttackType.Crush));
             Assert.AreEqual(4498, fightStats.GetHitStatisticsForAttackType(AttackType.Crush).Total);
+        }
+
+        [TestMethod]
+        public void DpsTestForFighter()
+        {
+            var fightStats = new FightStatistics();
+
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)")));
+            fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
+
+            Assert.AreEqual(3995, fightStats.Hit.Total);
+            Assert.AreEqual(new TimeSpan(0, 0, 9), fightStats.DPS.EntireDuration);
+            // Assert.AreEqual(12.34, fightStats.DPS., 0.01);
         }
     }
 }
