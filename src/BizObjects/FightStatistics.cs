@@ -96,7 +96,17 @@ namespace BizObjects
             _timeStats = timeStats;
         }
 
-        public double DPS { get => _hitStats.Total / _timeStats.EntireDuration.TotalSeconds; }
+        public double DPS
+        {
+            get
+            {
+                // One hit would give infinity DPS ... naw, let's cap it at your total damage
+                if (_timeStats.EntireDuration == TimeSpan.Zero)
+                    return _hitStats.Total;
+
+                return _hitStats.Total / _timeStats.EntireDuration.TotalSeconds;
+            }
+        }
 
         // DPS, trailing 6s, trailing 12s, per fighterEngagement, perFight
     }

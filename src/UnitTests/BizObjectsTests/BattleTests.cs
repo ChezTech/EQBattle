@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using BizObjects;
@@ -81,6 +82,14 @@ namespace BizObjectsTests
             Assert.AreEqual(0, battle.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Kill.Count);
             Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
             Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
+
+            Assert.AreEqual(new TimeSpan(0, 0, 38), battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 19), battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.OffensiveStatistics.Duration.EntireDuration);
+
+            Assert.AreEqual(118.61, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.DPS, 0.01);
+            Assert.AreEqual(604.26, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.DPS, 0.01);
+            Assert.AreEqual(267.92, battle.OffensiveStatistics.PerTime.DPS, 0.01);
         }
     }
 }
