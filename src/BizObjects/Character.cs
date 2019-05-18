@@ -17,6 +17,8 @@ namespace BizObjects
 
         private bool DetectPet(string name)
         {
+            // TODO: Listen for `/pet who leader` log message
+            // https://www.reddit.com/r/everquest/comments/6rkmyd/reliable_parser/
             return name.Contains("`s pet");
         }
 
