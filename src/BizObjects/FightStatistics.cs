@@ -13,7 +13,8 @@ namespace BizObjects
             Miss = new CountStatistics<Miss>(Lines);
             Kill = new CountStatistics<Kill>(Lines);
 
-            DPS = new DurationStatistics<ILine>(Lines);
+            Duration = new DurationStatistics<ILine>(Lines);
+            PerTime = new PerTimeStatistics<Hit, ILine>(Hit, Duration);
         }
 
         public IList<ILine> Lines { get; } = new List<ILine>();
@@ -23,7 +24,9 @@ namespace BizObjects
         public CountStatistics<Miss> Miss { get; }
         public CountStatistics<Kill> Kill { get; }
 
-        public DurationStatistics<ILine> DPS { get; }
+
+        public DurationStatistics<ILine> Duration { get; }
+        public PerTimeStatistics<Hit, ILine> PerTime { get; }
 
 
         public double HitPercentage { get => (double)Hit.Count / (Hit.Count + Miss.Count); }
@@ -78,5 +81,23 @@ namespace BizObjects
         /// Duration from when a particular fighter started their main engagement in the fight
         /// </Summary>
         public TimeSpan FighterDuration { get; }
+    }
+
+    public class PerTimeStatistics<T, U>
+        where T : class, ILine
+        where U : class, ILine
+    {
+        private readonly HitPointStatistics<T> _hitStats;
+        private readonly DurationStatistics<U> _timeStats;
+
+        public PerTimeStatistics(HitPointStatistics<T> hitStats, DurationStatistics<U> timeStats)
+        {
+            _hitStats = hitStats;
+            _timeStats = timeStats;
+        }
+
+        public double DPS { get => _hitStats.Total / _timeStats.EntireDuration.TotalSeconds; }
+
+        // DPS, trailing 6s, trailing 12s, per fighterEngagement, perFight
     }
 }
