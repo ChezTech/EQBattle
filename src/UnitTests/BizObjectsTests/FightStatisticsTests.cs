@@ -171,7 +171,7 @@ namespace BizObjectsTests
 
             Assert.AreEqual(3995, fightStats.Hit.Total);
             Assert.AreEqual(new TimeSpan(0, 0, 9), fightStats.Duration.FighterDuration);
-            Assert.AreEqual(443.89, fightStats.PerTime.DPS, 0.01);
+            Assert.AreEqual(443.89, fightStats.PerTime.FighterDPS, 0.01);
         }
     }
 }

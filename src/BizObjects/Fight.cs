@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public class Battle
+    public class Fight
     {
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
         public IList<ILine> Lines { get; } = new List<ILine>();

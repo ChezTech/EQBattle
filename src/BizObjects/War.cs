@@ -4,7 +4,7 @@ namespace BizObjects
 {
     public class War
     {
-        public IList<Battle> Battles { get; private set; }
+        public IList<Fight> Fights { get; private set; }
         public IList<Character> Fighters { get; private set; }
     }
 }

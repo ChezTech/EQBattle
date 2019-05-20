@@ -5,13 +5,13 @@ namespace BizObjects
 {
     public class Fighter
     {
-        private readonly Battle _fight;
+        private readonly Fight _fight;
 
         public Character Character { get; }
         public FightStatistics OffensiveStatistics { get; }
         public FightStatistics DefensiveStatistics { get; }
 
-        public Fighter(Character character, Battle fight = null)
+        public Fighter(Character character, Fight fight = null)
         {
             Character = character;
             _fight = fight;

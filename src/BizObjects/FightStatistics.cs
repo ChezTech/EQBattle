@@ -6,9 +6,9 @@ namespace BizObjects
 {
     public class FightStatistics
     {
-        private readonly Battle _fight;
+        private readonly Fight _fight;
 
-        public FightStatistics(Battle fight = null)
+        public FightStatistics(Fight fight = null)
         {
             _fight = fight;
 
@@ -56,9 +56,9 @@ namespace BizObjects
 
     public class DurationStatistics<T> where T : ILine
     {
-        private readonly Battle _fight;
+        private readonly Fight _fight;
 
-        public DurationStatistics(Battle fight, IEnumerable<T> lines)
+        public DurationStatistics(Fight fight, IEnumerable<T> lines)
         {
             _fight = fight;
             Lines = lines;
@@ -69,13 +69,13 @@ namespace BizObjects
         /// <Summary>
         /// Duration of the whole fight, from first pull to when the mobs are all dead
         /// </Summary>
-        public TimeSpan EntireDuration // FightDuration
+        public TimeSpan FightDuration
         {
             get
             {
                 return _fight == null
                   ? FighterDuration
-                  : _fight.OffensiveStatistics.Duration.EntireDuration;
+                  : _fight.OffensiveStatistics.Duration.FightDuration;
             }
 
         }
@@ -113,7 +113,7 @@ namespace BizObjects
             _timeStats = timeStats;
         }
 
-        public double DPS
+        public double FighterDPS
         {
             get
             {
@@ -130,10 +130,10 @@ namespace BizObjects
             get
             {
                 // One hit would give infinity DPS ... naw, let's cap it at your total damage
-                if (_timeStats.EntireDuration == TimeSpan.Zero)
+                if (_timeStats.FightDuration == TimeSpan.Zero)
                     return _hitStats.Total;
 
-                return _hitStats.Total / _timeStats.EntireDuration.TotalSeconds;
+                return _hitStats.Total / _timeStats.FightDuration.TotalSeconds;
             }
         }
 
