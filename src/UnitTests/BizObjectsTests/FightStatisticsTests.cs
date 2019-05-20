@@ -170,7 +170,7 @@ namespace BizObjectsTests
             fightStats.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
 
             Assert.AreEqual(3995, fightStats.Hit.Total);
-            Assert.AreEqual(new TimeSpan(0, 0, 9), fightStats.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 9), fightStats.Duration.FighterDuration);
             Assert.AreEqual(443.89, fightStats.PerTime.DPS, 0.01);
         }
     }

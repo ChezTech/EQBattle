@@ -5,13 +5,19 @@ namespace BizObjects
 {
     public class Fighter
     {
-        public Character Character { get; }
-        public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
-        public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
+        private readonly Battle _fight;
 
-        public Fighter(Character character)
+        public Character Character { get; }
+        public FightStatistics OffensiveStatistics { get; }
+        public FightStatistics DefensiveStatistics { get; }
+
+        public Fighter(Character character, Battle fight = null)
         {
             Character = character;
+            _fight = fight;
+
+            OffensiveStatistics = new FightStatistics(_fight);
+            DefensiveStatistics  = new FightStatistics(_fight);
         }
 
         public void AddOffense(ILine line)

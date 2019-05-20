@@ -6,14 +6,18 @@ namespace BizObjects
 {
     public class FightStatistics
     {
-        public FightStatistics()
+        private readonly Battle _fight;
+
+        public FightStatistics(Battle fight = null)
         {
+            _fight = fight;
+
             Hit = new HitPointStatistics<Hit>(Lines, x => x.Damage);
             Heal = new HitPointStatistics<Heal>(Lines, x => x.Amount);
             Miss = new CountStatistics<Miss>(Lines);
             Kill = new CountStatistics<Kill>(Lines);
 
-            Duration = new DurationStatistics<ILine>(Lines);
+            Duration = new DurationStatistics<ILine>(_fight, Lines);
             PerTime = new PerTimeStatistics<Hit, ILine>(Hit, Duration);
         }
 
@@ -52,8 +56,11 @@ namespace BizObjects
 
     public class DurationStatistics<T> where T : ILine
     {
-        public DurationStatistics(IEnumerable<T> lines)
+        private readonly Battle _fight;
+
+        public DurationStatistics(Battle fight, IEnumerable<T> lines)
         {
+            _fight = fight;
             Lines = lines;
         }
 
@@ -62,15 +69,17 @@ namespace BizObjects
         /// <Summary>
         /// Duration of the whole fight, from first pull to when the mobs are all dead
         /// </Summary>
-        public TimeSpan EntireDuration
+        public TimeSpan EntireDuration // FightDuration
         {
             get
             {
-                if (!Lines.Any())
-                    return TimeSpan.Zero;
-                return Lines.Last().Time - Lines.First().Time;
+                return _fight == null
+                  ? FighterDuration
+                  : _fight.OffensiveStatistics.Duration.EntireDuration;
             }
+
         }
+
 
         /// <Summary>
         /// Duration from the main engagement till death
@@ -80,7 +89,15 @@ namespace BizObjects
         /// <Summary>
         /// Duration from when a particular fighter started their main engagement in the fight
         /// </Summary>
-        public TimeSpan FighterDuration { get; }
+        public TimeSpan FighterDuration
+        {
+            get
+            {
+                if (!Lines.Any())
+                    return TimeSpan.Zero;
+                return Lines.Last().Time - Lines.First().Time;
+            }
+        }
     }
 
     public class PerTimeStatistics<T, U>
@@ -97,6 +114,18 @@ namespace BizObjects
         }
 
         public double DPS
+        {
+            get
+            {
+                // One hit would give infinity DPS ... naw, let's cap it at your total damage
+                if (_timeStats.FighterDuration == TimeSpan.Zero)
+                    return _hitStats.Total;
+
+                return _hitStats.Total / _timeStats.FighterDuration.TotalSeconds;
+            }
+        }
+
+        public double FightDPS
         {
             get
             {

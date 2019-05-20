@@ -18,11 +18,11 @@ namespace BizObjects
 
         public void AddLine(Attack line)
         {
-            var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker));
+            var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
             OffensiveStatistics.AddLine(line);
 
-            var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender));
+            var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
             defendChar.AddDefense(line);
             DefensiveStatistics.AddLine(line);
         }

@@ -83,13 +83,20 @@ namespace BizObjectsTests
             Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
             Assert.AreEqual(1, battle.OffensiveStatistics.Kill.Count);
 
-            Assert.AreEqual(new TimeSpan(0, 0, 38), battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.EntireDuration);
-            Assert.AreEqual(new TimeSpan(0, 0, 19), battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.EntireDuration);
-            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.OffensiveStatistics.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 38), battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.FighterDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 19), battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.FighterDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.OffensiveStatistics.Duration.FighterDuration);
 
             Assert.AreEqual(118.61, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.DPS, 0.01);
             Assert.AreEqual(604.26, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.DPS, 0.01);
             Assert.AreEqual(267.92, battle.OffensiveStatistics.PerTime.DPS, 0.01);
+
+            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.EntireDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), battle.OffensiveStatistics.Duration.EntireDuration);
+
+            Assert.AreEqual(60.09, battle.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FightDPS, 0.01);
+            Assert.AreEqual(153.08, battle.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FightDPS, 0.01);
         }
     }
 }
