@@ -8,13 +8,28 @@ namespace BizObjects
     public class Fight
     {
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
-        public IList<ILine> Lines { get; } = new List<ILine>();
         public string Zone { get; }
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
 
         public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
         public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
+        public bool IsFightOver(ILine line)
+        {
+
+            // A fight is over if
+            // - the main MOB is dead (what is the main mob? what about multiple mobs?)
+            // - it's been too long since the last attack
+            //   - it's not a loot line (we want to accept loot lines into this fight after the mob is dead .. as long as it's not a new attack before then)
+
+            // Obviously, this won't work, but it's a start
+            if (OffensiveStatistics.Lines.Any(x => x is Kill))
+                return true;
+            if (DefensiveStatistics.Lines.Any(x => x is Kill))
+                return true;
+
+            return false;
+        }
 
         public void AddLine(Attack line)
         {
