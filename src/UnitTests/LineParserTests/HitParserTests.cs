@@ -28,6 +28,7 @@ namespace LineParserTests
         [DataRow("[Sat Mar 30 07:37:24 2019] Khadaji hit a cliknar hunter for 1148 points of magic damage by Demon Crusher.", "Khadaji", false, "a cliknar hunter", false, 1148, "hit", AttackType.Hit, "magic", "Demon Crusher", null)]
         [DataRow("[Sat Mar 30 07:37:21 2019] A cliknar hunter has taken 11494 damage from Nectar of the Slitheren by Khronick. (Critical)", "Khronick", false, "a cliknar hunter", false, 11494, null, AttackType.Unknown, null, "Nectar of the Slitheren", "Critical")]
         [DataRow("[Tue Apr 02 22:36:18 2019] A sporali disciple has taken 1969 damage from Breath of Queen Malarian by Khronick.", "Khronick", false, "a sporali disciple", false, 1969, null, AttackType.Unknown, null, "Breath of Queen Malarian", null)]
+        [DataRow("[Fri Apr 26 09:40:54 2019] You have taken 1960 damage from Nature's Searing Wrath by a cliknar sporali farmer's corpse.", "a cliknar sporali farmer", false, "Khadaji", false, 1960, null, AttackType.Unknown, null, "Nature's Searing Wrath", null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
@@ -36,8 +37,8 @@ namespace LineParserTests
 
             var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Hit);
+            Assert.IsTrue(result, logLine);
+            Assert.IsTrue(lineEntry is Hit, logLine);
             var hitEntry = lineEntry as Hit;
             Assert.AreEqual(attacker, hitEntry.Attacker.Name, string.Format("Failing line: {0}", logLine));
             Assert.AreEqual(isAttackerPet, hitEntry.Attacker.IsPet, string.Format("Failing line: {0}", logLine));

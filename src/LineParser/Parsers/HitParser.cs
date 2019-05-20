@@ -14,7 +14,7 @@ namespace LineParser.Parsers
         private readonly Regex RxDot;
         private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
-        private readonly string regexDot = @"(.+) has taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/1
+        private readonly string regexDot = @"(.+) (?:has|have) taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/2
 
         private readonly YouResolver YouAre;
 
