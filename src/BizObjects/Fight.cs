@@ -56,5 +56,9 @@ namespace BizObjects
         // public void AddLine(Zone line) { }
         // public void AddLine(Chat line) { }
 
+        public void AddLine(ILine line)
+        {
+
+        }
     }
 }

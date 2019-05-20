@@ -13,6 +13,9 @@ namespace BizObjectsTests
     // Notes:
     // https://forums.daybreakgames.com/eq/index.php?threads/dps-parsers.232663/
     // https://github.com/rumstil
+    // http://www.eqpixie.com/
+    // http://www.eqwatcher.com/
+    // https://eq.gimasoft.com/gina/Default.aspx
 
     [TestClass]
     public class FightTests

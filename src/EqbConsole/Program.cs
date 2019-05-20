@@ -30,6 +30,8 @@ namespace EqbConsole
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
+        private Battle _eqBattle = new Battle();
+
         static void Main(string[] args)
         {
             var logPath = args.Length > 0 ? args[0] : LogFilePathName;
@@ -87,6 +89,13 @@ namespace EqbConsole
             DumpStatsForCharacter("Khadaji", charOnly: true);
             DumpStatsForCharacter("Khadaji", isPet: true);
             DumpStatsForCharacter("Khadaji", negative: true);
+
+            WriteMessage("===== Battle ======");
+            WriteMessage("Fight count: {0}", _eqBattle.Fights.Count);
+            WriteMessage("Fight offensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.OffensiveStatistics.Hit.Total));
+            WriteMessage("Fight defensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.DefensiveStatistics.Hit.Total));
+            WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Fights.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
+
         }
 
         private void DumpStatsForCharacter(string name, bool charOnly = false, bool isPet = false, bool negative = false)
@@ -143,7 +152,8 @@ namespace EqbConsole
                 try
                 {
                     var logLine = _jobQueueLogLines.Take();
-                    _parser.ParseLine(logLine);
+                    var line = _parser.ParseLine(logLine);
+                    _eqBattle.AddLine(line);
 
                     // if (logLine.LineNumber % 10000 == 0)
                     //     WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
