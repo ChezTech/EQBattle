@@ -17,6 +17,9 @@ namespace BizObjects
 
         public string WhoAreYou(string argName)
         {
+            if (argName == null)
+                return argName;
+
             if (argName.Equals("Your", StringComparison.InvariantCultureIgnoreCase))
                 return Name;
             if (argName.Equals("You", StringComparison.InvariantCultureIgnoreCase))

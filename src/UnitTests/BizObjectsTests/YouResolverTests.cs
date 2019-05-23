@@ -89,5 +89,19 @@ namespace BizObjectsTests
             var yr = new YouResolver();
             Assert.AreEqual("You", yr.WhoAreYou("YOUR"));
         }
+
+        [TestMethod]
+        public void VerifyNullName()
+        {
+            var yr = new YouResolver("Khadaji");
+            Assert.IsNull(yr.WhoAreYou(null));
+        }
+
+        [TestMethod]
+        public void VerifyEmptylName()
+        {
+            var yr = new YouResolver("Khadaji");
+            Assert.AreEqual(string.Empty, yr.WhoAreYou(""));
+        }
     }
 }
