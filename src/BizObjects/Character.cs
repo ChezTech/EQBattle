@@ -6,11 +6,20 @@ namespace BizObjects
 {
     public class Character : IEquatable<Character>
     {
+        private const string UnknownName = "Unknown";
         public string Name { get; }
         public bool IsPet { get; }
 
         public Character(string name)
         {
+            // Better to make this a builder pattern and return a static character instance of "Unknown"
+            if (string.IsNullOrEmpty(name))
+            {
+                Name = UnknownName;
+                IsPet = false;
+                return;
+            }
+
             IsPet = DetectPet(name);
             Name = CleanName(name);
         }

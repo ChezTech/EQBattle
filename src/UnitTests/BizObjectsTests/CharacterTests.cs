@@ -106,5 +106,21 @@ namespace BizObjectsTests
             Assert.IsTrue(charDict.TryAdd(c1, 17));
             Assert.IsFalse(charDict.TryAdd(c2, 19));
         }
+
+        [TestMethod]
+        public void VerifyNullBecomesUnknown()
+        {
+            var c = new Character(null);
+            Assert.AreEqual("Unknown", c.Name);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void VerifyEmptyBecomesUnknown()
+        {
+            var c = new Character("");
+            Assert.AreEqual("Unknown", c.Name);
+            Assert.IsFalse(c.IsPet);
+        }
     }
 }
