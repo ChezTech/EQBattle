@@ -27,5 +27,10 @@ namespace BizObjects
 
             return argName;
         }
+
+        public bool IsThisYou(string name)
+        {
+            return Name == name;
+        }
     }
 }

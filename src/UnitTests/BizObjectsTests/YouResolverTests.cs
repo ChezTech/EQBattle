@@ -103,5 +103,19 @@ namespace BizObjectsTests
             var yr = new YouResolver("Khadaji");
             Assert.AreEqual(string.Empty, yr.WhoAreYou(""));
         }
+
+        [TestMethod]
+        public void CheckIsThisYou()
+        {
+            var yr = new YouResolver("Khadaji");
+            Assert.IsTrue(yr.IsThisYou("Khadaji"));
+        }
+
+        [TestMethod]
+        public void CheckIsThisNotYou()
+        {
+            var yr = new YouResolver("Khadaji");
+            Assert.IsFalse(yr.IsThisYou("Khronick"));
+        }
     }
 }
