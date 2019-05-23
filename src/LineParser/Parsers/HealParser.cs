@@ -10,7 +10,7 @@ namespace LineParser.Parsers
     public class HealParser : IParser
     {
         private readonly Regex RxHeal;
-        private readonly string rgexHeal = @"(.+\. )?(.+) healed (.*?)( over time)? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/eBfX2c/2
+        private readonly string rgexHeal = @"^(.+\. )?(.*?)(?: (has been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$"; // https://regex101.com/r/eBfX2c/3
 
         private readonly YouResolver YouAre;
 
@@ -39,12 +39,22 @@ namespace LineParser.Parsers
 
             var flavor = match.Groups[1].Value;
             var healer = match.Groups[2].Value;
-            var patient = match.Groups[3].Value;
-            var isHot = match.Groups[4].Success;
-            var amount = int.Parse(match.Groups[5].Value);
-            var maxAmount = match.Groups[6].Success ? int.Parse(match.Groups[6].Value) : -1;
-            var spellName = match.Groups[7].Value;
-            var qualifier = match.Groups[8].Success ? match.Groups[8].Value : null;
+            var patient = match.Groups[4].Value;
+            // Mordsith has been healed ...
+            if (match.Groups[3].Success)
+            {
+                patient = healer;
+                healer = null;
+            }
+
+            // Khronick healed you over time ...
+            // Mordsith has been healed over time ...
+            var isHot = match.Groups[5].Success || match.Groups[4].Value == "over time";
+
+            var amount = int.Parse(match.Groups[6].Value);
+            var maxAmount = match.Groups[7].Success ? int.Parse(match.Groups[7].Value) : -1;
+            var spellName = match.Groups[8].Value;
+            var qualifier = match.Groups[9].Success ? match.Groups[9].Value : null;
 
             lineEntry = new Heal(logDatum, YouAre.WhoAreYou(healer), YouAre.WhoAreYou(patient), amount, maxAmount, spellName, isHot, qualifier);
 

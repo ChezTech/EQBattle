@@ -22,9 +22,10 @@ namespace LineParserTests
         [DataRow("[Mon Mar 25 19:52:35 2019] Jaminai feels the touch of resurgence. Jaminai healed herself for 1422 (8738) hit points by Word of Resurgence Rk. II.", "Jaminai", "Jaminai", 1422, 8738, "Word of Resurgence Rk. II", false, null)]
         [DataRow("[Mon Mar 25 19:52:36 2019] Buddahbean`s warder feels the touch of vivification. Seissyll healed Buddahbean`s warder for 903 (4137) hit points by Word of Vivification.", "Seissyll", "Buddahbean`s warder", 903, 4137, "Word of Vivification", false, null)]
         [DataRow("[Sat Mar 30 10:10:41 2019] Khronick is infused by a divine restitution. Khronick healed himself for 4652 (47334) hit points by Promised Restitution Trigger I. (Critical)", "Khronick", "Khronick", 4652, 47334, "Promised Restitution Trigger I", false, "Critical")]
+        [DataRow("[Fri Apr 12 11:32:11 2019] Mordsith has been healed over time for 345 (9525) hit points by Elixir of Wulthan Rk. II.", "Unknown", "Mordsith", 345, 9525, "Elixir of Wulthan Rk. II", true, null)]
 
         // Old school log messages
-        // [DataRow("[Tue Feb 25 18:51:03 2003] You have been healed for 938 points of damage.", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
+        // [DataRow("[Tue Feb 25 18:51:03 2003]     ", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri Jun 13 23:39:32 2003] Saxstein has healed you for 1522 points of damage.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         // [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri May 16 17:48:54 2003] A vann geistlig is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
@@ -35,16 +36,16 @@ namespace LineParserTests
 
             var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Heal);
+            Assert.IsTrue(result, logLine);
+            Assert.IsTrue(lineEntry is Heal, logLine);
             var entry = lineEntry as Heal;
-            Assert.AreEqual(healerName, entry.Healer.Name);
-            Assert.AreEqual(patientName, entry.Patient.Name);
-            Assert.AreEqual(amount, entry.Amount);
-            Assert.AreEqual(maxAmount, entry.OverAmount);
-            Assert.AreEqual(spellName, entry.SpellName);
-            Assert.AreEqual(isHot, entry.isHealOverTime);
-            Assert.AreEqual(qualifier, entry.Qualifier);
+            Assert.AreEqual(healerName, entry.Healer.Name, logLine);
+            Assert.AreEqual(patientName, entry.Patient.Name, logLine);
+            Assert.AreEqual(amount, entry.Amount, logLine);
+            Assert.AreEqual(maxAmount, entry.OverAmount, logLine);
+            Assert.AreEqual(spellName, entry.SpellName, logLine);
+            Assert.AreEqual(isHot, entry.isHealOverTime, logLine);
+            Assert.AreEqual(qualifier, entry.Qualifier, logLine);
         }
     }
 }
