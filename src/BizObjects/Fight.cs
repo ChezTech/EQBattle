@@ -48,8 +48,6 @@ namespace BizObjects
 
         public virtual void AddLine(Attack line)
         {
-            DeterminePrimaryMob(line);
-
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
             OffensiveStatistics.AddLine(line);
@@ -57,6 +55,8 @@ namespace BizObjects
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
             defendChar.AddDefense(line);
             DefensiveStatistics.AddLine(line);
+
+            DeterminePrimaryMob(line);
         }
 
         public virtual void AddLine(Heal line)
@@ -105,9 +105,15 @@ namespace BizObjects
                 return;
             }
 
+            // If we've got multiple lines, we should be able to see who's the main target by the fact that everyone keeps beating them up
+            if (!Fighters.Any())
+                return;
 
-
-
+            // Note: this finds the fighter who has the most combined attack lines
+            // better would be to find the fight with the most distinct other fighters who have been attacking them
+            var topFighter = Fighters.Aggregate((maxItem, nextItem) => (maxItem.DefensiveStatistics.Lines.Count + maxItem.OffensiveStatistics.Lines.Count) > (nextItem.DefensiveStatistics.Lines.Count + nextItem.OffensiveStatistics.Lines.Count) ? maxItem : nextItem);
+            if (topFighter.DefensiveStatistics.Lines.Count + topFighter.OffensiveStatistics.Lines.Count >= 2)
+                PrimaryMob = topFighter.Character;
         }
 
         private bool IsThisAMob(Character mob)

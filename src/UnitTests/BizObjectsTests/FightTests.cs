@@ -156,5 +156,19 @@ namespace BizObjectsTests
 
             Assert.AreEqual("Ragbeard the Morose", fight.PrimaryMob.Name);
         }
+
+        [TestMethod]
+        public void IdentifyNamedMobFromMultipleHits()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            // We should be able to identify a mob within 2 attacks involving 3 different characters
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.")));
+            Assert.AreEqual("Unknown", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:13 2003] Sontalak claws Nair for 290 points of damage.")));
+            Assert.AreEqual("Sontalak", fight.PrimaryMob.Name);
+        }
     }
 }
