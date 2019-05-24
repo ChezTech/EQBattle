@@ -170,5 +170,40 @@ namespace BizObjectsTests
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:13 2003] Sontalak claws Nair for 290 points of damage.")));
             Assert.AreEqual("Sontalak", fight.PrimaryMob.Name);
         }
+
+        [TestMethod]
+        public void DontConfusePetsWithGenericMobs()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:08 2019] Khadaji`s pet tries to hit a lavakin, but a lavakin dodges!")));
+
+            Assert.AreEqual("a lavakin", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void DontConfuseWarderPetsWithGenericMobs()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Girnon`s warder bites a telmira servant for 17 points of damage.")));
+
+            Assert.AreEqual("a telmira servant", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void DontConfuseWarderPetsWithNamedMobsWithASpace()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Girnon`s warder bites Sontalak for 17 points of damage.")));
+            Assert.AreEqual("Unknown", fight.PrimaryMob.Name); // We can't tell yet...
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.")));
+            Assert.AreEqual("Sontalak", fight.PrimaryMob.Name); // Now, we should be able to tell
+        }
     }
 }

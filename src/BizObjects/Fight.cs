@@ -93,13 +93,13 @@ namespace BizObjects
                 return;
             }
 
-            if (IsThisAMob(line.Attacker))
+            if (line.Attacker.IsMob)
             {
                 PrimaryMob = line.Attacker;
                 return;
             }
 
-            if (IsThisAMob(line.Defender))
+            if (line.Defender.IsMob)
             {
                 PrimaryMob = line.Defender;
                 return;
@@ -114,22 +114,6 @@ namespace BizObjects
             var topFighter = Fighters.Aggregate((maxItem, nextItem) => (maxItem.DefensiveStatistics.Lines.Count + maxItem.OffensiveStatistics.Lines.Count) > (nextItem.DefensiveStatistics.Lines.Count + nextItem.OffensiveStatistics.Lines.Count) ? maxItem : nextItem);
             if (topFighter.DefensiveStatistics.Lines.Count + topFighter.OffensiveStatistics.Lines.Count >= 2)
                 PrimaryMob = topFighter.Character;
-        }
-
-        private bool IsThisAMob(Character mob)
-        {
-            // Generic mob
-            if (mob.Name.StartsWith("a "))
-                return true;
-            if (mob.Name.StartsWith("an "))
-                return true;
-
-            // How to tell if this is a named mob?
-            // - a space in its name?
-            if (mob.Name.Contains(' '))
-                return true;
-
-            return false;
         }
     }
 }
