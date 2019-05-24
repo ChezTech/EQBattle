@@ -5,7 +5,14 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public class Fight
+    public interface IFight
+    {
+        void AddLine(ILine line);
+        void AddLine(Attack line);
+        void AddLine(Heal line);
+    }
+
+    public class Fight : IFight
     {
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
         public string Zone { get; }
@@ -31,7 +38,7 @@ namespace BizObjects
             return false;
         }
 
-        public void AddLine(Attack line)
+        public virtual void AddLine(Attack line)
         {
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
@@ -42,7 +49,7 @@ namespace BizObjects
             DefensiveStatistics.AddLine(line);
         }
 
-        public void AddLine(Heal line)
+        public virtual void AddLine(Heal line)
         {
             var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
             healerChar.AddOffense(line);
@@ -56,7 +63,7 @@ namespace BizObjects
         // public void AddLine(Zone line) { }
         // public void AddLine(Chat line) { }
 
-        public void AddLine(ILine line)
+        public virtual void AddLine(ILine line)
         {
 
         }
