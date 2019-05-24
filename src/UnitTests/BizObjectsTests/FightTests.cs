@@ -145,5 +145,16 @@ namespace BizObjectsTests
 
             Assert.AreEqual("a telmira servant", fight.PrimaryMob.Name);
         }
+
+        [TestMethod]
+        public void IdentifyNamedMobUsingSpaces()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Ragbeard the Morose crushes Khronick for 1319 points of damage.")));
+
+            Assert.AreEqual("Ragbeard the Morose", fight.PrimaryMob.Name);
+        }
     }
 }

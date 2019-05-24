@@ -120,6 +120,8 @@ namespace BizObjects
 
             // How to tell if this is a named mob?
             // - a space in its name?
+            if (mob.Name.Contains(' '))
+                return true;
 
             return false;
         }
