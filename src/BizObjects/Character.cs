@@ -6,6 +6,7 @@ namespace BizObjects
 {
     public class Character : IEquatable<Character>
     {
+        public static Character Unknown = new Character(UnknownName);
         private const string UnknownName = "Unknown";
         public string Name { get; }
         public bool IsPet { get; }
