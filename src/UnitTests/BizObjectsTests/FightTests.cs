@@ -101,5 +101,49 @@ namespace BizObjectsTests
             Assert.AreEqual(60.09, fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FightDPS, 0.01);
             Assert.AreEqual(153.08, fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FightDPS, 0.01);
         }
+
+        [TestMethod]
+        public void IdentifyMobFromYourAttack()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage.")));
+
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void IdentifyMobAttackingYouButMisses()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!")));
+
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void IdentifyGenericMob()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void IdentifyGenericMobHittingOther()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.")));
+
+            Assert.AreEqual("a telmira servant", fight.PrimaryMob.Name);
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace BizObjects
         private readonly YouResolver YouAre;
 
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
+        public Character PrimaryMob { get; private set; } = Character.Unknown;
         public string Zone { get; }
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
 
@@ -47,6 +48,8 @@ namespace BizObjects
 
         public virtual void AddLine(Attack line)
         {
+            DeterminePrimaryMob(line);
+
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
             OffensiveStatistics.AddLine(line);
@@ -73,6 +76,52 @@ namespace BizObjects
         public virtual void AddLine(ILine line)
         {
 
+        }
+
+        private void DeterminePrimaryMob(Attack line)
+        {
+            // If it's You that is attacking of defending, then the other is the mob
+            if (YouAre.IsThisYou(line.Attacker.Name))
+            {
+                PrimaryMob = line.Defender;
+                return;
+            }
+
+            if (YouAre.IsThisYou(line.Defender.Name))
+            {
+                PrimaryMob = line.Attacker;
+                return;
+            }
+
+            if (IsThisAMob(line.Attacker))
+            {
+                PrimaryMob = line.Attacker;
+                return;
+            }
+
+            if (IsThisAMob(line.Defender))
+            {
+                PrimaryMob = line.Defender;
+                return;
+            }
+
+
+
+
+        }
+
+        private bool IsThisAMob(Character mob)
+        {
+            // Generic mob
+            if (mob.Name.StartsWith("a "))
+                return true;
+            if (mob.Name.StartsWith("an "))
+                return true;
+
+            // How to tell if this is a named mob?
+            // - a space in its name?
+
+            return false;
         }
     }
 }
