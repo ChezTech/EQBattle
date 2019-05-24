@@ -13,14 +13,23 @@ namespace BizObjects
         // Can we have a Fight and sub-Fight (skirmish)? Or Battle and Fights?
         // How to show on UI?
         // I like the idea of a Fight w/ Skirmishes ... should I internally represent each fight with at least one skirmish?
+        // Should a fight turn into a skirmish if there's more than one mob? I think a skirmish should be bigger than a fight, but
+        // I don't want to represent the most common object as a Skirmish, but rather as a Fight.
+        // When I list the fights in the log file, I can use a different icon or name format to indicate more than one mob
+        // How can I split out different mobs into different fights?
+        // Can I make the Skirmish object, inherit from a fight, then replace the Fight object with a Skirmish one in the fight list?
+
+        private readonly YouResolver YouAre;
 
         private Fight _currentFight;
 
         public IList<Fight> Fights { get; } = new List<Fight>();
         public IEnumerable<Character> Fighters { get => Fights.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
-        public Battle()
+        public Battle(YouResolver youAre)
         {
+            YouAre = youAre;
+
             SetupNewFight();
         }
 
@@ -34,7 +43,7 @@ namespace BizObjects
 
         private void SetupNewFight()
         {
-            _currentFight = new Fight();
+            _currentFight = new Fight(YouAre);
             Fights.Add(_currentFight);
         }
 

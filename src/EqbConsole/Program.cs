@@ -30,7 +30,7 @@ namespace EqbConsole
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
 
-        private Battle _eqBattle = new Battle();
+        private Battle _eqBattle;
 
         static void Main(string[] args)
         {
@@ -42,6 +42,8 @@ namespace EqbConsole
         private Program(string logPath)
         {
             _youAre = new YouResolver(WhoseLogFile(logPath));
+            _eqBattle = new Battle(_youAre);
+
             WriteMessage("You are: {0}", _youAre.Name);
 
             _parser = new LineParserFactory();
@@ -96,6 +98,15 @@ namespace EqbConsole
             WriteMessage("Fight defensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.DefensiveStatistics.Hit.Total));
             WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Fights.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
 
+            WriteMessage("===== Named Fights ======");
+            var namedFighters = _eqBattle.Fighters
+                .Where(x => !x.Name.StartsWith("a "))
+                .Where(x => !x.Name.StartsWith("an "))
+                .Where(x => !x.IsPet)
+                .Distinct()
+                .OrderBy(x => x.Name);
+            WriteMessage("Named fighter count: {0}", namedFighters.Count());
+            WriteMessage("Named fighter count: \n{0}", string.Join("\t\n", namedFighters.Select(x => x.Name)));
         }
 
         private void DumpStatsForCharacter(string name, bool charOnly = false, bool isPet = false, bool negative = false)

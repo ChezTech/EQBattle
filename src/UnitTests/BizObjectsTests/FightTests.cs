@@ -40,7 +40,7 @@ namespace BizObjectsTests
         public void SmallFight()
         {
             var pc = new Character(YouAre.Name);
-            var fight = new Fight();
+            var fight = new Fight(YouAre);
 
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.")));
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));

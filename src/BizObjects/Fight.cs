@@ -14,9 +14,16 @@ namespace BizObjects
 
     public class Fight : IFight
     {
+        private readonly YouResolver YouAre;
+
         public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
         public string Zone { get; }
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
+
+        public Fight(YouResolver youAre)
+        {
+            YouAre = youAre;
+        }
 
         public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
         public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
