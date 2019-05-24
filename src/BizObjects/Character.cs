@@ -10,6 +10,7 @@ namespace BizObjects
         private const string UnknownName = "Unknown";
         public string Name { get; }
         public bool IsPet { get; }
+        public bool IsMob { get; }
 
         public Character(string name)
         {
@@ -23,6 +24,7 @@ namespace BizObjects
 
             IsPet = DetectPet(name);
             Name = CleanName(name);
+            IsMob = DetectMob(Name);
         }
 
         private bool DetectPet(string name)
@@ -52,6 +54,22 @@ namespace BizObjects
                 .Replace("'s", "") // apostrophe: Can we replace this by a better Regex? (E.g. "... pierced by a monster's thorns...")
 
                 ;
+        }
+
+        private bool DetectMob(string name)
+        {
+            // Generic mob
+            if (name.StartsWith("a "))
+                return true;
+            if (name.StartsWith("an "))
+                return true;
+
+            // How to tell if this is a named mob?
+            // - a space in its name?
+            if (name.Contains(' '))
+                return true;
+
+            return false;
         }
 
         #region Equality

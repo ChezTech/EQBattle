@@ -13,6 +13,7 @@ namespace BizObjectsTests
             var c = new Character("Khadaji");
             Assert.AreEqual("Khadaji", c.Name);
             Assert.IsFalse(c.IsPet);
+            Assert.IsFalse(c.IsMob);
         }
 
         [TestMethod]
@@ -22,6 +23,7 @@ namespace BizObjectsTests
             var c = new Character("YOU");
             Assert.AreEqual("YOU", c.Name);
             Assert.IsFalse(c.IsPet);
+            Assert.IsFalse(c.IsMob);
         }
 
         [TestMethod]
@@ -61,6 +63,7 @@ namespace BizObjectsTests
             var c = new Character("Movanna's");
             Assert.AreEqual("Movanna", c.Name);
             Assert.IsFalse(c.IsPet);
+            Assert.IsFalse(c.IsMob);
         }
 
         [TestMethod]
@@ -78,8 +81,8 @@ namespace BizObjectsTests
             var c = new Character("Khadaji`s pet");
             Assert.AreEqual("Khadaji", c.Name);
             Assert.IsTrue(c.IsPet);
+            Assert.IsFalse(c.IsMob);
         }
-
 
         [TestMethod]
         public void EnsureObjectEquality()
@@ -130,8 +133,47 @@ namespace BizObjectsTests
             var c = new Character("Girnon`s warder");
             Assert.AreEqual("Girnon", c.Name);
             Assert.IsTrue(c.IsPet);
+            Assert.IsFalse(c.IsMob);
         }
 
+        [TestMethod]
+        public void DetectGenericMobWithA()
+        {
+            var c = new Character("A dwarf disciple");
+            Assert.AreEqual("a dwarf disciple", c.Name);
+            Assert.IsFalse(c.IsPet);
+            Assert.IsTrue(c.IsMob);
+        }
 
+        [TestMethod]
+        public void DetectGenericMobWithAn()
+        {
+            var c = new Character("An awakened citizen");
+            Assert.AreEqual("an awakened citizen", c.Name);
+            Assert.IsFalse(c.IsPet);
+            Assert.IsTrue(c.IsMob);
+        }
+
+        [TestMethod]
+        public void DetectNamedMobWithSpaces()
+        {
+            var c = new Character("Ragbeard the Morose");
+            Assert.AreEqual("Ragbeard the Morose", c.Name);
+            Assert.IsFalse(c.IsPet);
+            Assert.IsTrue(c.IsMob);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void DetectNamedMobWithoutSpaces()
+        {
+            var c = new Character("Sontalak");
+            Assert.AreEqual("Sontalak", c.Name);
+            Assert.IsFalse(c.IsPet);
+
+            // No idea how to tell this NPC from a PC just by the name.
+            // We can tell by looking at other log lines, but that's over conext of a whole fight, not solely the name.
+            Assert.IsTrue(c.IsMob);
+        }
     }
 }
