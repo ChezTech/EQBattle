@@ -205,5 +205,18 @@ namespace BizObjectsTests
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.")));
             Assert.AreEqual("Sontalak", fight.PrimaryMob.Name); // Now, we should be able to tell
         }
+
+        [TestMethod]
+        public void DontSwitchPrimaryMobOnAdd()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.")));
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+        }
     }
 }

@@ -80,6 +80,10 @@ namespace BizObjects
 
         private void DeterminePrimaryMob(Attack line)
         {
+            // If mob already set, don't change it
+            if (PrimaryMob != Character.Unknown)
+                return;
+
             // If it's You that is attacking of defending, then the other is the mob
             if (YouAre.IsThisYou(line.Attacker.Name))
             {
@@ -93,6 +97,7 @@ namespace BizObjects
                 return;
             }
 
+            // If it's a generic mob, set it
             if (line.Attacker.IsMob)
             {
                 PrimaryMob = line.Attacker;
