@@ -29,7 +29,12 @@ namespace BizObjects
         {
             // TODO: Listen for `/pet who leader` log message
             // https://www.reddit.com/r/everquest/comments/6rkmyd/reliable_parser/
-            return name.Contains("`s pet");
+            if (name.Contains("`s pet"))
+                return true;
+            if (name.Contains("`s warder"))
+                return true;
+
+            return false;
         }
 
         private string CleanName(string name)
@@ -43,6 +48,7 @@ namespace BizObjects
                 .Replace("'s corpse", "") // dead mobs can still have a DoT in effect, "You have taken 1960 damage from Nature's Searing Wrath by a cliknar sporali farmer's corpse."
 
                 .Replace("`s pet", "") // backtick: better regex? (E.g. "Bob`s pet kicked ....", "Joe kicked Bob`s pet ....")
+                .Replace("`s warder", "")
                 .Replace("'s", "") // apostrophe: Can we replace this by a better Regex? (E.g. "... pierced by a monster's thorns...")
 
                 ;

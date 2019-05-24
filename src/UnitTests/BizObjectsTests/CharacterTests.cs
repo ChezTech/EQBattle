@@ -60,6 +60,7 @@ namespace BizObjectsTests
             // A master hunter is pierced by Movanna's thorns for 826 points of non-melee damage.
             var c = new Character("Movanna's");
             Assert.AreEqual("Movanna", c.Name);
+            Assert.IsFalse(c.IsPet);
         }
 
         [TestMethod]
@@ -122,5 +123,15 @@ namespace BizObjectsTests
             Assert.AreEqual("Unknown", c.Name);
             Assert.IsFalse(c.IsPet);
         }
+
+        [TestMethod]
+        public void DetectWarderPetCharacter()
+        {
+            var c = new Character("Girnon`s warder");
+            Assert.AreEqual("Girnon", c.Name);
+            Assert.IsTrue(c.IsPet);
+        }
+
+
     }
 }
