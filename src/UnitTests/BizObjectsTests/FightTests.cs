@@ -218,5 +218,44 @@ namespace BizObjectsTests
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.")));
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
         }
+
+        [TestMethod]
+        public void IsThisFightOverEasy()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+            Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!")));
+            Assert.IsTrue(fight.IsFightOver);
+        }
+
+        [TestMethod]
+        public void IsThisFightOverPetDied()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:11 2019] A lavakin hits Khadaji`s pet for 824 points of damage. (Riposte)")));
+            Assert.AreEqual("a lavakin", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:11 2019] Khadaji`s pet has been slain by a lavakin!")));
+            Assert.IsFalse(fight.IsFightOver);
+        }
+
+        [TestMethod]
+        public void IsThisFightOverYouDied()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 17:13:24 2019] An enraged disciple smashes YOU for 5206 points of damage.")));
+            Assert.AreEqual("an enraged disciple", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 17:13:24 2019] You have been slain by an enraged disciple!")));
+            Assert.IsFalse(fight.IsFightOver);
+        }
     }
 }
