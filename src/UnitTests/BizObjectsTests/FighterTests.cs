@@ -98,5 +98,22 @@ namespace BizObjectsTests
 
             Assert.IsFalse(fighter.IsDead);
         }
+
+        [TestMethod]
+        [Ignore]
+        public void MultiplePetsAttackingAndDying()
+        {
+            var pc = new Character("Khadaji`s pet");
+            var fighter = new Fighter(pc);
+
+            fighter.AddDefense((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:56:33 2019] A bellikos disciple slashes Khadaji`s pet for 2332 points of damage. (Riposte)")));
+            fighter.AddDefense((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:56:33 2019] Khadaji`s pet has been slain by a bellikos disciple!")));
+
+            Assert.IsTrue(fighter.IsDead);
+
+            fighter.AddOffense((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:56:33 2019] Khadaji`s pet tries to hit a bellikos disciple, but a bellikos disciple ripostes!")));
+
+            Assert.IsFalse(fighter.IsDead);
+        }
     }
 }
