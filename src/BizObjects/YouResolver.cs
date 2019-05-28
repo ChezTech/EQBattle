@@ -1,11 +1,14 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using LogObjects;
 
 namespace BizObjects
 {
     public class YouResolver
     {
+        private readonly List<string> reflexivePronouns = new List<string>() { "you", "your", "yourself" };
         public const string You = "You";
 
         public string Name { get; }
@@ -20,9 +23,7 @@ namespace BizObjects
             if (argName == null)
                 return argName;
 
-            if (argName.Equals("Your", StringComparison.InvariantCultureIgnoreCase))
-                return Name;
-            if (argName.Equals("You", StringComparison.InvariantCultureIgnoreCase))
+            if (reflexivePronouns.Any(x => x.Equals(argName, StringComparison.InvariantCultureIgnoreCase)))
                 return Name;
 
             return argName;
