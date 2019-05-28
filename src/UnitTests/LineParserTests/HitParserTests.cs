@@ -29,6 +29,7 @@ namespace LineParserTests
         [DataRow("[Sat Mar 30 07:37:21 2019] A cliknar hunter has taken 11494 damage from Nectar of the Slitheren by Khronick. (Critical)", "Khronick", false, "a cliknar hunter", false, 11494, null, AttackType.Unknown, null, "Nectar of the Slitheren", "Critical")]
         [DataRow("[Tue Apr 02 22:36:18 2019] A sporali disciple has taken 1969 damage from Breath of Queen Malarian by Khronick.", "Khronick", false, "a sporali disciple", false, 1969, null, AttackType.Unknown, null, "Breath of Queen Malarian", null)]
         [DataRow("[Fri Apr 26 09:40:54 2019] You have taken 1960 damage from Nature's Searing Wrath by a cliknar sporali farmer's corpse.", "a cliknar sporali farmer", false, "Khadaji", false, 1960, null, AttackType.Unknown, null, "Nature's Searing Wrath", null)]
+        [DataRow("[Tue May 28 06:48:42 2019] You hit yourself for 8000 points of unresistable damage by Cannibalization V.", "Khadaji", false, "Khadaji", false, 8000, "hit", AttackType.Hit, "unresistable", "Cannibalization V", null)] // Really this is Khronick's line, but "You" for our tests refers to Khadaji
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
@@ -50,6 +51,18 @@ namespace LineParserTests
             Assert.AreEqual(type, hitEntry.DamageType, string.Format("Failing line: {0}", logLine));
             Assert.AreEqual(by, hitEntry.DamageBy, string.Format("Failing line: {0}", logLine));
             Assert.AreEqual(qualifier, hitEntry.DamageQualifier, string.Format("Failing line: {0}", logLine));
+        }
+
+        [DataTestMethod]
+        [DataRow("[Tue May 28 06:48:42 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.")]
+        public void NullHitTests(string logLine)
+        {
+            var logDatum = new LogDatum(logLine);
+
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsFalse(result, logLine);
+            Assert.IsNull(lineEntry, logLine);
         }
     }
 }
