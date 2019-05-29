@@ -118,6 +118,39 @@ namespace BizObjectsTests
             VerifyFightStatistics(lastFight, "a cliknar sporali farmer", skirmish, 82769, 0, 0, 1);
         }
 
+        [TestMethod]
+        public void FightWithAddSameSingleName()
+        {
+            var pc = new Character(YouAre.Name);
+            var skirmish = new Skirmish(YouAre);
+
+            // Setup a fight and get an add (no way to tell it's an add)
+            // Then have the first die and a new fight should be made
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:28:43 2019] You hit Bob for 2 points of magic damage by Distant Strike I.")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:28:49 2019] Bob hits YOU for 10 points of damage.")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:28:56 2019] You kick Bob for 6 points of damage. (Riposte Critical)")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:29:58 2019] You have slain Bob!")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:31:14 2019] Bob hits YOU for 3 points of damage.")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:31:19 2019] You kick Bob for 7 points of damage. (Riposte)")));
+            skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:32:32 2019] You have slain Bob!"))); // Second mob dies
+
+            // Skirmish stats
+            VerifySkirmishStats(skirmish, 28, 0, 0, 2);
+
+            // Skirmish Fighters
+            Assert.AreEqual(2, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 15, 0, 0, 2, 13, 0, 0, 0);
+            VerifyFighterStatistics("Bob", skirmish, 13, 0, 0, 0, 15, 0, 0, 2);
+
+            // Skirmish Fights
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            VerifyFightStatistics("Bob", skirmish, 18, 0, 0, 1);
+
+            // The helper method just grabs the first match of the mobName which would be the fight above, so get the second/last fight our own way
+            var lastFight = skirmish.Fights.LastOrDefault(x => x.PrimaryMob.Name == "Bob");
+            VerifyFightStatistics(lastFight, "Bob", skirmish, 10, 0, 0, 1);
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.OffensiveStatistics;

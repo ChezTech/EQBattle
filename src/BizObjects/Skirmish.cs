@@ -81,8 +81,12 @@ namespace BizObjects
             if (primaryMobMatch.Any())
                 return primaryMobMatch.First();
 
-            // Either the characters are not MOBs or one of them is a named Mob and we don't know it, just use the first fight
-            return Fights.First();
+            // Either the characters are not MOBs or one of them is a named Mob and we don't know it, just use the first fight that's still ongoing
+            var firstActiveFight = Fights.Where(x => !x.IsFightOver);
+            if (firstActiveFight.Any())
+                return Fights.First();
+
+            return CreateNewFight();
         }
 
         private IFight GetOrAddFight(Character mob)
