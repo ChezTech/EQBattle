@@ -69,19 +69,9 @@ namespace BizObjects
 
             // If the char is a MOB, find the matching fight or create a new one
             if (char1.IsMob)
-            {
-                return Fights
-                    .Where(x => x.PrimaryMob == char1)
-                    .FirstOrDefault()
-                    ?? CreateNewFight();
-            }
+                return GetOrAddFight(char1);
             if (char2.IsMob)
-            {
-                return Fights
-                    .Where(x => x.PrimaryMob == char2)
-                    .FirstOrDefault()
-                    ?? CreateNewFight();
-            }
+                return GetOrAddFight(char2);
 
             // See if either character is already the primary mob (we can't tell if a named mob w/ a single name is a mob, so this may catch that)
             var primaryMobMatch = Fights.Where(x => x.PrimaryMob == char1 || x.PrimaryMob == char2);
@@ -90,6 +80,14 @@ namespace BizObjects
 
             // Either the characters are not MOBs or one of them is a named Mob and we don't know it, just use the first fight
             return Fights.First();
+        }
+
+        private IFight GetOrAddFight(Character mob)
+        {
+            return Fights
+                .Where(x => x.PrimaryMob == mob)
+                .FirstOrDefault()
+                ?? CreateNewFight();
         }
 
         private IFight CreateNewFight()
