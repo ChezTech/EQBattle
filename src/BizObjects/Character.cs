@@ -1,9 +1,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BizObjects
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Character : IEquatable<Character>
     {
         public static Character Unknown = new Character(UnknownName);
@@ -100,5 +102,13 @@ namespace BizObjects
             return !(left == right);
         }
         #endregion
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return string.Format($"{Name} {(IsPet ? "P" : "")}{(IsMob ? "M" : "")}");
+            }
+        }
     }
 }

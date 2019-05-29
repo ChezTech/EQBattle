@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BizObjects
@@ -18,6 +19,7 @@ namespace BizObjects
         void AddLine(Heal line);
     }
 
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Fight : IFight
     {
         private readonly YouResolver YouAre;
@@ -125,6 +127,14 @@ namespace BizObjects
             var topFighter = Fighters.Aggregate((maxItem, nextItem) => (maxItem.DefensiveStatistics.Lines.Count + maxItem.OffensiveStatistics.Lines.Count) > (nextItem.DefensiveStatistics.Lines.Count + nextItem.OffensiveStatistics.Lines.Count) ? maxItem : nextItem);
             if (topFighter.DefensiveStatistics.Lines.Count + topFighter.OffensiveStatistics.Lines.Count >= 2)
                 PrimaryMob = topFighter.Character;
+        }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return string.Format($"{PrimaryMob.Name}{(IsFightOver ? " - dead" : "")}");
+            }
         }
     }
 }

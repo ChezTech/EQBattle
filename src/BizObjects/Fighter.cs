@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BizObjects
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Fighter
     {
         private readonly IFight _fight;
@@ -31,6 +33,14 @@ namespace BizObjects
         public void AddDefense(ILine line)
         {
             DefensiveStatistics.AddLine(line);
+        }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return string.Format($"{Character.Name}{(IsDead ? " - dead" : "")}");
+            }
         }
     }
 }
