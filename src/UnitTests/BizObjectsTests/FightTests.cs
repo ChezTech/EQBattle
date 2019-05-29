@@ -172,6 +172,20 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        [Ignore]
+        public void LeadingHealConfusesPrimaryMob()
+        {
+            var pc = new Character(YouAre.Name);
+            var fight = new Fight(YouAre);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:17 2019] Khronick is bathed in a zealous light. Movanna healed Khronick for 9197 (23333) hit points by Zealous Light.")));
+            Assert.AreEqual("Unknown", fight.PrimaryMob.Name);
+
+            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:20 2019] Gomphus tries to hit Movanna, but Movanna blocks!")));
+            Assert.AreEqual("Gomphus", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
         public void DontConfusePetsWithGenericMobs()
         {
             var pc = new Character(YouAre.Name);
