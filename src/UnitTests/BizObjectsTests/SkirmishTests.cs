@@ -64,12 +64,7 @@ namespace BizObjectsTests
             skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:04:36 2019] Khronick has been slain by Gomphus!")));
 
             // Skirmish stats
-            Assert.AreEqual(42707, skirmish.OffensiveStatistics.Hit.Total);
-            Assert.AreEqual(42707, skirmish.DefensiveStatistics.Hit.Total);
-            Assert.AreEqual(56200, skirmish.DefensiveStatistics.Heal.Total);
-            Assert.AreEqual(56200, skirmish.OffensiveStatistics.Heal.Total);
-            Assert.AreEqual(3, skirmish.OffensiveStatistics.Kill.Count);
-            Assert.AreEqual(3, skirmish.OffensiveStatistics.Kill.Count);
+            VerifySkirmishStats(skirmish, 42707, 56200, 2, 3);
 
             // Skirmish Fighters
             Assert.AreEqual(6, skirmish.Fighters.Count());
@@ -84,6 +79,21 @@ namespace BizObjectsTests
             Assert.AreEqual(2, skirmish.Fights.Count);
             VerifyFightStatistics("Gomphus", skirmish, 18602, 56200, 1, 2);
             VerifyFightStatistics("Harvester Collyx", skirmish, 24105, 0, 1, 1);
+        }
+
+        private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
+        {
+            var stats = skirmish.OffensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills");
+
+            stats = skirmish.DefensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Defensive hit");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Defensive heal");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Defensive misses");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Defensive kills");
         }
 
         private void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
