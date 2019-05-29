@@ -80,59 +80,13 @@ namespace BizObjectsTests
             VerifyFighterStatistics("Harvester Collyx", skirmish, 2566, 0, 1, 0, 21539, 0, 0, 1);
             VerifyFighterStatistics("Unknown", skirmish, 3000, 0, 0, 0, 0, 0, 0, 0);
 
+            // Skirmish Fights
+            Assert.AreEqual(2, skirmish.Fights.Count);
 
 
 
 
 
-
-
-
-
-
-            // Assert.AreEqual(2, skirmish.Fights.Count);
-
-
-
-
-
-            // Assert.AreEqual(4507, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Hit.Total);
-            // Assert.AreEqual(11481, skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Hit.Total);
-            // Assert.AreEqual(4106, skirmish.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Hit.Total);
-            // Assert.AreEqual(20094, skirmish.OffensiveStatistics.Hit.Total);
-
-            // Assert.AreEqual(4106, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Hit.Total);
-            // Assert.AreEqual(0, skirmish.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Hit.Total);
-            // Assert.AreEqual(15988, skirmish.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Hit.Total);
-            // Assert.AreEqual(20094, skirmish.DefensiveStatistics.Hit.Total);
-
-            // Assert.AreEqual(5371, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Heal.Total);
-            // Assert.AreEqual(2335, skirmish.Fighters.First(x => x.Character.Name == "Movanna").OffensiveStatistics.Heal.Total);
-            // Assert.AreEqual(3036, skirmish.Fighters.First(x => x.Character.Name == "Khronick").OffensiveStatistics.Heal.Total);
-            // Assert.AreEqual(5371, skirmish.DefensiveStatistics.Heal.Total);
-            // Assert.AreEqual(5371, skirmish.OffensiveStatistics.Heal.Total);
-
-            // Assert.AreEqual(1, skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Kill.Count);
-            // Assert.AreEqual(0, skirmish.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Kill.Count);
-            // Assert.AreEqual(1, skirmish.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Kill.Count);
-            // Assert.AreEqual(0, skirmish.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Kill.Count);
-            // Assert.AreEqual(1, skirmish.OffensiveStatistics.Kill.Count);
-            // Assert.AreEqual(1, skirmish.OffensiveStatistics.Kill.Count);
-
-            // Assert.AreEqual(new TimeSpan(0, 0, 38), skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.FighterDuration);
-            // Assert.AreEqual(new TimeSpan(0, 0, 19), skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.FighterDuration);
-            // Assert.AreEqual(new TimeSpan(0, 1, 15), skirmish.OffensiveStatistics.Duration.FighterDuration);
-
-            // Assert.AreEqual(118.61, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FighterDPS, 0.01);
-            // Assert.AreEqual(604.26, skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FighterDPS, 0.01);
-            // Assert.AreEqual(267.92, skirmish.OffensiveStatistics.PerTime.FighterDPS, 0.01);
-
-            // Assert.AreEqual(new TimeSpan(0, 1, 15), skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.FightDuration);
-            // Assert.AreEqual(new TimeSpan(0, 1, 15), skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.FightDuration);
-            // Assert.AreEqual(new TimeSpan(0, 1, 15), skirmish.OffensiveStatistics.Duration.FightDuration);
-
-            // Assert.AreEqual(60.09, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FightDPS, 0.01);
-            // Assert.AreEqual(153.08, skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FightDPS, 0.01);
         }
 
         private static void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
