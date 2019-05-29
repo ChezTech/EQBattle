@@ -6,9 +6,9 @@ namespace BizObjects
 {
     public class FightStatistics
     {
-        private readonly Fight _fight;
+        private readonly IFight _fight;
 
-        public FightStatistics(Fight fight = null)
+        public FightStatistics(IFight fight = null)
         {
             _fight = fight;
 
@@ -56,9 +56,9 @@ namespace BizObjects
 
     public class DurationStatistics<T> where T : ILine
     {
-        private readonly Fight _fight;
+        private readonly IFight _fight;
 
-        public DurationStatistics(Fight fight, IEnumerable<T> lines)
+        public DurationStatistics(IFight fight, IEnumerable<T> lines)
         {
             _fight = fight;
             Lines = lines;

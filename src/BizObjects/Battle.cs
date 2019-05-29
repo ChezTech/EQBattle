@@ -21,9 +21,9 @@ namespace BizObjects
 
         private readonly YouResolver YouAre;
 
-        private Fight _currentFight;
+        private IFight _currentFight;
 
-        public IList<Fight> Fights { get; } = new List<Fight>();
+        public IList<IFight> Fights { get; } = new List<IFight>();
         public IEnumerable<Character> Fighters { get => Fights.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
         public Battle(YouResolver youAre)
@@ -43,14 +43,17 @@ namespace BizObjects
 
         private void SetupNewFight()
         {
-            _currentFight = new Fight(YouAre);
+            _currentFight = new Skirmish(YouAre);
             Fights.Add(_currentFight);
         }
 
         private bool IsNewFightNeeded(ILine line)
         {
-            if (_currentFight.IsFightOver(line))
+            // We want to allow loot lines on a fight even when teh fight is over (the mob is dead)
+            if (_currentFight.IsFightOver)
                 return true;
+
+            // If this is a new mob, but the old mob isn't dead yet, then the fight turns in to a skirmish
 
             return false;
         }

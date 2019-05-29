@@ -56,7 +56,7 @@ namespace BizObjectsTests
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
             fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!")));
 
-            Assert.AreEqual(5, fight.Fighters.Count);
+            Assert.AreEqual(5, fight.Fighters.Count());
             Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Khadaji"));
             Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Movanna"));
             Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Khronick"));

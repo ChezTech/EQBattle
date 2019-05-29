@@ -7,6 +7,11 @@ namespace BizObjects
 {
     public interface IFight
     {
+        bool IsFightOver { get; }
+        IEnumerable<Fighter> Fighters { get; }
+        FightStatistics OffensiveStatistics { get; }
+        FightStatistics DefensiveStatistics { get; }
+
         void AddLine(ILine line);
         void AddLine(Attack line);
         void AddLine(Heal line);
@@ -16,7 +21,7 @@ namespace BizObjects
     {
         private readonly YouResolver YouAre;
 
-        public ICollection<Fighter> Fighters { get { return _fighters.Values; } }
+        public IEnumerable<Fighter> Fighters { get { return _fighters.Values; } }
         public Character PrimaryMob { get; private set; } = Character.Unknown;
         public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
         public string Zone { get; }
@@ -30,7 +35,7 @@ namespace BizObjects
         public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
         public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
-        public bool IsFightOver
+        public virtual bool IsFightOver
         {
             get
             {

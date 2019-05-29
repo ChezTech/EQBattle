@@ -5,7 +5,7 @@ namespace BizObjects
 {
     public class Fighter
     {
-        private readonly Fight _fight;
+        private readonly IFight _fight;
 
         public Character Character { get; }
         public FightStatistics OffensiveStatistics { get; }
@@ -14,7 +14,7 @@ namespace BizObjects
         // Is currently dead. In the case of a PC, if they get rez'd, this should change back to false. (rezone, is there a rezone if you die in zone you're bound to?, or subsequent attacks, what if there's still your DoT on a mob?)
         public bool IsDead { get => DefensiveStatistics.Kill.Count > 0; }
 
-        public Fighter(Character character, Fight fight = null)
+        public Fighter(Character character, IFight fight = null)
         {
             Character = character;
             _fight = fight;
