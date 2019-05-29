@@ -82,6 +82,8 @@ namespace BizObjectsTests
 
             // Skirmish Fights
             Assert.AreEqual(2, skirmish.Fights.Count);
+            VerifyFightStatistics("Gomphus", skirmish);
+            VerifyFightStatistics("Harvester Collyx", skirmish);
 
 
 
@@ -89,12 +91,12 @@ namespace BizObjectsTests
 
         }
 
-        private static void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
+        private void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
         {
-            Fighter fighter = skirmish.Fighters.FirstOrDefault(x => x.Character.Name == name);
-            Assert.IsNotNull(fighter, $"Fighter exists - {fighter.Character.Name}");
+            var fighter = skirmish.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
 
-            FightStatistics stats = fighter.OffensiveStatistics;
+            var stats = fighter.OffensiveStatistics;
             Assert.AreEqual(offHit, stats.Hit.Total, $"Offensive hit - {fighter.Character.Name}");
             Assert.AreEqual(offHeal, stats.Heal.Total, $"Offensive heal - {fighter.Character.Name}");
             Assert.AreEqual(offMisses, stats.Miss.Count, $"Offensive misses - {fighter.Character.Name}");
@@ -105,6 +107,13 @@ namespace BizObjectsTests
             Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
             Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
             Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
+        }
+
+        private void VerifyFightStatistics(string fightMob, Skirmish skirmish)
+        {
+            var fight = skirmish.Fights.FirstOrDefault(x => x.PrimaryMob.Name == fightMob);
+            Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
+
         }
     }
 }
