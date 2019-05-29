@@ -57,6 +57,9 @@ namespace BizObjects
             // GetAppropriateFight(line).AddLine(line);
         }
 
+        // This is the function we'll use to see if a fight is a valid match (mob match and fight not over)
+        private readonly Func<IFight, Character, bool> IsValidFight = (f, c) => f.PrimaryMob == c && !f.IsFightOver;
+
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
             if (!Fights.Any())
@@ -64,7 +67,7 @@ namespace BizObjects
 
             // If the primary mob isn't established yet, use the first fight
             var fight = Fights.First();
-            if (fight.PrimaryMob == Character.Unknown)
+            if (IsValidFight(fight, Character.Unknown))
                 return fight;
 
             // If the char is a MOB, find the matching fight or create a new one
@@ -74,7 +77,7 @@ namespace BizObjects
                 return GetOrAddFight(char2);
 
             // See if either character is already the primary mob (we can't tell if a named mob w/ a single name is a mob, so this may catch that)
-            var primaryMobMatch = Fights.Where(x => x.PrimaryMob == char1 || x.PrimaryMob == char2);
+            var primaryMobMatch = Fights.Where(x => IsValidFight(x, char1) || IsValidFight(x, char2));
             if (primaryMobMatch.Any())
                 return primaryMobMatch.First();
 
@@ -85,7 +88,7 @@ namespace BizObjects
         private IFight GetOrAddFight(Character mob)
         {
             return Fights
-                .Where(x => x.PrimaryMob == mob)
+                .Where(x => IsValidFight(x, mob))
                 .FirstOrDefault()
                 ?? CreateNewFight();
         }
