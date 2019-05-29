@@ -11,6 +11,7 @@ namespace BizObjects
         IEnumerable<Fighter> Fighters { get; }
         FightStatistics OffensiveStatistics { get; }
         FightStatistics DefensiveStatistics { get; }
+        Character PrimaryMob { get; }
 
         void AddLine(ILine line);
         void AddLine(Attack line);
