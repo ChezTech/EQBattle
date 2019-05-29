@@ -82,13 +82,8 @@ namespace BizObjectsTests
 
             // Skirmish Fights
             Assert.AreEqual(2, skirmish.Fights.Count);
-            VerifyFightStatistics("Gomphus", skirmish);
-            VerifyFightStatistics("Harvester Collyx", skirmish);
-
-
-
-
-
+            VerifyFightStatistics("Gomphus", skirmish, 18602, 56200, 1, 2);
+            VerifyFightStatistics("Harvester Collyx", skirmish, 24105, 0, 1, 1);
         }
 
         private void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
@@ -109,11 +104,22 @@ namespace BizObjectsTests
             Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
         }
 
-        private void VerifyFightStatistics(string fightMob, Skirmish skirmish)
+        private void VerifyFightStatistics(string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var fight = skirmish.Fights.FirstOrDefault(x => x.PrimaryMob.Name == fightMob);
             Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
 
+            var stats = fight.OffensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills - {fight.PrimaryMob.Name}");
+
+            stats = fight.DefensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Defensive hit - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Defensive heal - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Defensive misses - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Defensive kills - {fight.PrimaryMob.Name}");
         }
     }
 }
