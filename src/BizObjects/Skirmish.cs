@@ -27,22 +27,22 @@ namespace BizObjects
 
 
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
-            // attackChar.AddOffense(line);
+            attackChar.AddOffense(line);
             OffensiveStatistics.AddLine(line);
 
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
-            // defendChar.AddDefense(line);
+            defendChar.AddDefense(line);
             DefensiveStatistics.AddLine(line);
         }
 
         public void AddLine(Heal line)
         {
             var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
-            // healerChar.AddOffense(line);
+            healerChar.AddOffense(line);
             OffensiveStatistics.AddLine(line);
 
             var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
-            // patientChar.AddDefense(line);
+            patientChar.AddDefense(line);
             DefensiveStatistics.AddLine(line);
         }
 

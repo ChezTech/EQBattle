@@ -63,14 +63,6 @@ namespace BizObjectsTests
             skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:04:36 2019] Gomphus hits Khronick for 6177 points of damage.")));
             skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:04:36 2019] Khronick has been slain by Gomphus!")));
 
-            Assert.AreEqual(6, skirmish.Fighters.Count());
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Khadaji"));
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Movanna"));
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Khronick"));
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Gomphus"));
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Harvester Collyx"));
-            Assert.IsTrue(skirmish.Fighters.Any(x => x.Character.Name == "Unknown"));
-
             // Skirmish stats
             Assert.AreEqual(42707, skirmish.OffensiveStatistics.Hit.Total);
             Assert.AreEqual(42707, skirmish.DefensiveStatistics.Hit.Total);
@@ -79,6 +71,26 @@ namespace BizObjectsTests
             Assert.AreEqual(3, skirmish.OffensiveStatistics.Kill.Count);
             Assert.AreEqual(3, skirmish.OffensiveStatistics.Kill.Count);
 
+            // Skirmish Fighters
+            Assert.AreEqual(6, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 14540, 0, 0, 1, 0, 21571, 1, 0);
+            VerifyFighterStatistics("Movanna", skirmish, 322, 54682, 0, 0, 11512, 23605, 1, 1);
+            VerifyFighterStatistics("Khronick", skirmish, 8206, 1518, 0, 0, 8127, 11024, 0, 1);
+            VerifyFighterStatistics("Gomphus", skirmish, 14073, 0, 1, 2, 1529, 0, 0, 0);
+            VerifyFighterStatistics("Harvester Collyx", skirmish, 2566, 0, 1, 0, 21539, 0, 0, 1);
+            VerifyFighterStatistics("Unknown", skirmish, 3000, 0, 0, 0, 0, 0, 0, 0);
+
+
+
+
+
+
+
+
+
+
+
+            // Assert.AreEqual(2, skirmish.Fights.Count);
 
 
 
@@ -121,6 +133,24 @@ namespace BizObjectsTests
 
             // Assert.AreEqual(60.09, skirmish.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FightDPS, 0.01);
             // Assert.AreEqual(153.08, skirmish.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FightDPS, 0.01);
+        }
+
+        private static void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
+        {
+            Fighter fighter = skirmish.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            Assert.IsNotNull(fighter, $"Fighter exists - {fighter.Character.Name}");
+
+            FightStatistics stats = fighter.OffensiveStatistics;
+            Assert.AreEqual(offHit, stats.Hit.Total, $"Offensive hit - {fighter.Character.Name}");
+            Assert.AreEqual(offHeal, stats.Heal.Total, $"Offensive heal - {fighter.Character.Name}");
+            Assert.AreEqual(offMisses, stats.Miss.Count, $"Offensive misses - {fighter.Character.Name}");
+            Assert.AreEqual(offKills, stats.Kill.Count, $"Offensive kills - {fighter.Character.Name}");
+
+            stats = fighter.DefensiveStatistics;
+            Assert.AreEqual(defHit, stats.Hit.Total, $"Defensive hit - {fighter.Character.Name}");
+            Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
+            Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
+            Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
         }
     }
 }
