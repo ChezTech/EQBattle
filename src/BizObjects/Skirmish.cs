@@ -8,10 +8,12 @@ namespace BizObjects
     public class Skirmish : IFight
     {
         private readonly YouResolver YouAre;
+        private readonly CharacterResolver CharResolver;
 
-        public Skirmish(YouResolver youAre)
+        public Skirmish(YouResolver youAre, CharacterResolver charResolver)
         {
             YouAre = youAre;
+            CharResolver = charResolver;
         }
 
         public IList<IFight> Fights { get; } = new List<IFight>();
@@ -71,9 +73,9 @@ namespace BizObjects
                 return fight;
 
             // If the char is a MOB, find the matching fight or create a new one
-            if (char1.IsMob)
+            if (CharResolver.WhichType(char1) == CharacterResolver.Type.NonPlayerCharacter)
                 return GetOrAddFight(char1);
-            if (char2.IsMob)
+            if (CharResolver.WhichType(char2) == CharacterResolver.Type.NonPlayerCharacter)
                 return GetOrAddFight(char2);
 
             // See if either character is already the primary mob (we can't tell if a named mob w/ a single name is a mob, so this may catch that)

@@ -22,6 +22,22 @@ namespace BizObjects
             // Do nothing in this general one
         }
 
+        public void TrackLine(Attack line)
+        {
+            TrackCharacter(line.Attacker);
+            TrackCharacter(line.Defender);
+        }
+
+        public void TrackLine(Song line)
+        {
+            TrackCharacter(line.Character);
+        }
+
+        public void TrackLine(Spell line)
+        {
+            TrackCharacter(line.Character);
+        }
+
         public void TrackLine(Chat chatLine)
         {
             switch (chatLine.Channel)
@@ -53,6 +69,14 @@ namespace BizObjects
         public void TrackLine(Who whoLine)
         {
             _charResolver.AddPlayer(whoLine.Character);
+        }
+
+        private void TrackCharacter(Character c)
+        {
+            if (c.IsPet)
+                _charResolver.AddPet(c);
+            if (c.IsMob)
+                _charResolver.AddNonPlayer(c);
         }
     }
 }

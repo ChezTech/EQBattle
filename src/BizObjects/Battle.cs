@@ -49,7 +49,7 @@ namespace BizObjects
 
         private void SetupNewFight()
         {
-            _currentFight = new Skirmish(YouAre);
+            _currentFight = new Skirmish(YouAre, CharResolver);
             Fights.Add(_currentFight);
         }
 

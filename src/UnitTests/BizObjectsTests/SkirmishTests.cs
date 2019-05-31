@@ -21,6 +21,7 @@ namespace BizObjectsTests
     public class SkirmishTests
     {
         private static readonly YouResolver YouAre = new YouResolver("Khadaji");
+        private static readonly CharacterResolver CharResolver = new CharacterResolver();
         private LineParserFactory _parser = new LineParserFactory();
         private readonly IParser _hitParser = new HitParser(YouAre);
         private readonly IParser _missParser = new MissParser(YouAre);
@@ -34,13 +35,15 @@ namespace BizObjectsTests
             _parser.AddParser(_missParser, null);
             _parser.AddParser(_healParser, null);
             _parser.AddParser(_killParser, null);
+
+            CharResolver.AddNonPlayer("Harvester Collyx");
         }
 
         [TestMethod]
         public void SmallFight()
         {
             var pc = new Character(YouAre.Name);
-            var skirmish = new Skirmish(YouAre);
+            var skirmish = new Skirmish(YouAre, CharResolver);
 
             skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:03 2019] Gomphus tries to hit YOU, but YOU block!")));
             skirmish.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:17 2019] Khronick is bathed in a zealous light. Movanna healed Khronick for 9197 (23333) hit points by Zealous Light.")));
@@ -85,7 +88,7 @@ namespace BizObjectsTests
         public void FightWithAddOfSameTypeThenOneDies()
         {
             var pc = new Character(YouAre.Name);
-            var skirmish = new Skirmish(YouAre);
+            var skirmish = new Skirmish(YouAre, CharResolver);
 
             // Setup a fight and get an add (no way to tell it's an add)
             // Then have the first die and a new fight should be made
@@ -122,7 +125,7 @@ namespace BizObjectsTests
         public void FightWithAddSameSingleName()
         {
             var pc = new Character(YouAre.Name);
-            var skirmish = new Skirmish(YouAre);
+            var skirmish = new Skirmish(YouAre, CharResolver);
 
             // Setup a fight and get an add (no way to tell it's an add)
             // Then have the first die and a new fight should be made
