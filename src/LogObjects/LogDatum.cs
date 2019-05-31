@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace LogObjects
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class LogDatum
     {
         // This should be constant.
@@ -54,5 +56,8 @@ namespace LogObjects
 
             return RawLogLine.Substring(MessageStart);
         }
+
+
+        private string DebuggerDisplay => LogMessage;
     }
 }
