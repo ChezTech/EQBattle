@@ -10,11 +10,13 @@ namespace BizObjects
     public class CharacterTracker
     {
         private const string PetPhrase = "My leader is";
-        private readonly CharacterResolver _charResolver;
+        private readonly YouResolver YouAre;
+        private readonly CharacterResolver CharResolver;
 
-        public CharacterTracker(CharacterResolver cr)
+        public CharacterTracker(YouResolver youAre, CharacterResolver charResolver)
         {
-            _charResolver = cr;
+            YouAre = youAre;
+            CharResolver = charResolver;
         }
 
         public void TrackLine(ILine line)
@@ -26,6 +28,12 @@ namespace BizObjects
         {
             TrackCharacter(line.Attacker);
             TrackCharacter(line.Defender);
+
+            // If "You" are attacking/defending then the other character is a mob (as long as it's also not yourself, which can happen witha Cannibalize spell)!
+            if (YouAre.IsThisYou(line.Attacker) && !YouAre.IsThisYou(line.Defender))
+                CharResolver.AddNonPlayer(line.Defender);
+            if (YouAre.IsThisYou(line.Defender) && !YouAre.IsThisYou(line.Attacker))
+                CharResolver.AddNonPlayer(line.Attacker);
         }
 
         public void TrackLine(Song line)
@@ -48,19 +56,19 @@ namespace BizObjects
                 case "guild":
                 case "raid": // Do merc's chat on raid channel?
                 case "General":
-                    _charResolver.AddPlayer(chatLine.Who);
+                    CharResolver.AddPlayer(chatLine.Who);
                     break;
 
                 case "group": // could be a mercenary, maybe even a pet?
-                    _charResolver.AddPlayer(chatLine.Who);
+                    CharResolver.AddPlayer(chatLine.Who);
                     break;
 
                 case "say":
                     if (chatLine.Text.StartsWith(PetPhrase))
                     {
-                        _charResolver.AddPet(chatLine.Who);
+                        CharResolver.AddPet(chatLine.Who);
                         var master = chatLine.Text.Substring(PetPhrase.Length + 1, chatLine.Text.Length - PetPhrase.Length - 2);
-                        _charResolver.AddPlayer(master);
+                        CharResolver.AddPlayer(master);
                     }
                     break;
             }
@@ -68,15 +76,15 @@ namespace BizObjects
 
         public void TrackLine(Who whoLine)
         {
-            _charResolver.AddPlayer(whoLine.Character);
+            CharResolver.AddPlayer(whoLine.Character);
         }
 
         private void TrackCharacter(Character c)
         {
             if (c.IsPet)
-                _charResolver.AddPet(c);
+                CharResolver.AddPet(c);
             if (c.IsMob)
-                _charResolver.AddNonPlayer(c);
+                CharResolver.AddNonPlayer(c);
         }
     }
 }
