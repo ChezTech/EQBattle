@@ -6,18 +6,6 @@ using System.Linq;
 
 namespace BizObjects
 {
-    public interface IFight
-    {
-        bool IsFightOver { get; }
-        IEnumerable<Fighter> Fighters { get; }
-        FightStatistics OffensiveStatistics { get; }
-        FightStatistics DefensiveStatistics { get; }
-        Character PrimaryMob { get; }
-
-        void AddLine(ILine line);
-        void AddLine(Attack line);
-        void AddLine(Heal line);
-    }
 
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Fight : IFight
