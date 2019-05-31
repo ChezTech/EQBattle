@@ -29,6 +29,7 @@ namespace BizObjects
             return argName;
         }
 
+        public bool IsThisYou(Character c) => IsThisYou(c.Name);
         public bool IsThisYou(string name)
         {
             return Name == name;
