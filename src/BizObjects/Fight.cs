@@ -23,6 +23,7 @@ namespace BizObjects
     public class Fight : IFight
     {
         private readonly YouResolver YouAre;
+        private readonly CharacterResolver CharResolver;
 
         public IEnumerable<Fighter> Fighters { get { return _fighters.Values; } }
         public Character PrimaryMob { get; private set; } = Character.Unknown;
@@ -30,9 +31,10 @@ namespace BizObjects
         public string Zone { get; }
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
 
-        public Fight(YouResolver youAre)
+        public Fight(YouResolver youAre, CharacterResolver charResolver)
         {
             YouAre = youAre;
+            CharResolver = charResolver;
         }
 
         public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
@@ -92,27 +94,14 @@ namespace BizObjects
             if (PrimaryMob != Character.Unknown)
                 return;
 
-            // If it's You that is attacking of defending, then the other is the mob
-            if (YouAre.IsThisYou(line.Attacker.Name))
-            {
-                PrimaryMob = line.Defender;
-                return;
-            }
-
-            if (YouAre.IsThisYou(line.Defender.Name))
+            // If it's a mob, set it
+            if (CharResolver.WhichType(line.Attacker) == CharacterResolver.Type.NonPlayerCharacter)
             {
                 PrimaryMob = line.Attacker;
                 return;
             }
 
-            // If it's a generic mob, set it
-            if (line.Attacker.IsMob)
-            {
-                PrimaryMob = line.Attacker;
-                return;
-            }
-
-            if (line.Defender.IsMob)
+            if (CharResolver.WhichType(line.Defender) == CharacterResolver.Type.NonPlayerCharacter)
             {
                 PrimaryMob = line.Defender;
                 return;

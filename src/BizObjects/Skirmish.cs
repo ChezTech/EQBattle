@@ -101,7 +101,7 @@ namespace BizObjects
 
         private IFight CreateNewFight()
         {
-            var fight = new Fight(YouAre);
+            var fight = new Fight(YouAre, CharResolver);
             Fights.Add(fight);
             return fight;
         }

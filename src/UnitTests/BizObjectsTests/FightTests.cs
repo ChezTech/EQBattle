@@ -21,12 +21,19 @@ namespace BizObjectsTests
     public class FightTests
     {
         private static readonly YouResolver YouAre = new YouResolver("Khadaji");
-        private LineParserFactory _parser = new LineParserFactory();
+        private static readonly CharacterResolver CharResolver = new CharacterResolver();
+        private static LineParserFactory _parser = new LineParserFactory();
         private readonly IParser _hitParser = new HitParser(YouAre);
         private readonly IParser _missParser = new MissParser(YouAre);
         private readonly IParser _healParser = new HealParser(YouAre);
         private readonly IParser _killParser = new KillParser(YouAre);
 
+        private readonly Action<Fight, CharacterTracker, string> AddFightTrackLine = (fight, tracker, logLine) =>
+        {
+            ILine line = _parser.ParseLine(new LogDatum(logLine));
+            tracker.TrackLine((dynamic)line);
+            fight.AddLine((dynamic)line);
+        };
 
         public FightTests()
         {
@@ -39,22 +46,21 @@ namespace BizObjectsTests
         [TestMethod]
         public void SmallFight()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:45 2019] A dwarf disciple punches YOU for 3241 points of damage.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:50 2019] You try to crush a dwarf disciple, but miss!")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:50 2019] Movanna healed you over time for 2335 hit points by Elixir of the Ardent.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:52 2019] A dwarf disciple punches YOU for 865 points of damage.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:21 2019] Khronick healed you over time for 3036 hit points by Healing Counterbias Effect. (Critical)")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:45 2019] A dwarf disciple punches YOU for 3241 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:50 2019] You try to crush a dwarf disciple, but miss!");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:50 2019] Movanna healed you over time for 2335 hit points by Elixir of the Ardent.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:51 2019] Khadaji hit a dwarf disciple for 892 points of poison damage by Strike of Venom IV. (Critical)");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:52 2019] A dwarf disciple punches YOU for 865 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:20 2019] Khadaji hit a dwarf disciple for 512 points of chromatic damage by Lynx Maw.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:21 2019] Khronick healed you over time for 3036 hit points by Healing Counterbias Effect. (Critical)");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.");
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!");
 
             Assert.AreEqual(5, fight.Fighters.Count());
             Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Khadaji"));
@@ -105,10 +111,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyMobFromYourAttack()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage.");
 
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
         }
@@ -116,10 +121,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyMobAttackingYouButMisses()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:16:47 2019] A dwarf disciple tries to punch YOU, but YOU riposte!");
 
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
         }
@@ -127,10 +131,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyGenericMob()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.");
 
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
         }
@@ -138,10 +141,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyGenericMobHittingOther()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.");
 
             Assert.AreEqual("a telmira servant", fight.PrimaryMob.Name);
         }
@@ -149,10 +151,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyNamedMobUsingSpaces()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Ragbeard the Morose crushes Khronick for 1319 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 10:19:36 2019] Ragbeard the Morose crushes Khronick for 1319 points of damage.");
 
             Assert.AreEqual("Ragbeard the Morose", fight.PrimaryMob.Name);
         }
@@ -160,14 +161,13 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyNamedMobFromMultipleHits()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
             // We should be able to identify a mob within 2 attacks involving 3 different characters
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.");
             Assert.AreEqual("Unknown", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:13 2003] Sontalak claws Nair for 290 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Fri May 16 20:21:13 2003] Sontalak claws Nair for 290 points of damage.");
             Assert.AreEqual("Sontalak", fight.PrimaryMob.Name);
         }
 
@@ -175,23 +175,21 @@ namespace BizObjectsTests
         [Ignore]
         public void LeadingHealConfusesPrimaryMob()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:17 2019] Khronick is bathed in a zealous light. Movanna healed Khronick for 9197 (23333) hit points by Zealous Light.")));
+            AddFightTrackLine(fight, charTracker, "[Tue May 28 06:01:17 2019] Khronick is bathed in a zealous light. Movanna healed Khronick for 9197 (23333) hit points by Zealous Light.");
             Assert.AreEqual("Unknown", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:01:20 2019] Gomphus tries to hit Movanna, but Movanna blocks!")));
+            AddFightTrackLine(fight, charTracker, "[Tue May 28 06:01:20 2019] Gomphus tries to hit Movanna, but Movanna blocks!");
             Assert.AreEqual("Gomphus", fight.PrimaryMob.Name);
         }
 
         [TestMethod]
         public void DontConfusePetsWithGenericMobs()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:08 2019] Khadaji`s pet tries to hit a lavakin, but a lavakin dodges!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 12 18:23:08 2019] Khadaji`s pet tries to hit a lavakin, but a lavakin dodges!");
 
             Assert.AreEqual("a lavakin", fight.PrimaryMob.Name);
         }
@@ -199,10 +197,9 @@ namespace BizObjectsTests
         [TestMethod]
         public void DontConfuseWarderPetsWithGenericMobs()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Girnon`s warder bites a telmira servant for 17 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 10:19:36 2019] Girnon`s warder bites a telmira servant for 17 points of damage.");
 
             Assert.AreEqual("a telmira servant", fight.PrimaryMob.Name);
         }
@@ -210,66 +207,68 @@ namespace BizObjectsTests
         [TestMethod]
         public void DontConfuseWarderPetsWithNamedMobsWithASpace()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Sat Mar 30 10:19:36 2019] Girnon`s warder bites Sontalak for 17 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 10:19:36 2019] Girnon`s warder bites Sontalak for 17 points of damage.");
             Assert.AreEqual("Unknown", fight.PrimaryMob.Name); // We can't tell yet...
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Fri May 16 20:21:00 2003] Sazzie punches Sontalak for 14 points of damage.");
             Assert.AreEqual("Sontalak", fight.PrimaryMob.Name); // Now, we should be able to tell
         }
 
         [TestMethod]
         public void DontSwitchPrimaryMobOnAdd()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.");
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Thu Apr 04 22:29:09 2019] A telmira servant hits Bealica for 2331 points of damage.");
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
         }
 
         [TestMethod]
         public void IsThisFightOverEasy()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:38 2019] Bealica hit a dwarf disciple for 11481 points of cold damage by Glacial Cascade.");
             Assert.AreEqual("a dwarf disciple", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 16:17:57 2019] A dwarf disciple has been slain by Bealica!");
             Assert.IsTrue(fight.IsFightOver);
         }
 
         [TestMethod]
         public void IsThisFightOverPetDied()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:11 2019] A lavakin hits Khadaji`s pet for 824 points of damage. (Riposte)")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 12 18:23:11 2019] A lavakin hits Khadaji`s pet for 824 points of damage. (Riposte)");
             Assert.AreEqual("a lavakin", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 12 18:23:11 2019] Khadaji`s pet has been slain by a lavakin!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 12 18:23:11 2019] Khadaji`s pet has been slain by a lavakin!");
             Assert.IsFalse(fight.IsFightOver);
         }
 
         [TestMethod]
         public void IsThisFightOverYouDied()
         {
-            var pc = new Character(YouAre.Name);
-            var fight = new Fight(YouAre);
+            var fight = SetupNewFight(out CharacterTracker charTracker);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 17:13:24 2019] An enraged disciple smashes YOU for 5206 points of damage.")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 17:13:24 2019] An enraged disciple smashes YOU for 5206 points of damage.");
             Assert.AreEqual("an enraged disciple", fight.PrimaryMob.Name);
 
-            fight.AddLine((dynamic)_parser.ParseLine(new LogDatum("[Fri Apr 05 17:13:24 2019] You have been slain by an enraged disciple!")));
+            AddFightTrackLine(fight, charTracker, "[Fri Apr 05 17:13:24 2019] You have been slain by an enraged disciple!");
             Assert.IsFalse(fight.IsFightOver);
+        }
+
+        private Fight SetupNewFight(out CharacterTracker charTracker)
+        {
+            var charResolver = new CharacterResolver();
+            charTracker = new CharacterTracker(YouAre, charResolver);
+            return new Fight(YouAre, charResolver);
         }
     }
 }
