@@ -26,7 +26,8 @@ namespace BizObjects
         public FightStatistics OffensiveStatistics { get; } = new FightStatistics();
         public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
-        public Character PrimaryMob => throw new NotImplementedException();
+        public Character PrimaryMob => Character.Unknown;
+        public string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
 
         public void AddLine(Attack line)
         {

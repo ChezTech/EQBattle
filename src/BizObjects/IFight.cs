@@ -9,6 +9,7 @@ namespace BizObjects
         FightStatistics OffensiveStatistics { get; }
         FightStatistics DefensiveStatistics { get; }
         Character PrimaryMob { get; }
+        string Title {get;}
 
         void AddLine(ILine line);
         void AddLine(Attack line);

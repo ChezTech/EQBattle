@@ -15,6 +15,9 @@ namespace BizObjects
 
         public IEnumerable<Fighter> Fighters { get { return _fighters.Values; } }
         public Character PrimaryMob { get; private set; } = Character.Unknown;
+
+        public string Title => PrimaryMob.Name;
+
         public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
         public string Zone { get; }
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
