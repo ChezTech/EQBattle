@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +21,8 @@ namespace BizObjects
         // Can I make the Skirmish object, inherit from a fight, then replace the Fight object with a Skirmish one in the fight list?
 
         private readonly YouResolver YouAre;
+        public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
+        private readonly CharacterTracker _charTracker = new CharacterTracker(CharResolver);
 
         private IFight _currentFight;
 
@@ -29,12 +32,15 @@ namespace BizObjects
         public Battle(YouResolver youAre)
         {
             YouAre = youAre;
+            CharResolver.AddPlayer(YouAre.Name);
 
             SetupNewFight();
         }
 
         public void AddLine(ILine line)
         {
+            _charTracker.TrackLine((dynamic)line);
+
             if (IsNewFightNeeded(line))
                 SetupNewFight();
 
