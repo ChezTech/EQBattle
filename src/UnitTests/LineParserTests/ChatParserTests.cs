@@ -32,6 +32,7 @@ namespace LineParserTests
         [DataRow("[Fri May 16 19:39:52 2003] Ganzo says, 'look under your feet :P'", "Ganzo", "Say", "look under your feet :P")]
         [DataRow("[Fri May 16 20:26:41 2003] Layend says out of character, '56 druid and 57 monk looking for more or a group to join'", "Layend", "OOC", "56 druid and 57 monk looking for more or a group to join")]
         [DataRow("[Fri Apr 26 09:25:50 2019] A cliknar adept says, 'Such is the fate of all who stand in our path!'", "a cliknar adept", "Say", "Such is the fate of all who stand in our path!")]
+        [DataRow("[Mon Mar 25 19:18:43 2019] Povar.Tvarran tells General:1, 'or is this raid better punting stuff, or just burning the crap outta the dragon? heh'", "Tvarran", "General", "or is this raid better punting stuff, or just burning the crap outta the dragon? heh")]
         // [DataRow("something with an apostrophe in it", "wwwww", "ccccc", "zzzzz")]
         // [DataRow("somethign with a backtick", "wwwww", "ccccc", "zzzzz")]
         // [DataRow("xxxxxx", "wwwww", "ccccc", "zzzzz")]

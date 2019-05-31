@@ -44,10 +44,24 @@ namespace LineParser.Parsers
 
             who = YouAre.WhoAreYou(who);
             channel = ModifyChannel(string.IsNullOrEmpty(channel) ? verb : channel);
+            var server = CheckNameForServer(ref who);
 
-            lineEntry = new Chat(logDatum, who, channel, text);
+            lineEntry = new Chat(logDatum, who, channel, text, server);
 
             return true;
+        }
+
+        private string CheckNameForServer(ref string who)
+        {
+            // User channels can be used cross server: "<serverName>.<charName> tells Channel:#, 'blah blah'."
+            var split = who.Split('.');
+
+            if (split.Length == 2)
+            {
+                who = split[1];
+                return split[0];
+            }
+            return null;
         }
 
         private string ModifyChannel(string channel)
