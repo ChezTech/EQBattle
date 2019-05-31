@@ -185,6 +185,12 @@ namespace BizObjectsTests
             VerifyFightStatistics("Mob2", skirmish, 10, 0, 0, 0);
         }
 
+        [TestMethod]
+        public void IsSkirmishOverJustWhenItsGettingStarted()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+            Assert.IsFalse(skirmish.IsFightOver);
+        }
 
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {

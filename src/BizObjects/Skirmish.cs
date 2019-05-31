@@ -18,7 +18,7 @@ namespace BizObjects
 
         public IList<IFight> Fights { get; } = new List<IFight>();
 
-        public bool IsFightOver => Fights.All(x => x.IsFightOver);
+        public bool IsFightOver => Fights.Any() && Fights.All(x => x.IsFightOver);
 
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         public IEnumerable<Fighter> Fighters => _fighters.Values;
