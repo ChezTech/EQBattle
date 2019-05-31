@@ -22,7 +22,7 @@ namespace BizObjects
 
         private readonly YouResolver YouAre;
         public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
-        private readonly CharacterTracker _charTracker = new CharacterTracker(CharResolver);
+        private readonly CharacterTracker _charTracker;
 
         private IFight _currentFight;
 
@@ -33,6 +33,7 @@ namespace BizObjects
         {
             YouAre = youAre;
             CharResolver.AddPlayer(YouAre.Name);
+            _charTracker = new CharacterTracker(YouAre, CharResolver);
 
             SetupNewFight();
         }
