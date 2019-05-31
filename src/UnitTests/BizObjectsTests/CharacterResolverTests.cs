@@ -58,5 +58,25 @@ namespace BizObjectsTests
 
             Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Bob"));
         }
+
+        [TestMethod]
+        public void PetOverridesPlayer()
+        {
+            var cr = new CharacterResolver();
+            cr.AddPlayer("Bob");
+            cr.AddPet("Bob");
+
+            Assert.AreEqual(CharacterResolver.Type.Pet, cr.WhichType("Bob"));
+        }
+
+        [TestMethod]
+        public void MercenaryOverridesPlayer()
+        {
+            var cr = new CharacterResolver();
+            cr.AddPlayer("Bob");
+            cr.AddMercenary("Bob");
+
+            Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Bob"));
+        }
     }
 }
