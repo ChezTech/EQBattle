@@ -33,6 +33,7 @@ namespace BizObjects
         {
             // TODO: Listen for `/pet who leader` log message
             // https://www.reddit.com/r/everquest/comments/6rkmyd/reliable_parser/
+            // This will also get confusing when an Enc charms a mob to make it their pet
             if (name.Contains("`s pet"))
                 return true;
             if (name.Contains("`s warder"))
