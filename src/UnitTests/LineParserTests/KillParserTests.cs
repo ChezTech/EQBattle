@@ -10,85 +10,27 @@ namespace LineParserTests
     {
         private KillParser _parser = new KillParser(new YouResolver("Khadaji"));
 
-        [TestMethod]
-        public void YouKilledSomething()
+        [DataTestMethod]
+        [DataRow("[Fri Apr 26 09:26:41 2019] You have slain a cliknar adept!", "Khadaji", "a cliknar adept", "slain", AttackType.Kill, false)]
+        [DataRow("[Fri May 16 20:23:52 2003] You have been slain by Sontalak!", "Sontalak", "Khadaji", "slain", AttackType.Kill, false)]
+        [DataRow("[Fri Apr 26 09:25:56 2019] Khadaji`s pet has been slain by a cliknar adept!", "a cliknar adept", "Khadaji", "slain", AttackType.Kill, true)]
+        [DataRow("[Fri Apr 26 09:25:56 2019] Movanna has been slain by a cliknar adept!", "a cliknar adept", "Movanna", "slain", AttackType.Kill, false)]
+        [DataRow("[Sat May 17 17:46:01 2003] A Razorfiend Subduer died.", "Unknown", "a Razorfiend Subduer", "died", AttackType.Kill, false)]
+        [DataRow("[Fri May 24 18:25:03 2019] A cliknar centurion has been slain by Vatalae!", "Vatalae", "a cliknar centurion", "slain", AttackType.Kill, false)]
+        public void Tests(string logLine, string attacker, string defender, string verb, AttackType attackType, bool isDefenderPet = false)
         {
-            var logDatum = new LogDatum("[Fri Apr 26 09:26:41 2019] You have slain a cliknar adept!");
+            var logDatum = new LogDatum(logLine);
 
             var result = _parser.TryParse(logDatum, out ILine lineEntry);
 
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Kill);
-            var killEntry = lineEntry as Kill;
-            Assert.AreEqual("Khadaji", killEntry.Attacker.Name);
-            Assert.AreEqual("a cliknar adept", killEntry.Defender.Name);
-            Assert.AreEqual("slain", killEntry.Verb);
-            Assert.AreEqual(AttackType.Kill, killEntry.Type);
-        }
-
-        [TestMethod]
-        public void YouGotKilled()
-        {
-            var logDatum = new LogDatum("[Fri May 16 20:23:52 2003] You have been slain by Sontalak!");
-
-            var result = _parser.TryParse(logDatum, out ILine lineEntry);
-
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Kill);
-            var killEntry = lineEntry as Kill;
-            Assert.AreEqual("Khadaji", killEntry.Defender.Name);
-            Assert.AreEqual("Sontalak", killEntry.Attacker.Name);
-            Assert.AreEqual("slain", killEntry.Verb);
-            Assert.AreEqual(AttackType.Kill, killEntry.Type);
-        }
-
-        [TestMethod]
-        public void SomeoneKilledAPet()
-        {
-            var logDatum = new LogDatum("[Fri Apr 26 09:25:56 2019] Khadaji`s pet has been slain by a cliknar adept!");
-
-            var result = _parser.TryParse(logDatum, out ILine lineEntry);
-
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Kill);
-            var killEntry = lineEntry as Kill;
-            Assert.AreEqual("Khadaji", killEntry.Defender.Name);
-            Assert.IsTrue(killEntry.Defender.IsPet);
-            Assert.AreEqual("a cliknar adept", killEntry.Attacker.Name);
-            Assert.AreEqual("slain", killEntry.Verb);
-            Assert.AreEqual(AttackType.Kill, killEntry.Type);
-        }
-
-        [TestMethod]
-        public void SomeoneKilledSomething()
-        {
-            var logDatum = new LogDatum("[Fri Apr 26 09:25:56 2019] Movanna has been slain by a cliknar adept!");
-
-            var result = _parser.TryParse(logDatum, out ILine lineEntry);
-
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Kill);
-            var killEntry = lineEntry as Kill;
-            Assert.AreEqual("Movanna", killEntry.Defender.Name);
-            Assert.AreEqual("a cliknar adept", killEntry.Attacker.Name);
-            Assert.AreEqual("slain", killEntry.Verb);
-            Assert.AreEqual(AttackType.Kill, killEntry.Type);
-        }
-
-        [TestMethod]
-        public void SomethingDied()
-        {
-            var logDatum = new LogDatum("[Sat May 17 17:46:01 2003] A Razorfiend Subduer died.");
-
-            var result = _parser.TryParse(logDatum, out ILine lineEntry);
-
-            Assert.IsTrue(result);
-            Assert.IsTrue(lineEntry is Kill);
-            var killEntry = lineEntry as Kill;
-            Assert.AreEqual("Unknown", killEntry.Attacker.Name);
-            Assert.AreEqual("a Razorfiend Subduer", killEntry.Defender.Name);
-            Assert.AreEqual("died", killEntry.Verb);
-            Assert.AreEqual(AttackType.Kill, killEntry.Type);
+            Assert.IsTrue(result, logLine, string.Format("Failing line: {0}", logLine));
+            var entry = lineEntry as Kill;
+            Assert.IsNotNull(entry, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(attacker, entry.Attacker.Name, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(isDefenderPet, entry.Defender.IsPet, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(defender, entry.Defender.Name, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(verb, entry.Verb, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(attackType, entry.Type, string.Format("Failing line: {0}", logLine));
         }
     }
 }
