@@ -97,7 +97,22 @@ namespace EqbConsole
             WriteMessage("Fight offensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.OffensiveStatistics.Hit.Total));
             WriteMessage("Fight defensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.DefensiveStatistics.Hit.Total));
             WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Fights.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
+            WriteMessage("");
+            WriteMessage("===== Skirmishes ======");
+            WriteMessage("Skirmish count: {0}", _eqBattle.Fights.Count);
+            foreach (Skirmish skirmish in _eqBattle.Fights)
+                ShowSkirmishDetail(skirmish);
 
+            // ShowNamedFighters();
+        }
+
+        private void ShowSkirmishDetail(Skirmish skirmish)
+        {
+            WriteMessage($"Mob: {skirmish.Title,-30} Dmg: {skirmish.OffensiveStatistics.Hit.Total}");
+        }
+
+        private void ShowNamedFighters()
+        {
             WriteMessage("===== Named Fights ======");
             var namedFighters = _eqBattle.Fighters
                 .Where(x => !x.Name.StartsWith("a "))
