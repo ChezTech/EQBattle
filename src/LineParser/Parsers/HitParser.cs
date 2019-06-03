@@ -18,7 +18,9 @@ namespace LineParser.Parsers
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
         private readonly string regexDot = @"(.+) (?:has|have) taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/2
         private readonly string regexYourDot = @"(.+) has taken (\d+) damage from your (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/6f1Xfq/1
-        private readonly string regexAnonymousDot = @"(.+) has taken (\d+) damage by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/rqZ5qD/2
+
+        // This happen's when a mob dies and a DoT is still on a PC. No more damage from "a generic mob's corpse"
+        private readonly string regexAnonymousDot = @"(.+) (?:has|have) taken (\d+) damage (?:by|from) (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/rqZ5qD/4
 
         private readonly YouResolver YouAre;
 
