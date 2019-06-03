@@ -23,6 +23,7 @@ namespace BizObjects
         private readonly YouResolver YouAre;
         public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
         private readonly CharacterTracker _charTracker;
+        private readonly TimeSpan _skirmishGap = new TimeSpan(0, 0, 5); // Make this configurable
 
         private IFight _currentSkirmish;
 
@@ -56,9 +57,25 @@ namespace BizObjects
 
         private bool IsNewSkirmishNeeded(ILine line)
         {
-            // We want to allow loot lines on a fight even when the fight is over (the mob is dead)
-            if (_currentSkirmish.IsFightOver)
+            // A new Skirmish is needed if it's been too long since the last mob died
+            // If you're fighting mobs without a break, they all get grouped into one skirmish
+            // Loot lines, roll-offs, etc go with that last fight
+
+            // A new mob (after time period) is a new skirmish
+
+            // Just because you die doesn't mean the fight is over .... you can be rezzed back into fight
+            // Maybe this is a special case .. if you get rezzed and still fighting the same mob...
+
+            // If the main mob is dead, and it's been enough time since the last attack and this attack, then a new Skirmish is needed
+            if (line is Attack && _currentSkirmish.IsFightOver && line.Time - _currentSkirmish.LastAttackTime > _skirmishGap)
                 return true;
+
+
+
+
+            // We want to allow loot lines on a fight even when the fight is over (the mob is dead)
+            // if (_currentSkirmish.IsFightOver)
+            //     return true;
 
             // If this is a new mob, but the old mob isn't dead yet, then the fight turns in to a skirmish
 

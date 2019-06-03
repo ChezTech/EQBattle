@@ -21,6 +21,8 @@ namespace BizObjects
 
         public bool IsFightOver => Fights.All(x => x.IsFightOver);
 
+        public DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
+
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         public IEnumerable<Fighter> Fighters => _fighters.Values;
 

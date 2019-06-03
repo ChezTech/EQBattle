@@ -47,6 +47,8 @@ namespace BizObjects
             }
         }
 
+        public DateTime LastAttackTime => OffensiveStatistics.Lines.LastOrDefault()?.Time ?? new DateTime();
+
         public virtual void AddLine(Attack line)
         {
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
