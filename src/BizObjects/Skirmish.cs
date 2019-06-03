@@ -14,11 +14,12 @@ namespace BizObjects
         {
             YouAre = youAre;
             CharResolver = charResolver;
+            CreateNewFight();
         }
 
         public IList<IFight> Fights { get; } = new List<IFight>();
 
-        public bool IsFightOver => Fights.Any() && Fights.All(x => x.IsFightOver);
+        public bool IsFightOver => Fights.All(x => x.IsFightOver);
 
         private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         public IEnumerable<Fighter> Fighters => _fighters.Values;
@@ -65,9 +66,6 @@ namespace BizObjects
 
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
-            if (!Fights.Any())
-                return CreateNewFight();
-
             // If the primary mob isn't established yet, use the first fight
             var fight = Fights.First();
             if (IsValidFight(fight, Character.Unknown))
