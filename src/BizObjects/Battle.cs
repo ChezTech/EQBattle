@@ -24,10 +24,10 @@ namespace BizObjects
         public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
         private readonly CharacterTracker _charTracker;
 
-        private IFight _currentFight;
+        private IFight _currentSkirmish;
 
-        public IList<IFight> Fights { get; } = new List<IFight>();
-        public IEnumerable<Character> Fighters { get => Fights.SelectMany(x => x.Fighters).Select(x => x.Character); }
+        public IList<IFight> Skirmishes { get; } = new List<IFight>();
+        public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
         public Battle(YouResolver youAre)
         {
@@ -42,22 +42,22 @@ namespace BizObjects
         {
             _charTracker.TrackLine((dynamic)line);
 
-            if (IsNewFightNeeded(line))
+            if (IsNewSkirmishNeeded(line))
                 SetupNewFight();
 
-            _currentFight.AddLine((dynamic)line);
+            _currentSkirmish.AddLine((dynamic)line);
         }
 
         private void SetupNewFight()
         {
-            _currentFight = new Skirmish(YouAre, CharResolver);
-            Fights.Add(_currentFight);
+            _currentSkirmish = new Skirmish(YouAre, CharResolver);
+            Skirmishes.Add(_currentSkirmish);
         }
 
-        private bool IsNewFightNeeded(ILine line)
+        private bool IsNewSkirmishNeeded(ILine line)
         {
-            // We want to allow loot lines on a fight even when teh fight is over (the mob is dead)
-            if (_currentFight.IsFightOver)
+            // We want to allow loot lines on a fight even when the fight is over (the mob is dead)
+            if (_currentSkirmish.IsFightOver)
                 return true;
 
             // If this is a new mob, but the old mob isn't dead yet, then the fight turns in to a skirmish

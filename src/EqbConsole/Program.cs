@@ -93,14 +93,14 @@ namespace EqbConsole
             DumpStatsForCharacter("Khadaji", negative: true);
 
             WriteMessage("===== Battle ======");
-            WriteMessage("Fight count: {0}", _eqBattle.Fights.Count);
-            WriteMessage("Fight offensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.OffensiveStatistics.Hit.Total));
-            WriteMessage("Fight defensive damage total: {0:N0}", _eqBattle.Fights.Sum(x => x.DefensiveStatistics.Hit.Total));
-            WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Fights.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
+            WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
+            WriteMessage("Skirmish offensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.OffensiveStatistics.Hit.Total));
+            WriteMessage("Skirmish defensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.DefensiveStatistics.Hit.Total));
+            WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Skirmishes.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
             WriteMessage("");
             WriteMessage("===== Skirmishes ======");
-            WriteMessage("Skirmish count: {0}", _eqBattle.Fights.Count);
-            foreach (Skirmish skirmish in _eqBattle.Fights)
+            WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
+            foreach (Skirmish skirmish in _eqBattle.Skirmishes)
                 ShowSkirmishDetail(skirmish);
 
             // ShowNamedFighters();
