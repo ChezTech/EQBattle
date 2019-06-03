@@ -33,7 +33,9 @@ namespace LineParserTests
         [DataRow("[Mon May 27 07:25:58 2019] A cliknar skirmish drone has taken 2040 damage from your Breath of Queen Malarian. (Critical)", "Khadaji", false, "a cliknar skirmish drone", false, 2040, null, AttackType.Unknown, null, "Breath of Queen Malarian", "Critical")]
         [DataRow("[Tue May 28 06:01:47 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus.", "Gomphus", false, "Khronick", false, 1950, null, AttackType.Unknown, null, "Noxious Visions", null)]
         [DataRow("[Tue May 28 06:02:16 2019] Movanna has taken 3000 damage by Noxious Visions.", "Unknown", false, "Movanna", false, 3000, null, AttackType.Unknown, null, "Noxious Visions", null)]
+        [DataRow("[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.", "Gomphus", false, "Khadaji", false, 1950, null, AttackType.Unknown, null, "Noxious Visions", null)]
         [DataRow("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.", "Unknown", false, "Khadaji", false, 2080, null, AttackType.Unknown, null, "Paralyzing Bite", null)]
+        [DataRow("[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.", "a sandspinner stalker", false, "Khadaji", false, 2080, null, AttackType.Unknown, null, "Paralyzing Bite", null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
