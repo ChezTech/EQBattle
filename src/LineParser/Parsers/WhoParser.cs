@@ -9,7 +9,7 @@ namespace LineParser.Parsers
 {
     public class WhoParser : IParser
     {
-        private readonly Regex RxWho = new Regex(@"(?:\[(ANONYMOUS)\] (.+) <(.+)>|\[(\d+) (.+) \((.+)\)\] (.+) \((.+)\) <(.+)> ZONE: (.+))", RegexOptions.Compiled); // https://regex101.com/r/Cp71GF/4
+        private readonly Regex RxWho = new Regex(@"(?:^\[(ANONYMOUS)\] (.+)\b(?: <(.+)>)?$|^\[(\d+) (.+) \((.+)\)\] (.+) \((.+)\) <(.+)> ZONE: (.+))$", RegexOptions.Compiled); // https://regex101.com/r/Cp71GF/5
 
         private readonly YouResolver YouAre;
 

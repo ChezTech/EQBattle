@@ -12,7 +12,8 @@ namespace LineParserTests
 
         [DataTestMethod]
         [DataRow("[Tue Apr 02 22:15:55 2019] [110 Ashenhand (Monk)] Tefka (Werewolf) <Rumble of Distant Thunder> ZONE: arthicrex", "Tefka", "Monk", 110, "Ashenhand", "Werewolf", "Rumble of Distant Thunder", "arthicrex")]
-        [DataRow("[Tue Apr 02 22:15:55 2019] [ANONYMOUS] Benza <Rumble of Distant Thunder>", "Benza", null, 0, null, null, "Rumble of Distant Thunder", null)]
+        [DataRow("[Tue Apr 02 22:15:55 2019] [ANONYMOUS] Benza <Rumble of Distant Thunder>", "Benza", null, 0, null, null, "Rumble of Distant Thunder", null)] // Role playing
+        [DataRow("[Tue Apr 02 22:15:55 2019] [ANONYMOUS] Benza", "Benza", null, 0, null, null, null, null)] // Anonymous
         public void WhoTests(string logLine, string name, string @class, int level, string title, string race, string guild, string zone)
         {
             var logDatum = new LogDatum(logLine);
