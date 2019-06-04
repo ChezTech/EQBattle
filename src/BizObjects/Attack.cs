@@ -3,7 +3,7 @@ using LogObjects;
 
 namespace BizObjects
 {
-    public class Attack : Line
+    public abstract class Attack : Line
     {
         public const string Unknown = "Unknown";
 
