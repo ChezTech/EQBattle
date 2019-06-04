@@ -192,6 +192,77 @@ namespace BizObjectsTests
             Assert.IsFalse(skirmish.IsFightOver);
         }
 
+        [TestMethod]
+        public void FightWithDotAfterDeath()
+        {
+            // Things to test...
+            // - the DOT is put onto the fight that is now over
+            // - the DOT is associated with the MOB that died ... (Posthumous Damage)
+
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:07 2019] You crush a sandspinner stalker for 708 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You kick a sandspinner stalker for 75472 points of damage. (Finishing Blow)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You have slain a sandspinner stalker!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.");
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            VerifyFightStatistics("a sandspinner stalker", skirmish, 80340, 0, 0, 1);
+
+            Assert.AreEqual(2, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 76180, 0, 0, 1, 4160, 0, 0, 0);
+            VerifyFighterStatistics("a sandspinner stalker", skirmish, 4160, 0, 0, 0, 76180, 0, 0, 1);
+        }
+
+        [TestMethod]
+        public void SimilarDotDamage()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:07 2019] You crush a sandspinner stalker for 708 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.");
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            VerifyFightStatistics("a sandspinner stalker", skirmish, 4868, 0, 0, 0);
+
+            Assert.AreEqual(2, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 708, 0, 0, 0, 4160, 0, 0, 0);
+            VerifyFighterStatistics("a sandspinner stalker", skirmish, 4160, 0, 0, 0, 708, 0, 0, 0);
+        }
+
+        [TestMethod]
+        public void FightMobWithDoTAfterDeathButDuringSecondMobFight()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            // Mob #1, with DoT
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:07 2019] You crush a sandspinner stalker for 708 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You kick a sandspinner stalker for 75472 points of damage. (Finishing Blow)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:09 2019] You have slain a sandspinner stalker!");
+
+            // Mob #2 fight start
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:12 2019] You kick a cliknar battle drone for 1074 points of damage. (Critical)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:12 2019] A cliknar battle drone bites YOU for 2415 points of damage.");
+
+            // This should be assigned to Mob #1
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.");
+
+            // Now, back to Mob #2
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 06:57:15 2019] You strike a cliknar battle drone for 580 points of damage.");
+
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            VerifyFightStatistics("a sandspinner stalker", skirmish, 80340, 0, 0, 1);
+            VerifyFightStatistics("a cliknar battle drone", skirmish, 4069, 0, 0, 0);
+
+            Assert.AreEqual(3, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 77834, 0, 0, 1, 6575, 0, 0, 0);
+            VerifyFighterStatistics("a sandspinner stalker", skirmish, 4160, 0, 0, 0, 76180, 0, 0, 1);
+            VerifyFighterStatistics("a cliknar battle drone", skirmish, 2415, 0, 0, 0, 1654, 0, 0, 0);
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.OffensiveStatistics;

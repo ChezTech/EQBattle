@@ -34,7 +34,7 @@ namespace BizObjects
 
         public void AddLine(Attack line)
         {
-            GetAppropriateFight(line.Attacker, line.Defender).AddLine(line);
+            GetAppropriateFight(ref line).AddLine(line);
 
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
@@ -65,6 +65,16 @@ namespace BizObjects
 
         // This is the function we'll use to see if a fight is a valid match (mob match and fight not over)
         private readonly Func<IFight, Character, bool> IsValidFight = (f, c) => f.PrimaryMob == c && !f.IsFightOver;
+
+        private IFight GetAppropriateFight(ref Attack line)
+        {
+            if (TryFindPostHumousFightDamage((dynamic)line, out IFight deadFight, out Attack newLineWithAttacker))
+            {
+                line = newLineWithAttacker;
+                return deadFight;
+            }
+            return GetAppropriateFight(line.Attacker, line.Defender);
+        }
 
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
@@ -105,6 +115,63 @@ namespace BizObjects
             var fight = new Fight(YouAre, CharResolver);
             Fights.Add(fight);
             return fight;
+        }
+
+        private bool TryFindPostHumousFightDamage(Attack line, out IFight deadFight, out Attack newLineWithAttacker)
+        {
+            deadFight = null;
+            newLineWithAttacker = null;
+            return false;
+        }
+        private bool TryFindPostHumousFightDamage(Hit line, out IFight deadFight, out Attack newLineWithAttacker)
+        {
+            deadFight = null;
+            newLineWithAttacker = null;
+
+            if (line.Attacker != Character.Unknown)
+                return false;
+
+            // This is to handle the case of a DOT still going after the attacker died and the log line no longer indicates the attacker name
+            // It used to say " ... by mob's corpse", now it just doesn't say
+            // "Movanna has taken 3000 damage by Noxious Visions."
+
+            // Further complicating things is the fact that not all DOTs specify their attacker even if they are alive
+            // It seems if a PC takes the damage, there is an Attacker in the message, while if a Merc takes the damage no Attacker is indicated
+
+            // [Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.
+            // [Mon May 27 09:56:45 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus.
+            // [Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Noxious Visions.
+
+            // Once it dies, it's still identified
+
+            // [Mon May 27 09:58:40 2019] You have taken 1950 damage from Noxious Visions by Gomphus's corpse.
+            // [Mon May 27 09:58:40 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus's corpse.
+            // [Mon May 27 09:58:42 2019] Movanna has taken 3000 damage by Noxious Visions.
+
+            // The complication is that I get this anonymous DoT both when the mob was alive and when it was dead...
+            // [Mon May 27 06:57:03 2019] You have taken 2080 damage from Paralyzing Bite.
+            // [Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.
+
+
+            // Basically, if this is an Anoymous Dot ... assign the Attacker to one of the primary mob fights ... which one?
+            // Let's see if a fight has had similar damage already ... same spell
+
+            // If we have, remake the Attack line instance (since it's immutable)
+
+            // So, find the most recent fight that has similar damage
+            // Try a tight match first (Defender, DamageType, DamageAmount), then a loose match (DamageType)
+            var fightsWithSimilarDamage = Fights.LastOrDefault(x => x.SimilarDamage(line)) ?? Fights.LastOrDefault(x => x.SimilarDamage(line, true));
+
+            // If we do have such a fight, remake this Attack Line w/ the Primary Mob as the attacker
+            if (fightsWithSimilarDamage != null)
+            {
+                deadFight = fightsWithSimilarDamage;
+                newLineWithAttacker = new Hit(line.LogLine, fightsWithSimilarDamage.PrimaryMob.Name, line.Defender.Name, line.Verb, line.Damage, line.DamageType, line.DamageBy, line.DamageQualifier, line.Zone);
+                return true;
+            }
+
+            // Otherwise, business as normal
+            return false;
         }
 
         public bool SimilarDamage(Hit line, bool looseMatch = false)
