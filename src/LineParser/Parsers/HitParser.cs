@@ -110,7 +110,7 @@ namespace LineParser.Parsers
             }
 
             var attacker = match.Groups[4].Value;
-            string attackVerb = null; // DoT?
+            string attackVerb = AttackType.DamageOverTime.ToString();
             var defender = match.Groups[1].Value;
             var damage = int.Parse(match.Groups[2].Value);
             string damageType = null; // DoT ?
@@ -133,7 +133,7 @@ namespace LineParser.Parsers
             }
 
             var attacker = YouAre.Name;
-            string attackVerb = null; // DoT?
+            string attackVerb = AttackType.DamageOverTime.ToString();
             var defender = match.Groups[1].Value;
             var damage = int.Parse(match.Groups[2].Value);
             string damageType = null; // DoT ?
@@ -156,7 +156,7 @@ namespace LineParser.Parsers
             }
 
             string attacker = null; // Anonymous
-            string attackVerb = null; // DoT?
+            string attackVerb = AttackType.DamageOverTime.ToString();
             var defender = match.Groups[1].Value;
             var damage = int.Parse(match.Groups[2].Value);
             string damageType = null; // DoT ?

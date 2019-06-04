@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BizObjects
 {
@@ -52,7 +53,12 @@ namespace BizObjects
         public AttackType Convert(string hitTypeName)
         {
             if (hitTypeName == null) return AttackType.Unknown;
-            return _nameToTypeMap.TryGetValue(hitTypeName, out AttackType hitType) ? hitType : AttackType.Unknown;
+
+            return _nameToTypeMap.TryGetValue(hitTypeName, out AttackType hitType)
+                ? hitType
+                : Enum.TryParse(hitTypeName, out hitType)
+                    ? hitType
+                    : AttackType.Unknown;
         }
 
         public ICollection<string> Names { get { return _nameToTypeMap.Keys; } }
