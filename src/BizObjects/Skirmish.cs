@@ -128,7 +128,7 @@ namespace BizObjects
             deadFight = null;
             newLineWithAttacker = null;
 
-            if (line.Attacker != Character.Unknown)
+            if (line.Type != AttackType.DamageOverTime)
                 return false;
 
             // This is to handle the case of a DOT still going after the attacker died and the log line no longer indicates the attacker name
@@ -160,7 +160,10 @@ namespace BizObjects
 
             // So, find the most recent fight that has similar damage
             // Try a tight match first (Defender, DamageType, DamageAmount), then a loose match (DamageType)
-            var fightsWithSimilarDamage = Fights.LastOrDefault(x => x.SimilarDamage(line)) ?? Fights.LastOrDefault(x => x.SimilarDamage(line, true));
+            var fightsWithSimilarDamage =
+                Fights.LastOrDefault(x => x.SimilarDamage(line)) // Tight match for similar damage (Defender, DamageType, DamageAmount)
+                ?? Fights.LastOrDefault(x => x.SimilarDamage(line, true)) // Loose match for similar damage (DamageType)
+                ?? Fights.LastOrDefault(x=>line.Attacker != Character.Unknown && x.PrimaryMob == line.Attacker); // Plain match on attacker name (if you're still taking damage from a corpse)
 
             // If we do have such a fight, remake this Attack Line w/ the Primary Mob as the attacker
             if (fightsWithSimilarDamage != null)

@@ -263,6 +263,43 @@ namespace BizObjectsTests
             VerifyFighterStatistics("a cliknar battle drone", skirmish, 2415, 0, 0, 0, 1654, 0, 0, 0);
         }
 
+        [TestMethod]
+        public void FightWithDoTAfterDeathNotAnonymousDamage()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:34 2019] You strike Gomphus for 577 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:34 2019] You have taken 1950 damage from Noxious Visions by Gomphus.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:37 2019] You strike Gomphus for 572 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:37 2019] You have slain Gomphus!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:40 2019] You have taken 1950 damage from Noxious Visions by Gomphus's corpse.");
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            VerifyFightStatistics("Gomphus", skirmish, 5049, 0, 0, 1);
+
+            Assert.AreEqual(2, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 1149, 0, 0, 1, 3900, 0, 0, 0);
+            VerifyFighterStatistics("Gomphus", skirmish, 3900, 0, 0, 0, 1149, 0, 0, 1);
+        }
+
+        [TestMethod]
+        public void FightWithDoTAfterButNotBeforeDeathNotAnonymousDamage()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:34 2019] You strike Gomphus for 577 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:37 2019] You strike Gomphus for 572 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:37 2019] You have slain Gomphus!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:58:40 2019] You have taken 1950 damage from Noxious Visions by Gomphus's corpse.");
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            VerifyFightStatistics("Gomphus", skirmish, 3099, 0, 0, 1);
+
+            Assert.AreEqual(2, skirmish.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", skirmish, 1149, 0, 0, 1, 1950, 0, 0, 0);
+            VerifyFighterStatistics("Gomphus", skirmish, 1950, 0, 0, 0, 1149, 0, 0, 1);
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.OffensiveStatistics;
