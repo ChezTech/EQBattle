@@ -264,6 +264,73 @@ namespace BizObjectsTests
             Assert.IsFalse(fight.IsFightOver);
         }
 
+        [TestMethod]
+        public void CheckSimilarFightNoLines()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite."));
+
+            Assert.IsFalse(fight.SimilarDamage(line as Hit));
+        }
+
+        [TestMethod]
+        public void CheckSimilarFightNoMatch()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:02 2019] You kick a sandspinner stalker for 967 points of damage. (Riposte)");
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:03 2019] You have taken 2080 damage from Paralyzing Bite."));
+
+            Assert.IsFalse(fight.SimilarDamage(line as Hit));
+        }
+
+        [TestMethod]
+        public void CheckSimilarFight()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite."));
+
+            Assert.IsTrue(fight.SimilarDamage(line as Hit));
+        }
+
+        [TestMethod]
+        public void CheckNotSimilarFight()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2081 damage from Paralyzing Bite."));
+
+            Assert.IsFalse(fight.SimilarDamage(line as Hit));
+        }
+
+        [TestMethod]
+        public void CheckSimilarFightLoose()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.");
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Noxious Visions."));
+
+            Assert.IsFalse(fight.SimilarDamage(line as Hit));
+            Assert.IsTrue(fight.SimilarDamage(line as Hit, true));
+        }
+
+        [TestMethod]
+        public void CheckNotSimilarFightLoose()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.");
+            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Putrid Visions."));
+
+            Assert.IsFalse(fight.SimilarDamage(line as Hit));
+            Assert.IsFalse(fight.SimilarDamage(line as Hit, true));
+        }
+
         private Fight SetupNewFight(out CharacterTracker charTracker)
         {
             var charResolver = new CharacterResolver();

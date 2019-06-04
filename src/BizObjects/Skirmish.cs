@@ -106,5 +106,10 @@ namespace BizObjects
             Fights.Add(fight);
             return fight;
         }
+
+        public bool SimilarDamage(Hit line, bool looseMatch = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
