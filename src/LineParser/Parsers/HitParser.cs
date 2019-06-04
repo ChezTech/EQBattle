@@ -14,6 +14,7 @@ namespace LineParser.Parsers
         private readonly Regex RxDot;
         private readonly Regex RxYourDot;
         private readonly Regex RxAnonymousDot;
+        private readonly Regex RxSpellDamage = new Regex(@"^(You) are (.+) in (.+)\.\s+You have taken (\d+) points of damage\.(?: \((.+)\))?$", RegexOptions.Compiled); // https://regex101.com/r/7g5Xfe/4
         private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
         private readonly string regexDot = @"(.+) (?:has|have) taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/2
@@ -48,6 +49,8 @@ namespace LineParser.Parsers
             if (TryParseYourDot(logDatum, out lineEntry))
                 return true;
             if (TryParseAnonymousDot(logDatum, out lineEntry))
+                return true;
+            if (TryParseSpellDamage(logDatum, out lineEntry))
                 return true;
 
             return false;
@@ -162,6 +165,29 @@ namespace LineParser.Parsers
             string damageType = null; // DoT ?
             var damageBy = match.Groups[3].Value;
             var damageQualifier = match.Groups[4].Success ? match.Groups[4].Value : null;
+
+            lineEntry = new Hit(logDatum, attacker, YouAre.WhoAreYou(defender), attackVerb, damage, damageType, damageBy, damageQualifier);
+
+            return true;
+        }
+
+        private bool TryParseSpellDamage(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxSpellDamage.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            string attacker = null; // Anonymous
+            var defender = match.Groups[1].Value;
+            var attackVerb = match.Groups[2].Value;
+            var damage = int.Parse(match.Groups[4].Value);
+            string damageType = null;
+            var damageBy = match.Groups[3].Value;
+            var damageQualifier = match.Groups[5].Success ? match.Groups[5].Value : null;
 
             lineEntry = new Hit(logDatum, attacker, YouAre.WhoAreYou(defender), attackVerb, damage, damageType, damageBy, damageQualifier);
 

@@ -36,6 +36,7 @@ namespace LineParserTests
         [DataRow("[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.", "Gomphus", false, "Khadaji", false, 1950, "DamageOverTime", AttackType.DamageOverTime, null, "Noxious Visions", null)]
         [DataRow("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.", "Unknown", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
         [DataRow("[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.", "a sandspinner stalker", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
+        [DataRow("[Mon May 27 10:03:39 2019] You are covered in crystals of rime.  You have taken 2199 points of damage.", "Unknown", false, "Khadaji", false, 2199, "covered", AttackType.Unknown, null, "crystals of rime", null)] // Note, double space bewtween the sentences
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
