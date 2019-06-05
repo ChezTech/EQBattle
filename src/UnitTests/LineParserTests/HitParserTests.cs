@@ -37,6 +37,8 @@ namespace LineParserTests
         [DataRow("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.", "Unknown", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
         [DataRow("[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.", "a sandspinner stalker", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
         [DataRow("[Mon May 27 10:03:39 2019] You are covered in crystals of rime.  You have taken 2199 points of damage.", "Unknown", false, "Khadaji", false, 2199, "covered", AttackType.Unknown, null, "crystals of rime", null)] // Note, double space bewtween the sentences
+        [DataRow("[Mon May 27 07:20:04 2019] You hit a cliknar skirmish drone for 22528 points of physical damage by Five Point Palm VI.", "Khadaji", false, "a cliknar skirmish drone", false, 22528, "hit", AttackType.Hit, "physical", "Five Point Palm VI", null)]
+        [DataRow("[Mon May 27 07:20:04 2019] You hit yourself for 1112 points of unresistable damage by Five Point Palm Focusing.", "Khadaji", false, "Khadaji", false, 1112, "hit", AttackType.Hit, "unresistable", "Five Point Palm Focusing", null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
 
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
@@ -61,7 +63,8 @@ namespace LineParserTests
         }
 
         [DataTestMethod]
-        [DataRow("[Tue May 28 06:48:42 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.")]
+        [DataRow("[Tue May 28 06:48:42 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.")] // Part of Cannibalization
+        [DataRow("[Mon May 27 07:20:04 2019]   You have taken 1112 points of damage.")] // Part of Five Point Palm
         public void NullHitTests(string logLine)
         {
             var logDatum = new LogDatum(logLine);
