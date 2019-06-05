@@ -331,11 +331,103 @@ namespace BizObjectsTests
             Assert.IsFalse(fight.SimilarDamage(line as Hit, true));
         }
 
+        [TestMethod]
+        public void TestFivePointPalmSameDamage()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:03 2019] You kick a cliknar skirmish drone for 1314 points of damage. (Strikethrough)");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019] You begin casting Five Point Palm VI.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019] You strike a cliknar skirmish drone for 3020 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019] You hit a cliknar skirmish drone for 22528 points of physical damage by Five Point Palm VI.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019] You hit yourself for 1112 points of unresistable damage by Five Point Palm Focusing.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019]   You have taken 1112 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 07:20:04 2019] You hit a cliknar skirmish drone for 512 points of chromatic damage by Lynx Maw.");
+
+            VerifyFightStatistics("a cliknar skirmish drone", fight, 28486, 0, 0, 0);
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", fight, 28486, 0, 0, 0, 1112, 0, 0, 0);
+            VerifyFighterStatistics("a cliknar skirmish drone", fight, 0, 0, 0, 0, 27374, 0, 0, 0);
+        }
+
+        [TestMethod]
+        [Ignore] // We can't handle this use case for now
+        public void TestFivePointPalmDifferentDamage()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:01 2019] You kick a master hunter for 1458 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019] You begin casting Five Point Palm VI.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019] Khadaji hit a master hunter for 51814 points of physical damage by Five Point Palm VI. (Critical)");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019] You strike a master hunter for 4823 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019] Khadaji hit Khadaji for 1354 points of unresistable damage by Five Point Palm Focusing.");
+
+            // Usually this is the same value as the previous line. I suspect that this line is the real damage you take, while the above line is the potential damage you dealt on yourself.
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019]   You have taken 948 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 08:15:02 2019] You crush a master hunter for 3614 points of damage. (Critical)");
+
+            VerifyFightStatistics("a master hunter", fight, 62657, 0, 0, 0);
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", fight, 63063, 0, 0, 0, 948, 0, 0, 0);
+            VerifyFighterStatistics("a master hunter", fight, 0, 0, 0, 0, 61709, 0, 0, 0);
+        }
+
+        [TestMethod]
+        public void TestCannibalization()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:59:23 2019] You hit yourself for 8000 points of unresistable damage by Cannibalization V.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:59:23 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.");
+
+            VerifyFightStatistics("Unknown", fight, 8000, 0, 0, 0);
+
+            Assert.AreEqual(1, fight.Fighters.Count());
+            VerifyFighterStatistics("Khadaji", fight, 8000, 0, 0, 0, 8000, 0, 0, 0); // Really, this is Khronick, but I have "you" setup as "Khadaji" for this test
+        }
+
         private Fight SetupNewFight(out CharacterTracker charTracker)
         {
             var charResolver = new CharacterResolver();
             charTracker = new CharacterTracker(YouAre, charResolver);
             return new Fight(YouAre, charResolver);
+        }
+
+        private void VerifyFighterStatistics(string name, Fight fight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
+        {
+            var fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
+
+            var stats = fighter.OffensiveStatistics;
+            Assert.AreEqual(offHit, stats.Hit.Total, $"Offensive hit - {fighter.Character.Name}");
+            Assert.AreEqual(offHeal, stats.Heal.Total, $"Offensive heal - {fighter.Character.Name}");
+            Assert.AreEqual(offMisses, stats.Miss.Count, $"Offensive misses - {fighter.Character.Name}");
+            Assert.AreEqual(offKills, stats.Kill.Count, $"Offensive kills - {fighter.Character.Name}");
+
+            stats = fighter.DefensiveStatistics;
+            Assert.AreEqual(defHit, stats.Hit.Total, $"Defensive hit - {fighter.Character.Name}");
+            Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
+            Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
+            Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
+        }
+
+        private void VerifyFightStatistics(string fightMob, Fight fight, int hit, int heal, int misses, int kills)
+        {
+            Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
+
+            var stats = fight.OffensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills - {fight.PrimaryMob.Name}");
+
+            stats = fight.DefensiveStatistics;
+            Assert.AreEqual(hit, stats.Hit.Total, $"Defensive hit - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(heal, stats.Heal.Total, $"Defensive heal - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(misses, stats.Miss.Count, $"Defensive misses - {fight.PrimaryMob.Name}");
+            Assert.AreEqual(kills, stats.Kill.Count, $"Defensive kills - {fight.PrimaryMob.Name}");
         }
     }
 }
