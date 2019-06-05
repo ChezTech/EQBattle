@@ -23,6 +23,9 @@ namespace LineParserTests
         [DataRow("[Mon Mar 25 19:52:36 2019] Buddahbean`s warder feels the touch of vivification. Seissyll healed Buddahbean`s warder for 903 (4137) hit points by Word of Vivification.", "Seissyll", "Buddahbean", 903, 4137, "Word of Vivification", false, null)]
         [DataRow("[Sat Mar 30 10:10:41 2019] Khronick is infused by a divine restitution. Khronick healed himself for 4652 (47334) hit points by Promised Restitution Trigger I. (Critical)", "Khronick", "Khronick", 4652, 47334, "Promised Restitution Trigger I", false, "Critical")]
         [DataRow("[Fri Apr 12 11:32:11 2019] Mordsith has been healed over time for 345 (9525) hit points by Elixir of Wulthan Rk. II.", "Unknown", "Mordsith", 345, 9525, "Elixir of Wulthan Rk. II", true, null)]
+        [DataRow("[Fri May 24 18:23:19 2019] Vatalae is bathed in a zealous light. Harmonious Prana healed Vatalae for 24502 hit points by Zealous Light Rk. II.", "Harmonious Prana", "Vatalae", 24502, -1, "Zealous Light Rk. II", false, null)]
+        [DataRow("[Fri May 24 18:23:33 2019] Harmonious Prana healed Eruzen over time for 556 (3849) hit points by Zealous Elixir Rk. II.", "Harmonious Prana", "Eruzen", 556, 3849, "Zealous Elixir Rk. II", true, null)]
+        [DataRow("[Fri May 24 18:23:40 2019] Vatalae has been healed with frenzied life-giving energy. Harmonious Prana healed Vatalae for 21367 (24855) hit points by Frenzied Renewal Rk. II.", "Harmonious Prana", "Vatalae", 21367, 24855, "Frenzied Renewal Rk. II", false, null)]
 
         // Old school log messages
         // [DataRow("[Tue Feb 25 18:51:03 2003]     ", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
