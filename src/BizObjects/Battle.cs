@@ -43,7 +43,7 @@ namespace BizObjects
         {
             _charTracker.TrackLine((dynamic)line);
 
-            if (IsNewSkirmishNeeded(line))
+            if (IsNewSkirmishNeeded((dynamic)line))
                 SetupNewFight();
 
             _currentSkirmish.AddLine((dynamic)line);
@@ -57,6 +57,18 @@ namespace BizObjects
 
         private bool IsNewSkirmishNeeded(ILine line)
         {
+            return false;
+        }
+
+        private bool IsNewSkirmishNeeded(Attack line)
+        {
+            // If the current Skirmish has nothing in it, we don't need a new one
+            // TODO: a better way to see if a skirmish 'isEmpty'
+            if (!_currentSkirmish.OffensiveStatistics.Lines.Any())
+                return false;
+
+
+
             // A new Skirmish is needed if it's been too long since the last mob died
             // If you're fighting mobs without a break, they all get grouped into one skirmish
             // Loot lines, roll-offs, etc go with that last fight
@@ -66,8 +78,8 @@ namespace BizObjects
             // Just because you die doesn't mean the fight is over .... you can be rezzed back into fight
             // Maybe this is a special case .. if you get rezzed and still fighting the same mob...
 
-            // If the main mob is dead, and it's been enough time since the last attack and this attack, then a new Skirmish is needed
-            if (line is Attack && _currentSkirmish.IsFightOver && line.Time - _currentSkirmish.LastAttackTime > _skirmishGap)
+            // If it's been enough time since the last attack and this attack, then a new Skirmish is needed
+            if (line.Time - _currentSkirmish.LastAttackTime > _skirmishGap)
                 return true;
 
 

@@ -47,7 +47,7 @@ namespace BizObjects
 
         public void AddLine(Heal line)
         {
-            GetAppropriateFight(line.Healer, line.Patient).AddLine(line);
+            GetAppropriateFight(line).AddLine(line);
 
             var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
             healerChar.AddOffense(line);
@@ -75,6 +75,38 @@ namespace BizObjects
             }
             return GetAppropriateFight(line.Attacker, line.Defender);
         }
+
+        private IFight GetAppropriateFight(Heal line)
+        {
+            // A heal line just applies to the last fight
+            // It's a PC/Merc that's healing another PC/Merc
+            // Except when it's a mob healing itself ... or healing a companion fighter...
+            // Would a PC ever heal a Mob or vice versa? Maybe for a charmed pet ... but that's going to be a pain in the ass anyway
+
+            if (IsCharacterPlayerOrMerc(line.Healer) || IsCharacterPlayerOrMerc(line.Patient))
+                return Fights.Last();
+
+            return GetAppropriateFight(line.Healer, line.Patient);
+        }
+
+        private bool IsCharacterPlayerOrMerc(Character c)
+        {
+            var charType = CharResolver.WhichType(c);
+
+            switch (charType)
+            {
+                case CharacterResolver.Type.NonPlayerCharacter:
+                    return false;
+
+                case CharacterResolver.Type.Player:
+                case CharacterResolver.Type.Mercenary:
+
+                // It's more that this char is not an NPC
+                default:
+                    return true;
+            }
+        }
+
 
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
@@ -163,7 +195,7 @@ namespace BizObjects
             var fightsWithSimilarDamage =
                 Fights.LastOrDefault(x => x.SimilarDamage(line)) // Tight match for similar damage (Defender, DamageType, DamageAmount)
                 ?? Fights.LastOrDefault(x => x.SimilarDamage(line, true)) // Loose match for similar damage (DamageType)
-                ?? Fights.LastOrDefault(x=>line.Attacker != Character.Unknown && x.PrimaryMob == line.Attacker); // Plain match on attacker name (if you're still taking damage from a corpse)
+                ?? Fights.LastOrDefault(x => line.Attacker != Character.Unknown && x.PrimaryMob == line.Attacker); // Plain match on attacker name (if you're still taking damage from a corpse)
 
             // If we do have such a fight, remake this Attack Line w/ the Primary Mob as the attacker
             if (fightsWithSimilarDamage != null)
