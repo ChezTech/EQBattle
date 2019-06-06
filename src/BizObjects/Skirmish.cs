@@ -84,7 +84,11 @@ namespace BizObjects
             // Would a PC ever heal a Mob or vice versa? Maybe for a charmed pet ... but that's going to be a pain in the ass anyway
 
             if (IsCharacterPlayerOrMerc(line.Healer) || IsCharacterPlayerOrMerc(line.Patient))
-                return Fights.Last();
+            {
+                // Apply the heal to the first active fight, or the last fight (that's inactive)
+                return Fights.FirstOrDefault(x => !x.IsFightOver)
+                    ?? Fights.Last();
+            }
 
             return GetAppropriateFight(line.Healer, line.Patient);
         }
@@ -106,7 +110,6 @@ namespace BizObjects
                     return true;
             }
         }
-
 
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
