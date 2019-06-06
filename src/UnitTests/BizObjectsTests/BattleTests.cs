@@ -141,6 +141,22 @@ namespace BizObjectsTests
             Assert.AreEqual(2, battle.Skirmishes.Count);
         }
 
+        [TestMethod]
+        public void MagicDamageByUnknownShouldGoToTheCurrentFight()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Fri Apr 26 09:26:27 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)");
+            AddBattleLine(battle, "[Fri Apr 26 09:26:28 2019] You are covered in crystals of rime.  You have taken 10 points of damage.");
+            AddBattleLine(battle, "[Fri Apr 26 09:26:28 2019] You punch a cliknar adept for 3176 points of damage. (Critical)");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+            var skirmish1 = battle.Skirmishes.First() as Skirmish;
+            Assert.AreEqual(1, skirmish1.Fights.Count);
+            VerifySkirmishStats(skirmish1, 4366, 0, 0, 0);
+            VerifyFightStatistics("a cliknar adept", skirmish1, 4366, 0, 0, 0);
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.OffensiveStatistics;

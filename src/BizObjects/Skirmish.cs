@@ -118,6 +118,12 @@ namespace BizObjects
             if (IsValidFight(fight, Character.Unknown))
                 return fight;
 
+            var firstActiveFight = Fights.Where(x => !x.IsFightOver);
+
+            // If either one of the characters is Unknown, just use the first active fight
+            if ((char1 == Character.Unknown || char2 == Character.Unknown) && firstActiveFight.Any())
+                return firstActiveFight.First();
+
             // If the char is a MOB, find the matching fight or create a new one
             if (CharResolver.WhichType(char1) == CharacterResolver.Type.NonPlayerCharacter)
                 return GetOrAddFight(char1);
@@ -130,7 +136,6 @@ namespace BizObjects
                 return primaryMobMatch.First();
 
             // Either the characters are not MOBs or one of them is a named Mob and we don't know it, just use the first fight that's still ongoing
-            var firstActiveFight = Fights.Where(x => !x.IsFightOver);
             if (firstActiveFight.Any())
                 return Fights.First();
 
