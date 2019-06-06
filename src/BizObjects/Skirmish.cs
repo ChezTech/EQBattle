@@ -137,7 +137,7 @@ namespace BizObjects
 
             // Either the characters are not MOBs or one of them is a named Mob and we don't know it, just use the first fight that's still ongoing
             if (firstActiveFight.Any())
-                return Fights.First();
+                return firstActiveFight.First();
 
             return CreateNewFight();
         }

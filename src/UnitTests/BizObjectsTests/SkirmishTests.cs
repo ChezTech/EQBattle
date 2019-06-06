@@ -186,6 +186,26 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        public void SkirmishWhereFirstMobDiesAndSecondMobWeDontKnowIsAMobThatDamageGoesToThatNewFight()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            // Fight and kill the first mob
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:43 2019] A generic mob hits YOU for 7 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:43 2019] You crush a generic mob for 10 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:43 2019] You have slain a generic mob!");
+
+            // Second is a named mob (a mob that we don't know is a mob yet)
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:45 2019] Mob1 hits Player1 for 10 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:46 2019] Player2 slashes Mob1 for 9 points of damage."); // This line is used to establish Mob1 as PrimaryMob
+
+            // Skirmish Fights
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            VerifyFightStatistics("a generic mob", skirmish, 17, 0, 0, 1);
+            VerifyFightStatistics("Mob1", skirmish, 19, 0, 0, 0);
+        }
+
+        [TestMethod]
         public void IsSkirmishOverJustWhenItsGettingStarted()
         {
             var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
