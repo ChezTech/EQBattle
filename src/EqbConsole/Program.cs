@@ -104,6 +104,30 @@ namespace EqbConsole
                 ShowSkirmishDetail(skirmish);
 
             // ShowNamedFighters();
+            // ShowMobHeals();
+            // ShowUnknownDamage();
+        }
+
+        private void ShowMobHeals()
+        {
+            WriteMessage("");
+            WriteMessage("===== Mob Heals ======");
+            var heals = _healCollection.Where(x => x.Patient.IsMob || x.Healer.IsMob);
+            WriteMessage($"Count: {heals.Count()}");
+
+            foreach(var heal in heals)
+                WriteMessage($"{heal.LogLine.LogMessage}");
+        }
+
+        private void ShowUnknownDamage()
+        {
+            WriteMessage("");
+            WriteMessage("===== Unknown lines containing Damage ======");
+            var unknownDamage = _unknownCollection.Where(x => x.LogLine.LogMessage.Contains("damage"));
+            WriteMessage($"Count: {unknownDamage.Count()}");
+
+            foreach(var dmg in unknownDamage)
+                WriteMessage($"{dmg.LogLine.LogMessage}");
         }
 
         private void ShowSkirmishDetail(Skirmish skirmish)
