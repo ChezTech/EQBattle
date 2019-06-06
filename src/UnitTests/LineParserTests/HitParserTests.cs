@@ -36,11 +36,9 @@ namespace LineParserTests
         [DataRow("[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.", "Gomphus", false, "Khadaji", false, 1950, "DamageOverTime", AttackType.DamageOverTime, null, "Noxious Visions", null)]
         [DataRow("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite.", "Unknown", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
         [DataRow("[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.", "a sandspinner stalker", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
-        [DataRow("[Mon May 27 10:03:39 2019] You are covered in crystals of rime.  You have taken 2199 points of damage.", "Unknown", false, "Khadaji", false, 2199, "covered", AttackType.Unknown, null, "crystals of rime", null)] // Note, double space bewtween the sentences
         [DataRow("[Mon May 27 07:20:04 2019] You hit a cliknar skirmish drone for 22528 points of physical damage by Five Point Palm VI.", "Khadaji", false, "a cliknar skirmish drone", false, 22528, "hit", AttackType.Hit, "physical", "Five Point Palm VI", null)]
         [DataRow("[Mon May 27 07:20:04 2019] You hit yourself for 1112 points of unresistable damage by Five Point Palm Focusing.", "Khadaji", false, "Khadaji", false, 1112, "hit", AttackType.Hit, "unresistable", "Five Point Palm Focusing", null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
-
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
         {
             var logDatum = new LogDatum(logLine);
@@ -62,8 +60,41 @@ namespace LineParserTests
             Assert.AreEqual(qualifier, hitEntry.DamageQualifier, string.Format("Failing line: {0}", logLine));
         }
 
+        [DataRow("[Mon May 27 07:14:39 2019] Your skin ignites in a pyroclastic fire.  You have taken 1278 points of damage.", "Khadaji", 1277, "ignites", "pyroclastic fire", "skin")]
+        [DataRow("[Mon May 27 07:15:57 2019] You are caught in a rain of molten scoria.  You have taken 399 points of damage.", "Khadaji", 1277, "caught", "rain of molten scoria", null)]
+        [DataRow("[Mon May 27 07:30:50 2019] You are struck by a phantasmal blade of discordant steel.  You have taken 1271 points of damage.", "Khadaji", 1277, "struck", "phantasmal blade of discordant steel", null)]
+        [DataRow("[Mon May 27 07:41:34 2019] You stagger in awe.  You have taken 259 points of damage.", "Khadaji", 1277, "stagger", "awe", null)]
+        [DataRow("[Mon May 27 08:47:04 2019] You are covered in crystals of rime.  You have taken 1185 points of damage.", "Khadaji", 1277, "covered", "crystals of rime", null)]
+        [DataRow("[Mon May 27 08:48:58 2019] You are consumed in a sunbeam.  You have taken 864 points of damage.", "Khadaji", 1277, "consumed", "sunbeam", null)]
+        [DataRow("[Mon May 27 09:21:56 2019] A blazing wave of heat engulfs you.  You have taken 741 points of damage.", "Khadaji", 1277, "engulfs", "blazing wave of heat", null)]
+        [DataRow("[Thu Apr 04 21:59:42 2019] You are denounced.  You have taken 664 points of damage.", "Khadaji", 1277, "denounced", "spell", null)]
+        [DataRow("[Thu Apr 04 22:14:50 2019] You are consumed in raging mana.  You have taken 1898 points of damage.", "Khadaji", 1277, "consumed", "raging mana", null)]
+        [DataRow("[Thu Apr 04 22:23:54 2019] You have been struck by a bolt of molten scoria.  You have taken 3358 points of damage.", "Khadaji", 1277, "struck", "bolt of molten scoria", null)]
+        [DataRow("[Thu Apr 04 22:30:15 2019] You are struck by the claw of Gorenaire.  You have taken 359 points of damage.", "Khadaji", 1277, "struck", "claw of Gorenaire", null)]
+        [DataRow("[Thu Apr 04 22:30:31 2019] You are burned by the breath of Klixcxyk.  You have taken 4381 points of damage.", "Khadaji", 1277, "burned", "breath of Klixcxyk", null)]
+        [DataRow("[Fri Apr 05 15:06:42 2019] The Ukun's bite sends poison coursing through your veins.  You have taken 806 points of damage.", "Khadaji", 1277, "sends poison coursing", "Ukun's bite", "veins")]
+        [DataRow("[Sat Mar 30 08:18:43 2019] You are struck by a masterful warrior.  You have taken 13656 points of damage.", "Khadaji", 1277, "struck", "masterful warrior", null)]
+        public void SpellDamage(string logLine, string attacker, int damage, string verb, string by, string spellTarget)
+        {
+            var logDatum = new LogDatum(logLine);
+
+            var result = _parser.TryParse(logDatum, out ILine lineEntry);
+
+            Assert.IsTrue(result, logLine);
+            Assert.IsTrue(lineEntry is Hit, logLine);
+            var hitEntry = lineEntry as Hit;
+            Assert.AreEqual(attacker, hitEntry.Attacker.Name, string.Format("Failing line: {0}", logLine));
+            Assert.AreEqual(damage, hitEntry.Damage, string.Format("Failing line: {0}", logLine));
+            // Assert.AreEqual(verb, hitEntry.Verb, string.Format("Failing line: {0}", logLine));
+            // Assert.AreEqual(by, hitEntry.By, string.Format("Failing line: {0}", logLine));
+            // Assert.AreEqual(spellTarget, hitEntry.xxx, string.Format("Failing line: {0}", logLine));
+        }
+
         [DataTestMethod]
-        [DataRow("[Tue May 28 06:48:42 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.")] // Part of Cannibalization
+
+        // This one actually parses now ... that's ok, but will need to not double count the damage during a Fight. See `FightTests.TestCannibalization()`
+        // [DataRow("[Tue May 28 06:48:42 2019] Your body aches as your mind clears.  You have taken 8000 points of damage.")] // Part of Cannibalization
+
         [DataRow("[Mon May 27 07:20:04 2019]   You have taken 1112 points of damage.")] // Part of Five Point Palm
         public void NullHitTests(string logLine)
         {
