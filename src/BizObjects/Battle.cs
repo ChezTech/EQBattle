@@ -33,7 +33,7 @@ namespace BizObjects
         public Battle(YouResolver youAre)
         {
             YouAre = youAre;
-            CharResolver.AddPlayer(YouAre.Name);
+            CharResolver.SetPlayer(YouAre.Name);
             _charTracker = new CharacterTracker(YouAre, CharResolver);
 
             SetupNewFight();

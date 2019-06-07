@@ -25,15 +25,15 @@ namespace BizObjects
 
         public Type WhichType(Character c) => WhichType(c.Name);
         public Type WhichType(string name) => _namesToTypes.TryGetValue(name, out Type charType) ? charType : Type.Unknown;
-        public void AddPlayer(Character c) => AddPlayer(c.Name);
-        public void AddPlayer(string name) => AddCharacter(name, Type.Player);
-        public void AddNonPlayer(Character c) => AddNonPlayer(c.Name);
-        public void AddNonPlayer(string name) => AddCharacter(name, Type.NonPlayerCharacter);
-        public void AddPet(Character c) => AddPet(c.Name);
-        public void AddPet(string name) => UpdateCharacter(name, Type.Pet);
-        public void AddMercenary(Character c) => AddMercenary(c.Name);
-        public void AddMercenary(string name) => UpdateCharacter(name, Type.Mercenary);
-        private void AddCharacter(string name, Type charType) => _namesToTypes.TryAdd(name, charType);
+        public void SetPlayer(Character c) => SetPlayer(c.Name);
+        public void SetPlayer(string name) => SetCharacter(name, Type.Player);
+        public void SetNonPlayer(Character c) => SetNonPlayer(c.Name);
+        public void SetNonPlayer(string name) => SetCharacter(name, Type.NonPlayerCharacter);
+        public void SetPet(Character c) => SetPet(c.Name);
+        public void SetPet(string name) => UpdateCharacter(name, Type.Pet);
+        public void SetMercenary(Character c) => SetMercenary(c.Name);
+        public void SetMercenary(string name) => UpdateCharacter(name, Type.Mercenary);
+        private void SetCharacter(string name, Type charType) => _namesToTypes.TryAdd(name, charType);
         private void UpdateCharacter(string name, Type charType) => _namesToTypes.AddOrUpdate(name, charType, (key, oldValue) => charType);
     }
 }

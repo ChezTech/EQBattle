@@ -29,7 +29,7 @@ namespace BizObjectsTests
         public void IdentifyCharYoureAttackingAsAMob()
         {
             CharacterResolver charResolver = new CharacterResolver();
-            charResolver.AddPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
 
             var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:56:06 2019] Khadaji kicks Gomphus for 871 points of damage. (Critical)")));
@@ -42,10 +42,34 @@ namespace BizObjectsTests
         public void YouAreNotAMonster()
         {
             CharacterResolver charResolver = new CharacterResolver();
-            charResolver.AddPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
 
             var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:10:45 2019] You hit yourself for 8000 points of unresistable damage by Cannibalization V.")));
+
+            Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khadaji"));
+        }
+
+        [TestMethod]
+        public void WhoLineSticks()
+        {
+            CharacterResolver charResolver = new CharacterResolver();
+            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+
+            var tracker = new CharacterTracker(YouAre, charResolver);
+            tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 24 18:26:18 2019] [86 Spiritwatcher (Shaman)] Khronick (Barbarian) <Siblings of the Shroud> ZONE: arthicrex")));
+
+            Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khadaji"));
+        }
+
+        [TestMethod]
+        public void WhoLineDetectsMercenary()
+        {
+            CharacterResolver charResolver = new CharacterResolver();
+            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+
+            var tracker = new CharacterTracker(YouAre, charResolver);
+            tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 24 18:26:18 2019] [86 Spiritwatcher (Shaman)] Khronick (Barbarian) <Siblings of the Shroud> ZONE: arthicrex")));
 
             Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khadaji"));
         }

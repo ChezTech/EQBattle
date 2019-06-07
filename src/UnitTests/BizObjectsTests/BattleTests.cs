@@ -37,7 +37,7 @@ namespace BizObjectsTests
             _parser.AddParser(_healParser, null);
             _parser.AddParser(_killParser, null);
 
-            CharResolver.AddNonPlayer("Harvester Collyx");
+            CharResolver.SetNonPlayer("Harvester Collyx");
         }
 
         [TestMethod]

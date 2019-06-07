@@ -25,7 +25,7 @@ namespace BizObjectsTests
         {
             var k = new Character("Khadaji");
             var cr = new CharacterResolver();
-            cr.AddPlayer(k);
+            cr.SetPlayer(k);
             Assert.AreEqual(CharacterResolver.Type.Player, cr.WhichType(k));
             Assert.AreEqual(CharacterResolver.Type.Player, cr.WhichType("Khadaji"));
         }
@@ -34,11 +34,11 @@ namespace BizObjectsTests
         public void AddVarietyOfNamesGetThemBackCorrectly()
         {
             var cr = new CharacterResolver();
-            cr.AddPlayer("Khadaji");
-            cr.AddMercenary("Movanna");
-            cr.AddPet("Khadaji`s pet");
-            cr.AddPet("Jabantik");
-            cr.AddNonPlayer("Gomphus");
+            cr.SetPlayer("Khadaji");
+            cr.SetMercenary("Movanna");
+            cr.SetPet("Khadaji`s pet");
+            cr.SetPet("Jabantik");
+            cr.SetNonPlayer("Gomphus");
 
             Assert.AreEqual(CharacterResolver.Type.Player, cr.WhichType("Khadaji"));
             Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Movanna"));
@@ -52,8 +52,8 @@ namespace BizObjectsTests
         public void AddNameToMultipleListsGetBackWhichShouldNotBeAllowed()
         {
             var cr = new CharacterResolver();
-            cr.AddMercenary("Bob");
-            cr.AddNonPlayer("Bob");
+            cr.SetMercenary("Bob");
+            cr.SetNonPlayer("Bob");
             // Should this fail? Exception or silent? I prefer no exception
 
             Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Bob"));
@@ -63,8 +63,8 @@ namespace BizObjectsTests
         public void PetOverridesPlayer()
         {
             var cr = new CharacterResolver();
-            cr.AddPlayer("Bob");
-            cr.AddPet("Bob");
+            cr.SetPlayer("Bob");
+            cr.SetPet("Bob");
 
             Assert.AreEqual(CharacterResolver.Type.Pet, cr.WhichType("Bob"));
         }
@@ -73,8 +73,8 @@ namespace BizObjectsTests
         public void MercenaryOverridesPlayer()
         {
             var cr = new CharacterResolver();
-            cr.AddPlayer("Bob");
-            cr.AddMercenary("Bob");
+            cr.SetPlayer("Bob");
+            cr.SetMercenary("Bob");
 
             Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Bob"));
         }

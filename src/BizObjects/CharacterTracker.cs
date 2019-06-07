@@ -31,9 +31,9 @@ namespace BizObjects
 
             // If "You" are attacking/defending then the other character is a mob (as long as it's also not yourself, which can happen witha Cannibalize spell)!
             if (YouAre.IsThisYou(line.Attacker) && !YouAre.IsThisYou(line.Defender))
-                CharResolver.AddNonPlayer(line.Defender);
+                CharResolver.SetNonPlayer(line.Defender);
             if (YouAre.IsThisYou(line.Defender) && !YouAre.IsThisYou(line.Attacker))
-                CharResolver.AddNonPlayer(line.Attacker);
+                CharResolver.SetNonPlayer(line.Attacker);
         }
 
         public void TrackLine(Song line)
@@ -56,19 +56,19 @@ namespace BizObjects
                 case "guild":
                 case "raid": // Do merc's chat on raid channel?
                 case "General":
-                    CharResolver.AddPlayer(chatLine.Who);
+                    CharResolver.SetPlayer(chatLine.Who);
                     break;
 
                 case "group": // could be a mercenary, maybe even a pet?
-                    CharResolver.AddPlayer(chatLine.Who);
+                    CharResolver.SetPlayer(chatLine.Who);
                     break;
 
                 case "say":
                     if (chatLine.Text.StartsWith(PetPhrase))
                     {
-                        CharResolver.AddPet(chatLine.Who);
+                        CharResolver.SetPet(chatLine.Who);
                         var master = chatLine.Text.Substring(PetPhrase.Length + 1, chatLine.Text.Length - PetPhrase.Length - 2);
-                        CharResolver.AddPlayer(master);
+                        CharResolver.SetPlayer(master);
                     }
                     break;
             }
@@ -76,15 +76,15 @@ namespace BizObjects
 
         public void TrackLine(Who whoLine)
         {
-            CharResolver.AddPlayer(whoLine.Character);
+            CharResolver.SetPlayer(whoLine.Character);
         }
 
         private void TrackCharacter(Character c)
         {
             if (c.IsPet)
-                CharResolver.AddPet(c);
+                CharResolver.SetPet(c);
             if (c.IsMob)
-                CharResolver.AddNonPlayer(c);
+                CharResolver.SetNonPlayer(c);
         }
     }
 }
