@@ -68,6 +68,18 @@ namespace BizObjects
                 return false;
 
 
+            // If the current Skirmish (most recent fight) looks like a Pull, then don't start a new skirmish
+            // Or, move that pull line into a new skirmish for this new fight
+            // Q: what does a pull look like?
+            // A: one or two hits of low damage
+            // A: maybe not necessarily low damage (bow shot pull, spell pull)
+            // A: still within a period of time, just a longer one
+
+
+
+
+
+
 
             // A new Skirmish is needed if it's been too long since the last mob died
             // If you're fighting mobs without a break, they all get grouped into one skirmish
