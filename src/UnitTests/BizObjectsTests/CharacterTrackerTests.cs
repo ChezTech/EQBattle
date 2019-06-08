@@ -1,32 +1,14 @@
 ﻿using System;
 using BizObjects;
-using LineParser;
-using LineParser.Parsers;
 using LogObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BizObjectsTests
 {
+
     [TestClass]
-    public class CharacterTrackerTests
+    public class CharacterTrackerTests : ParserTestBase
     {
-        private static readonly YouResolver YouAre = new YouResolver("Khadaji");
-        private static LineParserFactory _parser = new LineParserFactory();
-        private readonly IParser _hitParser = new HitParser(YouAre);
-        private readonly IParser _missParser = new MissParser(YouAre);
-        private readonly IParser _healParser = new HealParser(YouAre);
-        private readonly IParser _killParser = new KillParser(YouAre);
-        private readonly IParser _whoParser = new WhoParser(YouAre);
-
-        public CharacterTrackerTests()
-        {
-            _parser.AddParser(_hitParser, null);
-            _parser.AddParser(_missParser, null);
-            _parser.AddParser(_healParser, null);
-            _parser.AddParser(_killParser, null);
-            _parser.AddParser(_whoParser, null);
-        }
-
         private readonly Action<CharacterTracker, string> TrackLine = (tracker, logLine) =>
         {
             ILine line = _parser.ParseLine(new LogDatum(logLine));
