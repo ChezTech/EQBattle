@@ -30,10 +30,8 @@ namespace BizObjectsTests
         [TestMethod]
         public void IdentifyCharYoureAttackingAsAMob()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
-            var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Mon May 27 09:56:06 2019] Khadaji kicks Gomphus for 871 points of damage. (Critical)")));
 
             Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khadaji"));
@@ -43,10 +41,8 @@ namespace BizObjectsTests
         [TestMethod]
         public void YouAreNotAMonster()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
-            var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Tue May 28 06:10:45 2019] You hit yourself for 8000 points of unresistable damage by Cannibalization V.")));
 
             Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khadaji"));
@@ -55,10 +51,8 @@ namespace BizObjectsTests
         [TestMethod]
         public void WhoLineSetsPlayer()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
-            var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 24 18:26:18 2019] [86 Spiritwatcher (Shaman)] Khronick (Barbarian) <Siblings of the Shroud> ZONE: arthicrex")));
 
             Assert.AreEqual(CharacterResolver.Type.Player, charResolver.WhichType("Khronick"));
@@ -67,10 +61,8 @@ namespace BizObjectsTests
         [TestMethod]
         public void WhoLineSticks()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
-            var tracker = new CharacterTracker(YouAre, charResolver);
             tracker.TrackLine((dynamic)_parser.ParseLine(new LogDatum("[Fri May 24 18:26:18 2019] [86 Spiritwatcher (Shaman)] Khronick (Barbarian) <Siblings of the Shroud> ZONE: arthicrex")));
 
             // Fake line, but it would set Khronick to an NPC all by itself
@@ -82,10 +74,7 @@ namespace BizObjectsTests
         [TestMethod]
         public void HealOfPlayerDetectsMercenary()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
-
-            var tracker = new CharacterTracker(YouAre, charResolver);
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
             // Set the player
             charResolver.SetPlayer("Khronick");
@@ -99,10 +88,7 @@ namespace BizObjectsTests
         [TestMethod]
         public void HealOfPlayerDoesntOverrideExistingPlayer()
         {
-            CharacterResolver charResolver = new CharacterResolver();
-            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
-
-            var tracker = new CharacterTracker(YouAre, charResolver);
+            var tracker = SetupNewTracker(out CharacterResolver charResolver);
 
             // Set the player
             charResolver.SetPlayer("Khronick");
@@ -119,6 +105,13 @@ namespace BizObjectsTests
         {
             // Pet says 'My leader is Bob'
 
+        }
+
+        private CharacterTracker SetupNewTracker(out CharacterResolver charResolver)
+        {
+            charResolver = new CharacterResolver();
+            charResolver.SetPlayer(YouAre.Name); // This is normally done at the start of a Battle
+            return new CharacterTracker(YouAre, charResolver);
         }
     }
 }
