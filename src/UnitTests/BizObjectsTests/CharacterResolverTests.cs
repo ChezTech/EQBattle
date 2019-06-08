@@ -98,5 +98,15 @@ namespace BizObjectsTests
 
             Assert.AreEqual(CharacterResolver.Type.Mercenary, cr.WhichType("Bob"));
         }
+
+        [TestMethod]
+        public void PlayerNotOverwrittenByMercenary()
+        {
+            var cr = new CharacterResolver();
+            cr.SetPlayer("Bob");
+            cr.SetMercenary("Bob", overwrite: false);
+
+            Assert.AreEqual(CharacterResolver.Type.Player, cr.WhichType("Bob"));
+        }
     }
 }

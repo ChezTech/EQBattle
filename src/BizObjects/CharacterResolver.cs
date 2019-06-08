@@ -40,19 +40,20 @@ namespace BizObjects
 
         public Type WhichType(Character c) => WhichType(c.Name);
         public Type WhichType(string name) => _namesToMetaData.TryGetValue(name, out CharacterMetaData charMd) ? charMd.CharType : Type.Unknown;
-        public void SetPlayer(Character c, bool sticky = false) => SetPlayer(c.Name, sticky);
-        public void SetPlayer(string name, bool sticky = false) => SetCharacter(name, Type.Player, sticky);
-        public void SetNonPlayer(Character c, bool sticky = false) => SetNonPlayer(c.Name, sticky);
-        public void SetNonPlayer(string name, bool sticky = false) => SetCharacter(name, Type.NonPlayerCharacter, sticky);
-        public void SetPet(Character c, bool sticky = false) => SetPet(c.Name, sticky);
-        public void SetPet(string name, bool sticky = false) => SetCharacter(name, Type.Pet, sticky);
-        public void SetMercenary(Character c, bool sticky = false) => SetMercenary(c.Name, sticky);
-        public void SetMercenary(string name, bool sticky = false) => SetCharacter(name, Type.Mercenary, sticky);
-        private void SetCharacter(string name, Type charType, bool sticky = false)
+
+        public void SetPlayer(Character c, bool sticky = false, bool overwrite = true) => SetPlayer(c.Name, sticky, overwrite);
+        public void SetPlayer(string name, bool sticky = false, bool overwrite = true) => SetCharacter(name, Type.Player, sticky, overwrite);
+        public void SetNonPlayer(Character c, bool sticky = false, bool overwrite = true) => SetNonPlayer(c.Name, sticky, overwrite);
+        public void SetNonPlayer(string name, bool sticky = false, bool overwrite = true) => SetCharacter(name, Type.NonPlayerCharacter, sticky, overwrite);
+        public void SetPet(Character c, bool sticky = false, bool overwrite = true) => SetPet(c.Name, sticky, overwrite);
+        public void SetPet(string name, bool sticky = false, bool overwrite = true) => SetCharacter(name, Type.Pet, sticky, overwrite);
+        public void SetMercenary(Character c, bool sticky = false, bool overwrite = true) => SetMercenary(c.Name, sticky, overwrite);
+        public void SetMercenary(string name, bool sticky = false, bool overwrite = true) => SetCharacter(name, Type.Mercenary, sticky, overwrite);
+        private void SetCharacter(string name, Type charType, bool sticky = false, bool overwrite = true)
         {
             _namesToMetaData.AddOrUpdate(name,
                 key => new CharacterMetaData(charType, sticky),
-                (key, oldValue) => oldValue.Sticky ? oldValue : new CharacterMetaData(charType, sticky));
+                (key, oldValue) => oldValue.Sticky ? oldValue : overwrite ? new CharacterMetaData(charType, sticky) : oldValue);
         }
     }
 }
