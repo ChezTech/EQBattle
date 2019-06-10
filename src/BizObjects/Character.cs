@@ -111,5 +111,20 @@ namespace BizObjects
                 return string.Format($"{Name} {(IsPet ? "P" : "")}{(IsMob ? "M" : "")}");
             }
         }
+
+        public override string ToString()
+        {
+            return ToString("G");
+        }
+
+        public string ToString(string format)
+        {
+            switch (format)
+            {
+                case "G":
+                default:
+                    return DebuggerDisplay;
+            }
+        }
     }
 }
