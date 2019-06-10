@@ -33,7 +33,16 @@ namespace BizObjects
         public PerTimeStatistics<Hit, ILine> PerTime { get; }
 
 
-        public double HitPercentage { get => (double)Hit.Count / (Hit.Count + Miss.Count); }
+        public double HitPercentage
+        {
+            get
+            {
+                var totalCount = Hit.Count + Miss.Count;
+                if (totalCount == 0)
+                    return 0;
+                return (double)Hit.Count / totalCount;
+            }
+        }
 
         public IEnumerable<IGrouping<AttackType, Hit>> HitsPerType { get => Hit.Lines.GroupBy(x => x.Type); }
         public IEnumerable<AttackType> HitTypes { get => HitsPerType.Select(x => x.Key); }
