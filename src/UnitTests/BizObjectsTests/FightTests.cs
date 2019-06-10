@@ -18,30 +18,14 @@ namespace BizObjectsTests
     // https://eq.gimasoft.com/gina/Default.aspx
 
     [TestClass]
-    public class FightTests
+    public class FightTests : ParserTestBase
     {
-        private static readonly YouResolver YouAre = new YouResolver("Khadaji");
-        private static readonly CharacterResolver CharResolver = new CharacterResolver();
-        private static LineParserFactory _parser = new LineParserFactory();
-        private readonly IParser _hitParser = new HitParser(YouAre);
-        private readonly IParser _missParser = new MissParser(YouAre);
-        private readonly IParser _healParser = new HealParser(YouAre);
-        private readonly IParser _killParser = new KillParser(YouAre);
-
         private readonly Action<Fight, CharacterTracker, string> AddFightTrackLine = (fight, tracker, logLine) =>
         {
             ILine line = _parser.ParseLine(new LogDatum(logLine));
             tracker.TrackLine((dynamic)line);
             fight.AddLine((dynamic)line);
         };
-
-        public FightTests()
-        {
-            _parser.AddParser(_hitParser, null);
-            _parser.AddParser(_missParser, null);
-            _parser.AddParser(_healParser, null);
-            _parser.AddParser(_killParser, null);
-        }
 
         [TestMethod]
         public void SmallFight()

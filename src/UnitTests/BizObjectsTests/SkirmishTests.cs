@@ -18,32 +18,14 @@ namespace BizObjectsTests
     // https://eq.gimasoft.com/gina/Default.aspx
 
     [TestClass]
-    public class SkirmishTests
+    public class SkirmishTests : ParserTestBase
     {
-        private static readonly YouResolver YouAre = new YouResolver("Khadaji");
-        private static readonly CharacterResolver CharResolver = new CharacterResolver();
-        private static LineParserFactory _parser = new LineParserFactory();
-        private readonly IParser _hitParser = new HitParser(YouAre);
-        private readonly IParser _missParser = new MissParser(YouAre);
-        private readonly IParser _healParser = new HealParser(YouAre);
-        private readonly IParser _killParser = new KillParser(YouAre);
-
         private readonly Action<Skirmish, CharacterTracker, string> AddSkirmishTrackLine = (skirmish, tracker, logLine) =>
         {
             ILine line = _parser.ParseLine(new LogDatum(logLine));
             tracker.TrackLine((dynamic)line);
             skirmish.AddLine((dynamic)line);
         };
-
-        public SkirmishTests()
-        {
-            _parser.AddParser(_hitParser, null);
-            _parser.AddParser(_missParser, null);
-            _parser.AddParser(_healParser, null);
-            _parser.AddParser(_killParser, null);
-
-            CharResolver.SetNonPlayer("Harvester Collyx");
-        }
 
         [TestMethod]
         public void SmallFight()
