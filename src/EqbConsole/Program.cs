@@ -101,7 +101,11 @@ namespace EqbConsole
             WriteMessage("===== Skirmishes ======");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             foreach (Skirmish skirmish in _eqBattle.Skirmishes)
+            {
                 ShowSkirmishDetail(skirmish);
+                foreach (Fight fight in skirmish.Fights)
+                    ShowFightDetail(fight);
+            }
 
             // ShowNamedFighters();
             // ShowMobHeals();
@@ -115,7 +119,7 @@ namespace EqbConsole
             var heals = _healCollection.Where(x => x.Patient.IsMob || x.Healer.IsMob);
             WriteMessage($"Count: {heals.Count()}");
 
-            foreach(var heal in heals)
+            foreach (var heal in heals)
                 WriteMessage($"{heal.LogLine.LogMessage}");
         }
 
@@ -126,13 +130,30 @@ namespace EqbConsole
             var unknownDamage = _unknownCollection.Where(x => x.LogLine.LogMessage.Contains("damage"));
             WriteMessage($"Count: {unknownDamage.Count()}");
 
-            foreach(var dmg in unknownDamage)
+            foreach (var dmg in unknownDamage)
                 WriteMessage($"{dmg.LogLine.LogMessage}");
         }
 
         private void ShowSkirmishDetail(Skirmish skirmish)
         {
-            WriteMessage($"Mob: {skirmish.Title,-30} Dmg: {skirmish.OffensiveStatistics.Hit.Total}");
+            WriteMessage($"---- Skirmish: {skirmish.Title,-30}");
+        }
+
+        private void ShowFightDetail(Fight fight)
+        {
+            WriteMessage($"--------- Fight: {fight.Title,-30}");
+
+            foreach (var fighter in fight.Fighters.OrderBy(x => x.Character.Name))
+                ShowFighterDetail(fighter);
+        }
+
+        private void ShowFighterDetail(Fighter fighter)
+        {
+            WriteMessage(" {0,-30}  Off: {1,8:N0} ({2,4:P0})  Def: {3,8:N0} ({4,4:P0})  Heals: {5,8:N0} / {6,8:N0}",
+                fighter.Character,
+                fighter.OffensiveStatistics.Hit.Total, fighter.OffensiveStatistics.HitPercentage,
+                fighter.DefensiveStatistics.Hit.Total, fighter.DefensiveStatistics.HitPercentage,
+                fighter.OffensiveStatistics.Heal.Total, fighter.DefensiveStatistics.Heal.Total);
         }
 
         private void ShowNamedFighters()
