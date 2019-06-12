@@ -124,26 +124,21 @@ namespace BizObjects
 
         public double FighterDPS
         {
-            get
-            {
-                // One hit would give infinity DPS ... naw, let's cap it at your total damage
-                if (_timeStats.FighterDuration == TimeSpan.Zero)
-                    return _hitStats.Total;
-
-                return _hitStats.Total / _timeStats.FighterDuration.TotalSeconds;
-            }
+            get => getDPS(_hitStats.Total, _timeStats.FighterDuration);
         }
 
         public double FightDPS
         {
-            get
-            {
-                // One hit would give infinity DPS ... naw, let's cap it at your total damage
-                if (_timeStats.FightDuration == TimeSpan.Zero)
-                    return _hitStats.Total;
+            get => getDPS(_hitStats.Total, _timeStats.FightDuration);
+        }
 
-                return _hitStats.Total / _timeStats.FightDuration.TotalSeconds;
-            }
+        private double getDPS(int total, TimeSpan duration)
+        {
+            // One hit would give infinity DPS ... naw, let's cap it at your total damage
+            if (duration == TimeSpan.Zero)
+                return total;
+
+            return total / duration.TotalSeconds;
         }
 
         // DPS, trailing 6s, trailing 12s, per fighterEngagement, perFight
