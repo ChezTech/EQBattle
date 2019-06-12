@@ -86,14 +86,7 @@ namespace BizObjects
                   ? FighterDuration
                   : _fight.OffensiveStatistics.Duration.FightDuration;
             }
-
         }
-
-
-        /// <Summary>
-        /// Duration from the main engagement till death
-        /// </Summary>
-        public TimeSpan PrimaryDuration { get; }
 
         /// <Summary>
         /// Duration from when a particular fighter started their main engagement in the fight
