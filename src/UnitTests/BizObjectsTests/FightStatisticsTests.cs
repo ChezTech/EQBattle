@@ -166,6 +166,57 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        public void LongTestForSlidingWindows()
+        {
+            var fightStats = new FightStatistics();
+
+            VerifyLastSix(fightStats, 0, 0);
+
+            AddFightStats(fightStats, "[Tue May 28 06:18:10 2019] You kick Gomphus for 1288 points of damage. (Riposte)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:10 2019] You crush Gomphus for 6528 points of damage. (Riposte Critical)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:13 2019] You crush Gomphus for 1472 points of damage.");
+            VerifyLastSix(fightStats, 9288, 3096); // DPS here should be based on how long the fight is so far, since that's less than six seconds
+
+            AddFightStats(fightStats, "[Tue May 28 06:18:14 2019] Gomphus is pierced by YOUR thorns for 60 points of non-melee damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:14 2019] You kick Gomphus for 2598 points of damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:14 2019] Gomphus is pierced by YOUR thorns for 60 points of non-melee damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:15 2019] You strike Gomphus for 9723 points of damage. (Critical)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:15 2019] You hit Gomphus for 22528 points of physical damage by Five Point Palm VI.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:18 2019] You crush Gomphus for 6795 points of damage. (Critical)");
+            VerifyLastSix(fightStats, 43236, 7206);
+
+            AddFightStats(fightStats, "[Tue May 28 06:18:20 2019] Gomphus is pierced by YOUR thorns for 60 points of non-melee damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:20 2019] You kick Gomphus for 7078 points of damage. (Critical)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:22 2019] You kick Gomphus for 9605 points of damage. (Riposte Critical)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:23 2019] You strike Gomphus for 598 points of damage. (Strikethrough)");
+            VerifyLastSix(fightStats, 24136, 4022.66);
+
+            AddFightStats(fightStats, "[Tue May 28 06:18:26 2019] You strike Gomphus for 514 points of damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:27 2019] You hit Gomphus for 388 points of poison damage by Strike of Venom IV.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:27 2019] You kick Gomphus for 7938 points of damage. (Riposte)");
+            AddFightStats(fightStats, "[Tue May 28 06:18:28 2019] You strike Gomphus for 1208 points of damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:28 2019] You kick Gomphus for 2905 points of damage. (Strikethrough Critical)");
+            VerifyLastSix(fightStats, 13551, 2258.5); // Note: this is not inclusive of ":22 9605 damage" hit, the six seconds are [:23 - :28]
+
+            AddFightStats(fightStats, "[Tue May 28 06:18:29 2019] Gomphus is pierced by YOUR thorns for 60 points of non-melee damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:29 2019] You kick Gomphus for 7938 points of damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:30 2019] You crush Gomphus for 663 points of damage.");
+            AddFightStats(fightStats, "[Tue May 28 06:18:30 2019] You kick Gomphus for 4021 points of damage.");
+
+            // Basic tests
+            Assert.AreEqual(94028, fightStats.Hit.Total);
+            Assert.AreEqual(new TimeSpan(0, 0, 20), fightStats.Duration.FighterDuration);
+            Assert.AreEqual(4701.4, fightStats.PerTime.FighterDPS, 0.01);
+            VerifyLastSix(fightStats, 25635, 4272.5);
+        }
+
+        private void VerifyLastSix(FightStatistics fightStats, int total, double dps)
+        {
+            Assert.AreEqual(total, fightStats.Hit.LastSixTotal);
+            Assert.AreEqual(dps, fightStats.PerTime.FighterDPSLastSixSeconds, 0.01);
+        }
+
+        [TestMethod]
         public void EmptyStats()
         {
             var fightStats = new FightStatistics();

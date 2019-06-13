@@ -106,6 +106,7 @@ namespace BizObjects
         where T : class, ILine
         where U : class, ILine
     {
+        private readonly TimeSpan SixSeconds = new TimeSpan(0, 0, 6);
         private readonly HitPointStatistics<T> _hitStats;
         private readonly DurationStatistics<U> _timeStats;
 
@@ -118,6 +119,15 @@ namespace BizObjects
         public double FighterDPS
         {
             get => getDPS(_hitStats.Total, _timeStats.FighterDuration);
+        }
+
+        /// <Summary>
+        /// Last six seconds DPS (last six since the latest line)
+        /// </Summary>
+
+        public double FighterDPSLastSixSeconds
+        {
+            get => getDPS(_hitStats.LastSixTotal, new[] { SixSeconds, _timeStats.FighterDuration }.Min());
         }
 
         public double FightDPS
