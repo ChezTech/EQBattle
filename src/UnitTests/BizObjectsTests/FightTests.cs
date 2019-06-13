@@ -373,11 +373,49 @@ namespace BizObjectsTests
             VerifyFighterStatistics("Khadaji", fight, 8000, 0, 0, 0, 8000, 0, 0, 0); // Really, this is Khronick, but I have "you" setup as "Khadaji" for this test
         }
 
+        [TestMethod]
+        public void DpsTestPerFighter()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:00 2019] A scary mob smashes YOU for 927 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:01 2019] You kick a scary mob for 741 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:03 2019] A scary mob smashes YOU for 4259 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:04 2019] You strike a scary mob for 647 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:04 2019] Khadaji hit a scary mob for 388 points of poison damage by Strike of Venom IV.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:06 2019] Bealica hit a scary mob for 6426 points of magic damage by Pure Wildmagic.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:07 2019] You crush a scary mob for 1520 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:08 2019] A scary mob smashes YOU for 3257 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:09 2019] Bealica hit a scary mob for 8085 points of fire damage by Inizen's Fire.");
+            AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:10 2019] You crush a scary mob for 1546 points of damage.");
+
+            VerifyDpsStats(fight.OffensiveStatistics, 27796, new TimeSpan(0, 0, 10), 2779.6, 2779.6);
+            VerifyDpsStats(fight, "a scary mob", 8443, new TimeSpan(0, 0, 8), 1055.38, 844.3, x => x.OffensiveStatistics);
+            VerifyDpsStats(fight, "Khadaji", 4842, new TimeSpan(0, 0, 9), 538.0, 484.2, x => x.OffensiveStatistics);
+            VerifyDpsStats(fight, "Bealica", 14511, new TimeSpan(0, 0, 3), 4837, 1451.1, x => x.OffensiveStatistics);
+        }
+
         private Fight SetupNewFight(out CharacterTracker charTracker)
         {
             var charResolver = new CharacterResolver();
             charTracker = new CharacterTracker(YouAre, charResolver);
             return new Fight(YouAre, charResolver);
+        }
+
+        private void VerifyDpsStats(Fight fight, string name, int total, TimeSpan duration, double fighterDps, double fightDps, Func<Fighter, FightStatistics> statChooser)
+        {
+            var fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
+
+            VerifyDpsStats(statChooser(fighter), total, duration, fighterDps, fightDps);
+        }
+
+        private void VerifyDpsStats(FightStatistics stats, int total, TimeSpan duration, double fighterDps, double fightDps)
+        {
+            Assert.AreEqual(total, stats.Hit.Total);
+            Assert.AreEqual(duration, stats.Duration.FighterDuration);
+            Assert.AreEqual(fighterDps, stats.PerTime.FighterDPS, 0.01);
+            Assert.AreEqual(fightDps, stats.PerTime.FightDPS, 0.01);
         }
 
         private void VerifyFighterStatistics(string name, Fight fight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
