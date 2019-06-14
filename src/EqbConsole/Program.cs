@@ -13,6 +13,11 @@ using LogObjects;
 
 namespace EqbConsole
 {
+    // Chart controls
+    // https://github.com/Microsoft/InteractiveDataDisplay.WPF
+    // https://github.com/Live-Charts/Live-Charts
+    // https://github.com/oxyplot/oxyplot/
+
     class Program
     {
         //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
@@ -76,34 +81,34 @@ namespace EqbConsole
             WriteMessage("Read Elapsed: {0}", readElapsed);
             WriteMessage("Parse Elapsed: {0}", parseElapsed);
             WriteMessage("Line count: {0:N0}", lineCount);
-            WriteMessage("Job Queue: {0:N0}", _jobQueueLogLines.Count);
+            // WriteMessage("Job Queue: {0:N0}", _jobQueueLogLines.Count);
 
-            WriteMessage("Line collection count: {0}", _lineCollection.Count);
-            WriteMessage("Unknown collection count: {0}", _unknownCollection.Count);
-            WriteMessage("Attack collection count: {0}", _hitCollection.Count);
-            WriteMessage("Kill collection count: {0}", _killCollection.Count);
-            WriteMessage("Miss collection count: {0}", _missCollection.Count);
-            WriteMessage("Heal collection count: {0}", _healCollection.Count);
+            // WriteMessage("Line collection count: {0}", _lineCollection.Count);
+            // WriteMessage("Unknown collection count: {0}", _unknownCollection.Count);
+            // WriteMessage("Attack collection count: {0}", _hitCollection.Count);
+            // WriteMessage("Kill collection count: {0}", _killCollection.Count);
+            // WriteMessage("Miss collection count: {0}", _missCollection.Count);
+            // WriteMessage("Heal collection count: {0}", _healCollection.Count);
 
-            WriteMessage("===== Attacks ======");
-            WriteMessage("Total damage: {0:N0}", _hitCollection.Sum(x => x.Damage));
-            DumpStatsForCharacter("Khadaji");
-            DumpStatsForCharacter("Khadaji", charOnly: true);
-            DumpStatsForCharacter("Khadaji", isPet: true);
-            DumpStatsForCharacter("Khadaji", negative: true);
+            // WriteMessage("===== Attacks ======");
+            // WriteMessage("Total damage: {0:N0}", _hitCollection.Sum(x => x.Damage));
+            // DumpStatsForCharacter("Khadaji");
+            // DumpStatsForCharacter("Khadaji", charOnly: true);
+            // DumpStatsForCharacter("Khadaji", isPet: true);
+            // DumpStatsForCharacter("Khadaji", negative: true);
 
             WriteMessage("===== Battle ======");
-            WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
-            WriteMessage("Skirmish offensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.OffensiveStatistics.Hit.Total));
-            WriteMessage("Skirmish defensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.DefensiveStatistics.Hit.Total));
-            WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Skirmishes.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
-            WriteMessage("");
+            // WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
+            // WriteMessage("Skirmish offensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.OffensiveStatistics.Hit.Total));
+            // WriteMessage("Skirmish defensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.DefensiveStatistics.Hit.Total));
+            // WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Skirmishes.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
+            // WriteMessage("");
             WriteMessage("===== Skirmishes ======");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
-            foreach (Skirmish skirmish in _eqBattle.Skirmishes)
+            foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.OffensiveStatistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
             {
                 ShowSkirmishDetail(skirmish);
-                foreach (Fight fight in skirmish.Fights)
+                foreach (Fight fight in skirmish.Fights.Where(x => x.OffensiveStatistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
                     ShowFightDetail(fight);
             }
 
@@ -141,7 +146,7 @@ namespace EqbConsole
 
         private void ShowFightDetail(Fight fight)
         {
-            WriteMessage($"--------- Fight: {fight.Title,-30}");
+            WriteMessage($"--------- Fight: ({fight.OffensiveStatistics.Duration.FightDuration:mm\\:ss})  {fight.Title,-30}");
 
             foreach (var fighter in fight.Fighters.OrderBy(x => x.Character.Name))
                 ShowFighterDetail(fighter);
@@ -149,9 +154,9 @@ namespace EqbConsole
 
         private void ShowFighterDetail(Fighter fighter)
         {
-            WriteMessage(" {0,-30}  Off: {1,8:N0} ({2,4:P0})  Def: {3,8:N0} ({4,4:P0})  Heals: {5,8:N0} / {6,8:N0}",
+            WriteMessage(" {0,-30}  Off: {1,8:N0} ({2,4:P0}) {3,9:N2}    Def: {4,8:N0} ({5,4:P0})    Heals: {6,8:N0} / {7,8:N0}",
                 fighter.Character,
-                fighter.OffensiveStatistics.Hit.Total, fighter.OffensiveStatistics.HitPercentage,
+                fighter.OffensiveStatistics.Hit.Total, fighter.OffensiveStatistics.HitPercentage, fighter.OffensiveStatistics.PerTime.FightDPS,
                 fighter.DefensiveStatistics.Hit.Total, fighter.DefensiveStatistics.HitPercentage,
                 fighter.OffensiveStatistics.Heal.Total, fighter.DefensiveStatistics.Heal.Total);
         }
