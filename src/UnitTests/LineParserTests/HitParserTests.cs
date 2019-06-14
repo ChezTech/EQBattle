@@ -38,6 +38,7 @@ namespace LineParserTests
         [DataRow("[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.", "a sandspinner stalker", false, "Khadaji", false, 2080, "DamageOverTime", AttackType.DamageOverTime, null, "Paralyzing Bite", null)]
         [DataRow("[Mon May 27 07:20:04 2019] You hit a cliknar skirmish drone for 22528 points of physical damage by Five Point Palm VI.", "Khadaji", false, "a cliknar skirmish drone", false, 22528, "hit", AttackType.Hit, "physical", "Five Point Palm VI", null)]
         [DataRow("[Mon May 27 07:20:04 2019] You hit yourself for 1112 points of unresistable damage by Five Point Palm Focusing.", "Khadaji", false, "Khadaji", false, 1112, "hit", AttackType.Hit, "unresistable", "Five Point Palm Focusing", null)]
+        [DataRow("[Tue Apr 01 21:58:49 2003] A Razorfiend Subduer was hit by non-melee for 83 points of damage.", "Unknown", false, "a Razorfiend Subduer", false, 83, "hit", AttackType.Hit, "non-melee", null, null)]
         // [DataRow("LLLLLLLLLL", "Khadaji", false, "dddddd", false, 1277, "punch", AttackType.Punch, null, null, null)]
         public void HitTests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, int damage, string verb, AttackType attackType, string type, string by, string qualifier)
         {

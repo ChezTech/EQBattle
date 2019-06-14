@@ -15,6 +15,7 @@ namespace LineParser.Parsers
         private readonly Regex RxYourDot;
         private readonly Regex RxAnonymousDot;
         private readonly Regex RxSpellDamage = new Regex(@"^(.*)\.\s+You have taken (\d+) points of damage\.(?: \((.+)\))?$", RegexOptions.Compiled); // https://regex101.com/r/7g5Xfe/6
+        private readonly Regex RxNonMeleeDamage = new Regex(@"^(.+) was (.+) by (.+) for (\d+) points of damage\.$", RegexOptions.Compiled); // https://regex101.com/r/y3K5qL/3/
         private readonly string regexHit = @"(.+) (**verbs**) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?\.(?: \((.+)\))?"; // https://regex101.com/r/bc2GRX/2
         private readonly string regexDamageShield = @"(.+) (?:is|are) (**verbs**) by (.+) (.+) for (\d+) points? of(?: (.+))? damage(?: by (.+))?[.!](?: \((.+)\))?"; // https://regex101.com/r/uerSMk/2/
         private readonly string regexDot = @"(.+) (?:has|have) taken (\d+) damage from (.+) by (.+)\.(?: \((.+)\))?"; // https://regex101.com/r/U4DUt4/2
@@ -40,6 +41,10 @@ namespace LineParser.Parsers
         {
             // Need to do Damage Shield before normal hit because normal hit will match a DS message, but won't group it correctly.
             if (TryParseDamageShield(logDatum, out lineEntry))
+                return true;
+
+            // Need to do non-melee damage before normal hit otherwise it will match incorrectly.
+            if (TryParseNonMeleeDamage(logDatum, out lineEntry))
                 return true;
 
             if (TryParseHit(logDatum, out lineEntry))
@@ -189,6 +194,30 @@ namespace LineParser.Parsers
             string damageType = null;
             string damageBy = null;
             var damageQualifier = match.Groups[3].Success ? match.Groups[3].Value : null;
+
+            lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier);
+
+            return true;
+        }
+
+        private bool TryParseNonMeleeDamage(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxNonMeleeDamage.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            var spellDescription = match.Groups[1].Value;
+            string attacker = null; // Anonymous
+            var defender = match.Groups[1].Value;
+            var attackVerb = match.Groups[2].Value;
+            var damage = int.Parse(match.Groups[4].Value);
+            var damageType = match.Groups[3].Value;
+            string damageBy = null;
+            string damageQualifier = null;
 
             lineEntry = new Hit(logDatum, attacker, defender, attackVerb, damage, damageType, damageBy, damageQualifier);
 
