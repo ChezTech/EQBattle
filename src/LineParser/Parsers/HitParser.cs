@@ -10,6 +10,7 @@ namespace LineParser.Parsers
 {
     public class HitParser : IParser
     {
+        private const string DamagePhrase = "damage";
         private readonly Regex RxHit;
         private readonly Regex RxDamageShield;
         private readonly Regex RxDot;
@@ -40,6 +41,11 @@ namespace LineParser.Parsers
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
+            lineEntry = null;
+
+            if (EarlyExit(logDatum))
+                return false;
+
             // Need to do Damage Shield before normal hit because normal hit will match a DS message, but won't group it correctly.
             if (TryParseDamageShield(logDatum, out lineEntry))
                 return true;
@@ -59,6 +65,13 @@ namespace LineParser.Parsers
             if (TryParseSpellDamage(logDatum, out lineEntry))
                 return true;
 
+            return false;
+        }
+
+        private bool EarlyExit(LogDatum logDatum)
+        {
+            if (!logDatum.LogMessage.Contains(DamagePhrase))
+                return true;
             return false;
         }
 
