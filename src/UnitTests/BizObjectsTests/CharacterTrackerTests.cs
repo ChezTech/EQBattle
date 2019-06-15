@@ -1,5 +1,6 @@
 ﻿using System;
-using BizObjects;
+using BizObjects.Converters;
+using BizObjects.Lines;
 using LogObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

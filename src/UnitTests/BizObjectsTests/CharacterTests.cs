@@ -1,4 +1,4 @@
-﻿using BizObjects;
+﻿using BizObjects.Battle;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 

@@ -1,8 +1,10 @@
+using BizObjects.Lines;
+using BizObjects.Statistics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Battle
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Fighter

@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BizObjects.Battle;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Converters
 {
     public class YouResolver
     {

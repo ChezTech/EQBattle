@@ -1,4 +1,5 @@
-﻿using BizObjects;
+﻿using BizObjects.Converters;
+using BizObjects.Lines;
 using LogObjects;
 
 namespace LineParser.Parsers

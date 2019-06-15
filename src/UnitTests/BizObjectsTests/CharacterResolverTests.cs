@@ -1,4 +1,5 @@
-﻿using BizObjects;
+﻿using BizObjects.Battle;
+using BizObjects.Converters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BizObjectsTests

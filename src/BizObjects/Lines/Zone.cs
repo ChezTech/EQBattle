@@ -1,7 +1,6 @@
-﻿
-using LogObjects;
+﻿using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public class Zone : Line
     {

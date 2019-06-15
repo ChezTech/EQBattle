@@ -1,4 +1,4 @@
-﻿namespace BizObjects
+﻿namespace BizObjects.Converters
 {
     public enum AttackType
     {

@@ -1,10 +1,13 @@
+using BizObjects.Converters;
+using BizObjects.Lines;
+using BizObjects.Statistics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Battle
 {
 
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
@@ -106,7 +109,7 @@ namespace BizObjects
 
             // Note: this finds the fighter who has the most combined attack lines
             // better would be to find the fight with the most distinct other fighters who have been attacking them
-            var topFighter = Fighters.Aggregate((maxItem, nextItem) => (maxItem.DefensiveStatistics.Lines.Count + maxItem.OffensiveStatistics.Lines.Count) > (nextItem.DefensiveStatistics.Lines.Count + nextItem.OffensiveStatistics.Lines.Count) ? maxItem : nextItem);
+            var topFighter = Fighters.Aggregate((maxItem, nextItem) => maxItem.DefensiveStatistics.Lines.Count + maxItem.OffensiveStatistics.Lines.Count > nextItem.DefensiveStatistics.Lines.Count + nextItem.OffensiveStatistics.Lines.Count ? maxItem : nextItem);
             if (topFighter.DefensiveStatistics.Lines.Count + topFighter.OffensiveStatistics.Lines.Count >= 2)
                 PrimaryMob = topFighter.Character;
         }

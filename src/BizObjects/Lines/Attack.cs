@@ -1,7 +1,8 @@
-﻿
+﻿using BizObjects.Battle;
+using BizObjects.Converters;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public abstract class Attack : Line
     {

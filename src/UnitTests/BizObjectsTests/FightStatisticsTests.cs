@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using BizObjects;
+using BizObjects.Converters;
+using BizObjects.Lines;
+using BizObjects.Statistics;
 using LineParser;
 using LineParser.Parsers;
 using LogObjects;

@@ -1,9 +1,10 @@
 ﻿
 
 using System.Collections.Generic;
+using BizObjects.Battle;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public class Heal : Line
     {

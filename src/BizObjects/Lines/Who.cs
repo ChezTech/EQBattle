@@ -1,7 +1,7 @@
-﻿
+﻿using BizObjects.Battle;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public class Who : Line
     {

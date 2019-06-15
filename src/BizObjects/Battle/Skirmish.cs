@@ -1,9 +1,12 @@
+using BizObjects.Converters;
+using BizObjects.Lines;
+using BizObjects.Statistics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Battle
 {
     public class Skirmish : IFight
     {

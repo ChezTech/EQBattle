@@ -1,7 +1,8 @@
+using BizObjects.Lines;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Statistics
 {
     public class CountStatistics<T> where T : class, ILine
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public interface ILine
     {

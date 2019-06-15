@@ -1,8 +1,9 @@
+using BizObjects.Lines;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Statistics
 {
     public class HitPointStatistics<T> : CountStatistics<T> where T : class, ILine
     {

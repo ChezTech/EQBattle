@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using BizObjects;
+using BizObjects.Battle;
 using LineParser;
 using LineParser.Parsers;
 using LogObjects;

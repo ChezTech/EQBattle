@@ -1,4 +1,4 @@
-using BizObjects;
+using BizObjects.Converters;
 using LineParser;
 using LineParser.Parsers;
 

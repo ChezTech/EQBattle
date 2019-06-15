@@ -1,8 +1,11 @@
+using BizObjects.Battle;
+using BizObjects.Converters;
+using BizObjects.Lines;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BizObjects
+namespace BizObjects.Statistics
 {
     public class FightStatistics
     {

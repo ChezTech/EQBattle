@@ -3,9 +3,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using BizObjects.Battle;
 using LogObjects;
 
-namespace BizObjects
+namespace BizObjects.Converters
 {
     /// <Summary>
     /// Figures out if the character is a PC, NPC/Mob, Pet or Mercenary. Especially useful for named mobs

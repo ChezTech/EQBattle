@@ -1,8 +1,7 @@
-﻿
-using LogObjects;
+﻿using LogObjects;
 using System;
 
-namespace BizObjects
+namespace BizObjects.Lines
 {
     public abstract class Line : ILine
     {

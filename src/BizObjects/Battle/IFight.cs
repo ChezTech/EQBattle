@@ -1,7 +1,9 @@
+using BizObjects.Lines;
+using BizObjects.Statistics;
 using System;
 using System.Collections.Generic;
 
-namespace BizObjects
+namespace BizObjects.Battle
 {
     public interface IFight
     {
@@ -10,7 +12,7 @@ namespace BizObjects
         FightStatistics OffensiveStatistics { get; }
         FightStatistics DefensiveStatistics { get; }
         Character PrimaryMob { get; }
-        string Title {get;}
+        string Title { get; }
         DateTime LastAttackTime { get; }
 
         void AddLine(ILine line);

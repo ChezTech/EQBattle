@@ -1,9 +1,8 @@
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace BizObjects
+namespace BizObjects.Battle
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Character : IEquatable<Character>

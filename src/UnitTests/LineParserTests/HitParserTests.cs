@@ -1,4 +1,5 @@
-﻿using BizObjects;
+﻿using BizObjects.Converters;
+using BizObjects.Lines;
 using LineParser.Parsers;
 using LogObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

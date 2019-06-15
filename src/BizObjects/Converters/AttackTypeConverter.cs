@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BizObjects
+namespace BizObjects.Converters
 {
     public class AttackTypeConverter
     {

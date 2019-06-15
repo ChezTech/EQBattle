@@ -1,4 +1,4 @@
-﻿using BizObjects;
+﻿using BizObjects.Lines;
 using LineParser.Parsers;
 using LogObjects;
 using System;

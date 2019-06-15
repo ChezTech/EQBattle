@@ -1,5 +1,6 @@
 ﻿using System;
-using BizObjects;
+using BizObjects.Battle;
+using BizObjects.Lines;
 using LineParser;
 using LineParser.Parsers;
 using LogObjects;

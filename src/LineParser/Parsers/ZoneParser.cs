@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using BizObjects;
+using BizObjects.Lines;
 using LogObjects;
 
 namespace LineParser.Parsers
