@@ -70,9 +70,9 @@ namespace LineParser.Parsers
 
         private bool EarlyExit(LogDatum logDatum)
         {
-            if (!logDatum.LogMessage.Contains(DamagePhrase))
-                return true;
-            return false;
+            if (logDatum.LogMessage.Contains(DamagePhrase))
+                return false;
+            return true;
         }
 
         private bool TryParseHit(LogDatum logDatum, out ILine lineEntry)
