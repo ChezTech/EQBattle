@@ -26,6 +26,11 @@ namespace LineParser.Parsers
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
+            lineEntry = null;
+
+            if (EarlyExit(logDatum))
+                return false;
+
             if (TryParseYouMiss(logDatum, out lineEntry))
                 return true;
             if (TryParseOtherMiss(logDatum, out lineEntry))
@@ -33,6 +38,16 @@ namespace LineParser.Parsers
 
             return false;
         }
+        private bool EarlyExit(LogDatum logDatum)
+        {
+            if (logDatum.LogMessage.Contains("try"))
+                return false;
+            if (logDatum.LogMessage.Contains("tries"))
+                return false;
+
+            return true;
+        }
+
         private bool TryParseYouMiss(LogDatum logDatum, out ILine lineEntry)
         {
             var match = RxYouMiss.Match(logDatum.LogMessage);
