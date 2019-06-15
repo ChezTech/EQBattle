@@ -100,13 +100,15 @@ namespace LineParser.Parsers
 
         private bool TryParseDamageShield(LogDatum logDatum, out ILine lineEntry)
         {
+            lineEntry = null;
+
+            if (EarlyExitDamageShield(logDatum))
+                return false;
+
             var match = RxDamageShield.Match(logDatum.LogMessage);
 
             if (!match.Success)
-            {
-                lineEntry = null;
                 return false;
-            }
 
             var attacker = match.Groups[3].Value;
             var attackVerb = match.Groups[2].Value;
@@ -118,6 +120,13 @@ namespace LineParser.Parsers
 
             lineEntry = new Hit(logDatum, YouAre.WhoAreYou(attacker), YouAre.WhoAreYou(defender), YouAre.WhoAreYou(attackVerb), damage, damageType, damageBy, damageQualifier);
 
+            return true;
+        }
+
+        private bool EarlyExitDamageShield(LogDatum logDatum)
+        {
+            if (logDatum.LogMessage.Contains("non-melee"))
+                return false;
             return true;
         }
 
