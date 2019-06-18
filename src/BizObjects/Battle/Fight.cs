@@ -55,11 +55,8 @@ namespace BizObjects.Battle
         {
             Statistics.AddLine(line);
 
-            var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
-            attackChar.AddOffense(line);
-
-            var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
-            defendChar.AddDefense(line);
+            AddFighterLine(line.Attacker, f => f.AddOffense(line));
+            AddFighterLine(line.Defender, f => f.AddDefense(line));
 
             DeterminePrimaryMob(line);
         }
@@ -68,11 +65,14 @@ namespace BizObjects.Battle
         {
             Statistics.AddLine(line);
 
-            var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
-            healerChar.AddOffense(line);
+            AddFighterLine(line.Healer, f => f.AddOffense(line));
+            AddFighterLine(line.Patient, f => f.AddDefense(line));
+        }
 
-            var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
-            patientChar.AddDefense(line);
+        private void AddFighterLine(Character fighterChar, Action<Fighter> addLine)
+        {
+            var fighter = _fighters.GetOrAdd(fighterChar, new Fighter(fighterChar));
+            addLine(fighter);
         }
 
         // public void AddLine(Zone line) { }
