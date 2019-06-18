@@ -37,10 +37,10 @@ namespace BizObjects.Battle
         public void AddLine(Attack line)
         {
             GetAppropriateFight(ref line).AddLine(line);
+            Statistics.AddLine(line);
 
             var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
             attackChar.AddOffense(line);
-            Statistics.AddLine(line);
 
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
             defendChar.AddDefense(line);
@@ -49,10 +49,10 @@ namespace BizObjects.Battle
         public void AddLine(Heal line)
         {
             GetAppropriateFight(line).AddLine(line);
+            Statistics.AddLine(line);
 
             var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
             healerChar.AddOffense(line);
-            Statistics.AddLine(line);
 
             var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
             patientChar.AddDefense(line);
