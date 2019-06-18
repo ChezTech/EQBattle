@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BizObjects.Battle
 {
-    public class Skirmish : IFight
+    public class Skirmish : FightBase
     {
         private readonly YouResolver YouAre;
         private readonly CharacterResolver CharResolver;
@@ -21,46 +21,26 @@ namespace BizObjects.Battle
         }
 
         public IList<IFight> Fights { get; } = new List<IFight>();
+        public override bool IsFightOver => Fights.All(x => x.IsFightOver);
+        public override DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
+        public override string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
 
-        public bool IsFightOver => Fights.All(x => x.IsFightOver);
-
-        public DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
-
-        private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
-        public IEnumerable<Fighter> Fighters => _fighters.Values;
-
-        public FightStatistics Statistics { get; } = new FightStatistics();
-
-        public Character PrimaryMob => Character.Unknown;
-        public string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
-
-        public void AddLine(Attack line)
+        public override void AddLine(Attack line)
         {
             GetAppropriateFight(ref line).AddLine(line);
             Statistics.AddLine(line);
 
-            var attackChar = _fighters.GetOrAdd(line.Attacker, new Fighter(line.Attacker, this));
-            attackChar.AddOffense(line);
-
-            var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
-            defendChar.AddDefense(line);
+            AddFighterLine(line.Attacker, f => f.AddOffense(line));
+            AddFighterLine(line.Defender, f => f.AddDefense(line));
         }
 
-        public void AddLine(Heal line)
+        public override void AddLine(Heal line)
         {
             GetAppropriateFight(line).AddLine(line);
             Statistics.AddLine(line);
 
-            var healerChar = _fighters.GetOrAdd(line.Healer, new Fighter(line.Healer));
-            healerChar.AddOffense(line);
-
-            var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
-            patientChar.AddDefense(line);
-        }
-
-        public void AddLine(ILine line)
-        {
-            // GetAppropriateFight(line).AddLine(line);
+            AddFighterLine(line.Healer, f => f.AddOffense(line));
+            AddFighterLine(line.Patient, f => f.AddDefense(line));
         }
 
         // This is the function we'll use to see if a fight is a valid match (mob match and fight not over)
@@ -215,11 +195,6 @@ namespace BizObjects.Battle
 
             // Otherwise, business as normal
             return false;
-        }
-
-        public bool SimilarDamage(Hit line, bool looseMatch = false)
-        {
-            throw new NotImplementedException();
         }
     }
 }
