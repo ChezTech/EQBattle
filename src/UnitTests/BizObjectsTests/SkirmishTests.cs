@@ -304,6 +304,50 @@ namespace BizObjectsTests
             VerifyFighterStatistics("Gomphus", skirmish, 1950, 0, 0, 0, 1149, 0, 0, 1);
         }
 
+
+        [TestMethod]
+        public void EnsureFightsInASkirmishUseTheirOwnDurationForDps()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:30 2019] A sandspinner juvenile bites YOU for 2329 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Mar 30 07:18:31 2019] Bealica hit a sandspinner juvenile for 1 points of fire damage by Tears of Flame.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Mar 30 07:18:34 2019] Bealica hit a sandspinner juvenile for 2 points of fire damage by Tears of Flame.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:35 2019] You crush a sandspinner juvenile for 4051 points of damage. (Riposte Critical)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:36 2019] You have slain a sandspinner juvenile!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:40 2019] A cliknar skirmish drone bites YOU for 961 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Mar 30 07:18:42 2019] Bealica hit a cliknar skirmish drone for 3 points of fire damage by Tears of Flame.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Mar 30 07:18:44 2019] Bealica hit a cliknar skirmish drone for 4 points of fire damage by Tears of Flame.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:45 2019] You kick a cliknar skirmish drone for 7555 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 07:18:45 2019] You have slain a cliknar skirmish drone!");
+
+            // Skirmish stats
+            VerifySkirmishStats(skirmish, 14906, 0, 0, 2);
+            Assert.AreEqual(new TimeSpan(0, 0, 15), skirmish.OffensiveStatistics.Duration.FightDuration);
+            VerifyFighterDuration(skirmish, "Khadaji", new TimeSpan(0, 0, 15), new TimeSpan(0, 0, 10));
+            VerifyFighterDuration(skirmish, "Bealica", new TimeSpan(0, 0, 15), new TimeSpan(0, 0, 13));
+
+            // Fight1
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            var fight = VerifyFightStatistics("a sandspinner juvenile", skirmish, 6383, 0, 0, 1);
+            Assert.AreEqual(new TimeSpan(0, 0, 6), fight.OffensiveStatistics.Duration.FightDuration);
+            VerifyFighterDuration(fight, "Khadaji", new TimeSpan(0, 0, 6), new TimeSpan(0, 0, 1));
+            VerifyFighterDuration(fight, "Bealica", new TimeSpan(0, 0, 6), new TimeSpan(0, 0, 3));
+
+            // Fight2
+            fight = VerifyFightStatistics("a cliknar skirmish drone", skirmish, 8523, 0, 0, 1);
+            Assert.AreEqual(new TimeSpan(0, 0, 5), fight.OffensiveStatistics.Duration.FightDuration);
+            VerifyFighterDuration(fight, "Khadaji", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 0));
+            VerifyFighterDuration(fight, "Bealica", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 2));
+        }
+
+        private static void VerifyFighterDuration(IFight fight, string name, TimeSpan fightDuration, TimeSpan fighterDuration)
+        {
+            Fighter fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            Assert.AreEqual(fightDuration, fighter.OffensiveStatistics.Duration.FightDuration);
+            Assert.AreEqual(fighterDuration, fighter.OffensiveStatistics.Duration.FighterDuration);
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.OffensiveStatistics;
@@ -337,10 +381,11 @@ namespace BizObjectsTests
             Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
         }
 
-        private void VerifyFightStatistics(string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
+        private IFight VerifyFightStatistics(string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var fight = skirmish.Fights.FirstOrDefault(x => x.PrimaryMob.Name == fightMob);
             VerifyFightStatistics(fight, fightMob, skirmish, hit, heal, misses, kills);
+            return fight;
         }
 
         private void VerifyFightStatistics(IFight fight, string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
