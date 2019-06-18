@@ -30,7 +30,6 @@ namespace BizObjects.Battle
         public IEnumerable<Fighter> Fighters => _fighters.Values;
 
         public FightStatistics Statistics { get; } = new FightStatistics();
-        public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
         public Character PrimaryMob => Character.Unknown;
         public string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
@@ -45,7 +44,6 @@ namespace BizObjects.Battle
 
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
             defendChar.AddDefense(line);
-            DefensiveStatistics.AddLine(line);
         }
 
         public void AddLine(Heal line)
@@ -58,7 +56,6 @@ namespace BizObjects.Battle
 
             var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
             patientChar.AddDefense(line);
-            DefensiveStatistics.AddLine(line);
         }
 
         public void AddLine(ILine line)

@@ -32,7 +32,6 @@ namespace BizObjects.Battle
         }
 
         public FightStatistics Statistics { get; } = new FightStatistics();
-        public FightStatistics DefensiveStatistics { get; } = new FightStatistics();
 
         public virtual bool IsFightOver
         {
@@ -60,7 +59,6 @@ namespace BizObjects.Battle
 
             var defendChar = _fighters.GetOrAdd(line.Defender, new Fighter(line.Defender, this));
             defendChar.AddDefense(line);
-            DefensiveStatistics.AddLine(line);
 
             DeterminePrimaryMob(line);
         }
@@ -73,7 +71,6 @@ namespace BizObjects.Battle
 
             var patientChar = _fighters.GetOrAdd(line.Patient, new Fighter(line.Patient));
             patientChar.AddDefense(line);
-            DefensiveStatistics.AddLine(line);
         }
 
         // public void AddLine(Zone line) { }
@@ -123,7 +120,7 @@ namespace BizObjects.Battle
         public bool SimilarDamage(Hit line, bool looseMatch = false)
         {
             return looseMatch
-                ? DefensiveStatistics
+                ? Statistics
                     .Lines
                     .Select(x => x as Hit)
                     .Where(x => x != null)

@@ -10,7 +10,6 @@ namespace BizObjects.Battle
         bool IsFightOver { get; }
         IEnumerable<Fighter> Fighters { get; }
         FightStatistics Statistics { get; }
-        FightStatistics DefensiveStatistics { get; }
         Character PrimaryMob { get; }
         string Title { get; }
         DateTime LastAttackTime { get; }

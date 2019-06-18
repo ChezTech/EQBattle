@@ -355,12 +355,6 @@ namespace BizObjectsTests
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses");
             Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills");
-
-            stats = skirmish.DefensiveStatistics;
-            Assert.AreEqual(hit, stats.Hit.Total, $"Defensive hit");
-            Assert.AreEqual(heal, stats.Heal.Total, $"Defensive heal");
-            Assert.AreEqual(misses, stats.Miss.Count, $"Defensive misses");
-            Assert.AreEqual(kills, stats.Kill.Count, $"Defensive kills");
         }
 
         private void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
@@ -397,12 +391,6 @@ namespace BizObjectsTests
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");
             Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills - {fight.PrimaryMob.Name}");
-
-            stats = fight.DefensiveStatistics;
-            Assert.AreEqual(hit, stats.Hit.Total, $"Defensive hit - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(heal, stats.Heal.Total, $"Defensive heal - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(misses, stats.Miss.Count, $"Defensive misses - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(kills, stats.Kill.Count, $"Defensive kills - {fight.PrimaryMob.Name}");
         }
 
         private Skirmish SetupNewSkirmish(out CharacterTracker charTracker)
