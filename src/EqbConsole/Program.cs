@@ -107,10 +107,10 @@ namespace EqbConsole
             // WriteMessage("");
             WriteMessage("===== Skirmishes ======");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
-            foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.OffensiveStatistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
+            foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
             {
                 ShowSkirmishDetail(skirmish);
-                foreach (Fight fight in skirmish.Fights.Where(x => x.OffensiveStatistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
+                foreach (Fight fight in skirmish.Fights.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
                     ShowFightDetail(fight);
             }
 
@@ -148,7 +148,7 @@ namespace EqbConsole
 
         private void ShowFightDetail(Fight fight)
         {
-            WriteMessage($"--------- Fight: ({fight.OffensiveStatistics.Duration.FightDuration:mm\\:ss})  {fight.Title,-30}");
+            WriteMessage($"--------- Fight: ({fight.Statistics.Duration.FightDuration:mm\\:ss})  {fight.Title,-30}");
 
             foreach (var fighter in fight.Fighters.OrderBy(x => x.Character.Name))
                 ShowFighterDetail(fighter);

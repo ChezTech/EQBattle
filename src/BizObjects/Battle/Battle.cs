@@ -66,7 +66,7 @@ namespace BizObjects.Battle
         {
             // If the current Skirmish has nothing in it, we don't need a new one
             // TODO: a better way to see if a skirmish 'isEmpty'
-            if (!_currentSkirmish.OffensiveStatistics.Lines.Any())
+            if (!_currentSkirmish.Statistics.Lines.Any())
                 return false;
 
 

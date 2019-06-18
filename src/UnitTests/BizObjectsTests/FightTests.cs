@@ -59,7 +59,7 @@ namespace BizObjectsTests
             Assert.AreEqual(4507, fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Hit.Total);
             Assert.AreEqual(11481, fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Hit.Total);
             Assert.AreEqual(4106, fight.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Hit.Total);
-            Assert.AreEqual(20094, fight.OffensiveStatistics.Hit.Total);
+            Assert.AreEqual(20094, fight.Statistics.Hit.Total);
 
             Assert.AreEqual(4106, fight.Fighters.First(x => x.Character.Name == "Khadaji").DefensiveStatistics.Hit.Total);
             Assert.AreEqual(0, fight.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Hit.Total);
@@ -70,26 +70,26 @@ namespace BizObjectsTests
             Assert.AreEqual(2335, fight.Fighters.First(x => x.Character.Name == "Movanna").OffensiveStatistics.Heal.Total);
             Assert.AreEqual(3036, fight.Fighters.First(x => x.Character.Name == "Khronick").OffensiveStatistics.Heal.Total);
             Assert.AreEqual(5371, fight.DefensiveStatistics.Heal.Total);
-            Assert.AreEqual(5371, fight.OffensiveStatistics.Heal.Total);
+            Assert.AreEqual(5371, fight.Statistics.Heal.Total);
 
             Assert.AreEqual(1, fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Kill.Count);
             Assert.AreEqual(0, fight.Fighters.First(x => x.Character.Name == "Bealica").DefensiveStatistics.Kill.Count);
             Assert.AreEqual(1, fight.Fighters.First(x => x.Character.Name == "a dwarf disciple").DefensiveStatistics.Kill.Count);
             Assert.AreEqual(0, fight.Fighters.First(x => x.Character.Name == "a dwarf disciple").OffensiveStatistics.Kill.Count);
-            Assert.AreEqual(1, fight.OffensiveStatistics.Kill.Count);
-            Assert.AreEqual(1, fight.OffensiveStatistics.Kill.Count);
+            Assert.AreEqual(1, fight.Statistics.Kill.Count);
+            Assert.AreEqual(1, fight.Statistics.Kill.Count);
 
             Assert.AreEqual(new TimeSpan(0, 0, 38), fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.FighterDuration);
             Assert.AreEqual(new TimeSpan(0, 0, 19), fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.FighterDuration);
-            Assert.AreEqual(new TimeSpan(0, 1, 15), fight.OffensiveStatistics.Duration.FighterDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), fight.Statistics.Duration.FighterDuration);
 
             Assert.AreEqual(118.61, fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FighterDPS, 0.01);
             Assert.AreEqual(604.26, fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FighterDPS, 0.01);
-            Assert.AreEqual(267.92, fight.OffensiveStatistics.PerTime.FighterDPS, 0.01);
+            Assert.AreEqual(267.92, fight.Statistics.PerTime.FighterDPS, 0.01);
 
             Assert.AreEqual(new TimeSpan(0, 1, 15), fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.Duration.FightDuration);
             Assert.AreEqual(new TimeSpan(0, 1, 15), fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.Duration.FightDuration);
-            Assert.AreEqual(new TimeSpan(0, 1, 15), fight.OffensiveStatistics.Duration.FightDuration);
+            Assert.AreEqual(new TimeSpan(0, 1, 15), fight.Statistics.Duration.FightDuration);
 
             Assert.AreEqual(60.09, fight.Fighters.First(x => x.Character.Name == "Khadaji").OffensiveStatistics.PerTime.FightDPS, 0.01);
             Assert.AreEqual(153.08, fight.Fighters.First(x => x.Character.Name == "Bealica").OffensiveStatistics.PerTime.FightDPS, 0.01);
@@ -392,7 +392,7 @@ namespace BizObjectsTests
             AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:09 2019] Bealica hit a scary mob for 8085 points of fire damage by Inizen's Fire.");
             AddFightTrackLine(fight, charTracker, "[Sat Mar 30 07:33:10 2019] You crush a scary mob for 1546 points of damage.");
 
-            VerifyDpsStats(fight.OffensiveStatistics, 27796, new TimeSpan(0, 0, 10), 2779.6, 2779.6);
+            VerifyDpsStats(fight.Statistics, 27796, new TimeSpan(0, 0, 10), 2779.6, 2779.6);
             VerifyDpsStats(fight, "a scary mob", 8443, new TimeSpan(0, 0, 8), 1055.38, 844.3, x => x.OffensiveStatistics);
             VerifyDpsStats(fight, "Khadaji", 4842, new TimeSpan(0, 0, 9), 538.0, 484.2, x => x.OffensiveStatistics);
             VerifyDpsStats(fight, "Bealica", 14511, new TimeSpan(0, 0, 3), 4837, 1451.1, x => x.OffensiveStatistics);
@@ -443,7 +443,7 @@ namespace BizObjectsTests
         {
             Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
 
-            var stats = fight.OffensiveStatistics;
+            var stats = fight.Statistics;
             Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");

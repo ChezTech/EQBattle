@@ -323,20 +323,20 @@ namespace BizObjectsTests
 
             // Skirmish stats
             VerifySkirmishStats(skirmish, 14906, 0, 0, 2);
-            Assert.AreEqual(new TimeSpan(0, 0, 15), skirmish.OffensiveStatistics.Duration.FightDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 15), skirmish.Statistics.Duration.FightDuration);
             VerifyFighterDuration(skirmish, "Khadaji", new TimeSpan(0, 0, 15), new TimeSpan(0, 0, 10));
             VerifyFighterDuration(skirmish, "Bealica", new TimeSpan(0, 0, 15), new TimeSpan(0, 0, 13));
 
             // Fight1
             Assert.AreEqual(2, skirmish.Fights.Count);
             var fight = VerifyFightStatistics("a sandspinner juvenile", skirmish, 6383, 0, 0, 1);
-            Assert.AreEqual(new TimeSpan(0, 0, 6), fight.OffensiveStatistics.Duration.FightDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 6), fight.Statistics.Duration.FightDuration);
             VerifyFighterDuration(fight, "Khadaji", new TimeSpan(0, 0, 6), new TimeSpan(0, 0, 1));
             VerifyFighterDuration(fight, "Bealica", new TimeSpan(0, 0, 6), new TimeSpan(0, 0, 3));
 
             // Fight2
             fight = VerifyFightStatistics("a cliknar skirmish drone", skirmish, 8523, 0, 0, 1);
-            Assert.AreEqual(new TimeSpan(0, 0, 5), fight.OffensiveStatistics.Duration.FightDuration);
+            Assert.AreEqual(new TimeSpan(0, 0, 5), fight.Statistics.Duration.FightDuration);
             VerifyFighterDuration(fight, "Khadaji", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 0));
             VerifyFighterDuration(fight, "Bealica", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 2));
         }
@@ -350,7 +350,7 @@ namespace BizObjectsTests
 
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
-            var stats = skirmish.OffensiveStatistics;
+            var stats = skirmish.Statistics;
             Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit");
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses");
@@ -392,7 +392,7 @@ namespace BizObjectsTests
         {
             Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
 
-            var stats = fight.OffensiveStatistics;
+            var stats = fight.Statistics;
             Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");

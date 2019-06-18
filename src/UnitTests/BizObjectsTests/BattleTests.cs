@@ -282,7 +282,7 @@ namespace BizObjectsTests
 
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
-            var stats = skirmish.OffensiveStatistics;
+            var stats = skirmish.Statistics;
             Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit");
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses");
@@ -323,7 +323,7 @@ namespace BizObjectsTests
         {
             Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
 
-            var stats = fight.OffensiveStatistics;
+            var stats = fight.Statistics;
             Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
             Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
             Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");

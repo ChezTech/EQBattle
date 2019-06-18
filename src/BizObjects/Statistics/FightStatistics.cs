@@ -87,7 +87,7 @@ namespace BizObjects.Statistics
             {
                 return _fight == null
                   ? FighterDuration
-                  : _fight.OffensiveStatistics.Duration.FightDuration;
+                  : _fight.Statistics.Duration.FightDuration;
             }
         }
 
