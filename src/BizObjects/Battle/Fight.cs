@@ -11,19 +11,15 @@ namespace BizObjects.Battle
 {
 
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class Fight : IFight
+    public class Fight : FightBase
     {
         private readonly YouResolver YouAre;
         private readonly CharacterResolver CharResolver;
 
-        public IEnumerable<Fighter> Fighters { get { return _fighters.Values; } }
-        public Character PrimaryMob { get; private set; } = Character.Unknown;
-
-        public string Title => PrimaryMob.Name;
+        public override string Title => PrimaryMob.Name;
 
         public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
         public string Zone { get; }
-        private ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
 
         public Fight(YouResolver youAre, CharacterResolver charResolver)
         {
@@ -31,9 +27,7 @@ namespace BizObjects.Battle
             CharResolver = charResolver;
         }
 
-        public FightStatistics Statistics { get; } = new FightStatistics();
-
-        public virtual bool IsFightOver
+        public override bool IsFightOver
         {
             get
             {
@@ -49,9 +43,9 @@ namespace BizObjects.Battle
             }
         }
 
-        public DateTime LastAttackTime => Statistics.Lines.LastOrDefault()?.Time ?? new DateTime();
+        public override DateTime LastAttackTime => Statistics.Lines.LastOrDefault()?.Time ?? new DateTime();
 
-        public virtual void AddLine(Attack line)
+        public override void AddLine(Attack line)
         {
             Statistics.AddLine(line);
 
@@ -61,7 +55,7 @@ namespace BizObjects.Battle
             DeterminePrimaryMob(line);
         }
 
-        public virtual void AddLine(Heal line)
+        public override void AddLine(Heal line)
         {
             Statistics.AddLine(line);
 
@@ -69,19 +63,8 @@ namespace BizObjects.Battle
             AddFighterLine(line.Patient, f => f.AddDefense(line));
         }
 
-        private void AddFighterLine(Character fighterChar, Action<Fighter> addLine)
-        {
-            var fighter = _fighters.GetOrAdd(fighterChar, new Fighter(fighterChar));
-            addLine(fighter);
-        }
-
         // public void AddLine(Zone line) { }
         // public void AddLine(Chat line) { }
-
-        public virtual void AddLine(ILine line)
-        {
-
-        }
 
         private void DeterminePrimaryMob(Attack line)
         {
@@ -119,7 +102,7 @@ namespace BizObjects.Battle
         /// This is to help match Anonymous DoT damage (usually of a dead mob) with previous DoT damage
         /// If `looseMatch` is specified, only matches based on DamageBy. This picks up Merc DoT damage which doesn't specify an Attacker
         /// </Summary>
-        public bool SimilarDamage(Hit line, bool looseMatch = false)
+        public override bool SimilarDamage(Hit line, bool looseMatch = false)
         {
             return looseMatch
                 ? Statistics
