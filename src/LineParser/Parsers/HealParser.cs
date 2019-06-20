@@ -23,11 +23,25 @@ namespace LineParser.Parsers
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
+            lineEntry = null;
+
+            if (EarlyExit(logDatum))
+                return false;
+
             if (TryParseHeal(logDatum, out lineEntry))
                 return true;
 
             return false;
         }
+
+        private bool EarlyExit(LogDatum logDatum)
+        {
+            if (logDatum.LogMessage.Contains("healed"))
+                return false;
+
+            return true;
+        }
+
         private bool TryParseHeal(LogDatum logDatum, out ILine lineEntry)
         {
             var match = RxHeal.Match(logDatum.LogMessage);
