@@ -115,7 +115,7 @@ namespace LineParser.Parsers
 
             var patient = match.Groups[1].Value;
             string healer = null;
-            var amount = -1;
+            var amount = 0;
             var isHot = false;
             var maxAmount = -1;
             string spellName = "Complete Heal";

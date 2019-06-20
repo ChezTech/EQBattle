@@ -36,8 +36,8 @@ namespace LineParserTests
         // [Mon May 12 22:20:43 2003] You mend your wounds and heal some damage.
         // [DataRow("[Tue Feb 25 18:51:03 2003]     ", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri Jun 13 23:39:32 2003] Saxstein has healed you for 1522 points of damage.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
-        [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "Unknown", "Dethvegi", -1, -1, "Complete Heal", false, null)]
-        [DataRow("[Mon May 12 19:42:26 2003] You are completely healed.", "Unknown", "Khadaji", -1, -1, "Complete Heal", false, null)]
+        [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "Unknown", "Dethvegi", 0, -1, "Complete Heal", false, null)]
+        [DataRow("[Mon May 12 19:42:26 2003] You are completely healed.", "Unknown", "Khadaji", 0, -1, "Complete Heal", false, null)]
         // [DataRow("[Fri May 16 17:48:54 2003] A vann geistlig is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         // [DataRow("xxxx", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         public void HealTests(string logLine, string healerName, string patientName, int amount, int maxAmount, string spellName, bool isHot, string qualifier)

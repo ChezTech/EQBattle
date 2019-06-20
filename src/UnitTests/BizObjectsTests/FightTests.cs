@@ -396,6 +396,24 @@ namespace BizObjectsTests
             VerifyDpsStats(fight, "Bealica", 14511, new TimeSpan(0, 0, 3), 4837, 1451.1, x => x.OffensiveStatistics);
         }
 
+        [TestMethod]
+        [Ignore]
+        public void CompleteHealLineCountsAsOne()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Mon May 12 19:42:26 2003] You have been healed for 1951 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Mon May 12 19:42:26 2003] You are completely healed.");
+
+            VerifyFightStatistics("Unknown", fight, 0, 1951, 0, 0);
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            var fighter = VerifyFighterStatistics("Khadaji", fight, 0, 0, 0, 0, 0, 1951, 0, 0);
+
+            // It's really one heal event
+            Assert.AreEqual(1, fighter.DefensiveStatistics.Heal.Count);
+        }
+
         private Fight SetupNewFight(out CharacterTracker charTracker)
         {
             var charResolver = new CharacterResolver();
@@ -419,7 +437,7 @@ namespace BizObjectsTests
             Assert.AreEqual(fightDps, stats.PerTime.FightDPS, 0.01);
         }
 
-        private void VerifyFighterStatistics(string name, Fight fight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
+        private Fighter VerifyFighterStatistics(string name, Fight fight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
         {
             var fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
             Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
@@ -435,6 +453,8 @@ namespace BizObjectsTests
             Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
             Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
             Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
+
+            return fighter;
         }
 
         private void VerifyFightStatistics(string fightMob, Fight fight, int hit, int heal, int misses, int kills)
