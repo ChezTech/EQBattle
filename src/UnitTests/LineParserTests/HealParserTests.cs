@@ -30,9 +30,14 @@ namespace LineParserTests
 
         // Old school log messages
         [DataRow("[Fri May 09 22:42:30 2003] You have been healed for 1451 points of damage.", "Unknown", "Khadaji", 1451, -1, null, false, null)]
+        // [Fri May 09 22:57:10 2003] Nair is washed over by the healing wave of Prexus.
+        // [Fri May 09 23:07:22 2003] You sacrifice some of your health for the benefit of your party.
+        // [Mon May 12 22:22:33 2003] Nair feels a healing touch.
+        // [Mon May 12 22:20:43 2003] You mend your wounds and heal some damage.
         // [DataRow("[Tue Feb 25 18:51:03 2003]     ", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri Jun 13 23:39:32 2003] Saxstein has healed you for 1522 points of damage.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
-        // [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
+        [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "Unknown", "Dethvegi", -1, -1, "Complete Heal", false, null)]
+        [DataRow("[Mon May 12 19:42:26 2003] You are completely healed.", "Unknown", "Khadaji", -1, -1, "Complete Heal", false, null)]
         // [DataRow("[Fri May 16 17:48:54 2003] A vann geistlig is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         // [DataRow("xxxx", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         public void HealTests(string logLine, string healerName, string patientName, int amount, int maxAmount, string spellName, bool isHot, string qualifier)
