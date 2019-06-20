@@ -29,6 +29,7 @@ namespace LineParserTests
         [DataRow("[Fri May 24 18:23:40 2019] Vatalae has been healed with frenzied life-giving energy. Harmonious Prana healed Vatalae for 21367 (24855) hit points by Frenzied Renewal Rk. II.", "Harmonious Prana", "Vatalae", 21367, 24855, "Frenzied Renewal Rk. II", false, null)]
 
         // Old school log messages
+        [DataRow("[Fri May 09 22:42:30 2003] You have been healed for 1451 points of damage.", "Unknown", "Khadaji", 1451, -1, null, false, null)]
         // [DataRow("[Tue Feb 25 18:51:03 2003]     ", "hhhh", "Khadaji", 2222, -1, "sssss", false, null)]
         // [DataRow("[Fri Jun 13 23:39:32 2003] Saxstein has healed you for 1522 points of damage.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]
         // [DataRow("[Tue May 27 19:06:21 2003] Dethvegi is completely healed.", "hhhh", "pppppp", 2222, -1, "sssss", false, null)]

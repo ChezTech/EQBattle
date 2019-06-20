@@ -12,6 +12,7 @@ namespace LineParser.Parsers
     {
         private readonly Regex RxHeal;
         private readonly string rgexHeal = @"^(.+\. )?(.*?)(?: (has been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$"; // https://regex101.com/r/eBfX2c/3
+        private readonly Regex RxYouAreHealed = new Regex(@"^You have been healed for (\d+) points of damage\.$", RegexOptions.Compiled); // https://regex101.com/r/2Stapt/1
 
         private readonly YouResolver YouAre;
 
@@ -29,6 +30,9 @@ namespace LineParser.Parsers
                 return false;
 
             if (TryParseHeal(logDatum, out lineEntry))
+                return true;
+
+            if (TryParseYouAreHealed(logDatum, out lineEntry))
                 return true;
 
             return false;
@@ -72,6 +76,28 @@ namespace LineParser.Parsers
             var qualifier = match.Groups[9].Success ? match.Groups[9].Value : null;
 
             lineEntry = new Heal(logDatum, YouAre.WhoAreYou(healer), YouAre.WhoAreYou(patient), amount, maxAmount, spellName, isHot, qualifier);
+
+            return true;
+        }
+
+        private bool TryParseYouAreHealed(LogDatum logDatum, out ILine lineEntry)
+        {
+            var match = RxYouAreHealed.Match(logDatum.LogMessage);
+
+            if (!match.Success)
+            {
+                lineEntry = null;
+                return false;
+            }
+
+            string healer = null;
+            var amount = int.Parse(match.Groups[1].Value);
+            var isHot = false;
+            var maxAmount = -1;
+            string spellName = null;
+            string qualifier = null;
+
+            lineEntry = new Heal(logDatum, healer, YouAre.Name, amount, maxAmount, spellName, isHot, qualifier);
 
             return true;
         }
