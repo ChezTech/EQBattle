@@ -36,6 +36,7 @@ namespace EqbConsole
         private ConcurrentQueue<Heal> _healCollection = new ConcurrentQueue<Heal>();
 
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
+        private ConcurrentBag<ILine> _parsedLines = new ConcurrentBag<ILine>();
 
         private Battle _eqBattle;
 
@@ -80,9 +81,16 @@ namespace EqbConsole
             Task.WaitAll(parserTasks.ToArray());
             var parseElapsed = sw.Elapsed;
 
+            sw = Stopwatch.StartNew();
+            AddParsedLinesToBattle();
+            sw.Stop();
+            var battleElapsed = sw.Elapsed;
+
             WriteMessage("Read Elapsed: {0}", readElapsed);
             WriteMessage("Parse Elapsed: {0}", parseElapsed);
+            WriteMessage("Battle Elapsed: {0}", battleElapsed);
             WriteMessage("Line count: {0:N0}", lineCount);
+            WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
             // WriteMessage("Job Queue: {0:N0}", _jobQueueLogLines.Count);
 
             // WriteMessage("Line collection count: {0}", _lineCollection.Count);
@@ -99,7 +107,7 @@ namespace EqbConsole
             // DumpStatsForCharacter("Khadaji", isPet: true);
             // DumpStatsForCharacter("Khadaji", negative: true);
 
-            WriteMessage("===== Battle ======");
+            // WriteMessage("===== Battle ======");
             // WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             // WriteMessage("Skirmish offensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.OffensiveStatistics.Hit.Total));
             // WriteMessage("Skirmish defensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.DefensiveStatistics.Hit.Total));
@@ -107,16 +115,34 @@ namespace EqbConsole
             // WriteMessage("");
             WriteMessage("===== Skirmishes ======");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
-            foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
-            {
-                ShowSkirmishDetail(skirmish);
-                foreach (Fight fight in skirmish.Fights.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
-                    ShowFightDetail(fight);
-            }
+            // foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
+            // {
+            //     ShowSkirmishDetail(skirmish);
+            //     foreach (Fight fight in skirmish.Fights.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
+            //         ShowFightDetail(fight);
+            // }
 
             // ShowNamedFighters();
             // ShowMobHeals();
             // ShowUnknownDamage();
+        }
+
+        private void AddParsedLinesToBattle()
+        {
+            // foreach (var kvLine in _parsedLines)
+            //     _eqBattle.AddLine(kvLine.Value);
+
+            // var e = _parsedLines.GetEnumerator();
+            // while (e.MoveNext())
+            //     _eqBattle.AddLine(e.Current);
+
+            // Bottleneck here, having to wait for everything to be parsed, then added to the Bag, then sort all at once to add to EQBattle
+            // Would like to chunk it up as we go ... get a chunk of 5000 lines, sort, take the first 1000 ... repeat
+            var sortedLines = _parsedLines
+                .ToList()
+                .OrderBy(x => x.LogLine.LineNumber);
+            foreach (var line in sortedLines)
+                _eqBattle.AddLine(line);
         }
 
         private void ShowMobHeals()
@@ -231,7 +257,8 @@ namespace EqbConsole
                 {
                     var logLine = _jobQueueLogLines.Take();
                     var line = _parser.ParseLine(logLine);
-                    _eqBattle.AddLine(line);
+                    // _eqBattle.AddLine(line);
+                    _parsedLines.Add(line);
 
                     // if (logLine.LineNumber % 10000 == 0)
                     //     WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
