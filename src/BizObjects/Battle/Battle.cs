@@ -43,12 +43,34 @@ namespace BizObjects.Battle
 
         public void AddLine(ILine line)
         {
+            VerifyLineOrder(line);
+
+
             _charTracker.TrackLine((dynamic)line);
 
             if (IsNewSkirmishNeeded((dynamic)line))
                 SetupNewFight();
 
             _currentSkirmish.AddLine((dynamic)line);
+        }
+
+        private ILine _previousLine = null;
+        public int OutOfOrderCount = 0;
+        public int MaxDelta = 0;
+        private void VerifyLineOrder(ILine line)
+        {
+            if (_previousLine != null)
+            {
+                if (line.LogLine.LineNumber < _previousLine.LogLine.LineNumber)
+                {
+                    int delta = _previousLine.LogLine.LineNumber - line.LogLine.LineNumber;
+                    MaxDelta = Math.Max(MaxDelta, delta);
+                    OutOfOrderCount++;
+                    // System.Console.WriteLine("Line out of order:\n   Prev: [{2,5}] {0}\n   Cur:  [{3,5}] {1}", _previousLine.LogLine.RawLogLine, line.LogLine.RawLogLine, _previousLine.LogLine.LineNumber, line.LogLine.LineNumber);
+                }
+            }
+
+            _previousLine = line;
         }
 
         private void SetupNewFight()
