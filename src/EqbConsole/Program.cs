@@ -48,26 +48,6 @@ namespace EqbConsole
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
-            // WriteMessage("Line collection count: {0}", _lineCollection.Count);
-            // WriteMessage("Unknown collection count: {0}", _unknownCollection.Count);
-            // WriteMessage("Attack collection count: {0}", _hitCollection.Count);
-            // WriteMessage("Kill collection count: {0}", _killCollection.Count);
-            // WriteMessage("Miss collection count: {0}", _missCollection.Count);
-            // WriteMessage("Heal collection count: {0}", _healCollection.Count);
-
-            // WriteMessage("===== Attacks ======");
-            // WriteMessage("Total damage: {0:N0}", _hitCollection.Sum(x => x.Damage));
-            // DumpStatsForCharacter("Khadaji");
-            // DumpStatsForCharacter("Khadaji", charOnly: true);
-            // DumpStatsForCharacter("Khadaji", isPet: true);
-            // DumpStatsForCharacter("Khadaji", negative: true);
-
-            // WriteMessage("===== Battle ======");
-            // WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
-            // WriteMessage("Skirmish offensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.OffensiveStatistics.Hit.Total));
-            // WriteMessage("Skirmish defensive damage total: {0:N0}", _eqBattle.Skirmishes.Sum(x => x.DefensiveStatistics.Hit.Total));
-            // WriteMessage("Khadaji offensive total: {0:N0}", _eqBattle.Skirmishes.SelectMany(x => x.Fighters.Where(y => y.Character.Name == "Khadaji")).Sum(y => y.OffensiveStatistics.Hit.Total));
-            // WriteMessage("");
             WriteMessage("===== Skirmishes ======");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             // foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
@@ -148,38 +128,6 @@ namespace EqbConsole
                 .OrderBy(x => x.Name);
             WriteMessage("Named fighter count: {0}", namedFighters.Count());
             WriteMessage("Named fighter count: \n{0}", string.Join("\t\n", namedFighters.Select(x => x.Name)));
-        }
-
-        private void DumpStatsForCharacter(string name, bool charOnly = false, bool isPet = false, bool negative = false)
-        {
-            Func<Character, bool> fCharAndPet = x => x.Name == name;
-            Func<Character, bool> fCharOnly = x => x.Name == name && !x.IsPet;
-            Func<Character, bool> fPpetOnly = x => x.Name == name && x.IsPet;
-            Func<Character, bool> fNegativeChar = x => x.Name != name;
-
-            var nameTitle = name;
-            Func<Character, bool> fToUse = fCharAndPet;
-            if (charOnly)
-            {
-                fToUse = fCharOnly;
-                nameTitle = string.Format("{0} only", name);
-            }
-            if (isPet)
-            {
-                fToUse = fPpetOnly;
-                nameTitle = string.Format("{0}'s pet", name);
-            }
-            if (negative)
-            {
-                fToUse = fNegativeChar;
-                nameTitle = string.Format("Not {0}", name);
-            }
-
-            // WriteMessage("{0,-15} : Yeet {1,12:N0}  Ouch: {2,12:N0}  Heals: {3,12:N0}",
-            //     nameTitle,
-            //     _hitCollection.Where(x => fToUse(x.Attacker)).Sum(x => x.Damage),
-            //     _hitCollection.Where(x => fToUse(x.Defender)).Sum(x => x.Damage),
-            //     _healCollection.Where(x => fToUse(x.Patient)).Sum(x => x.Amount));
         }
 
         private string WhoseLogFile(string logPath)
