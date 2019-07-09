@@ -42,7 +42,7 @@ namespace LineParser
             return unknownLine;
         }
 
-        public void AddParser(IParser parser, Action<ILine> createAction)
+        public void AddParser(IParser parser, Action<ILine> createAction = null)
         {
             _parsers.Add(new ParserAction() {Parser = parser, OnCreated = createAction });
         }
