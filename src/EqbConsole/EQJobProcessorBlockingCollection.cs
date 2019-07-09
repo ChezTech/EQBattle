@@ -14,52 +14,47 @@ using LogObjects;
 
 namespace EqbConsole
 {
-    public class EQJobProcessorBlockingCollection
+    public interface IJobProcessor
     {
-        private readonly string _logPath;
+        void StartProcessingJob(string logFilePath, Battle eqBattle);
+    }
+
+    public class EQJobProcessorBlockingCollection : IJobProcessor
+    {
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
         private ConcurrentQueue<ILine> _parsedLines = new ConcurrentQueue<ILine>();
         protected readonly LineParserFactory _parser;
+        private readonly int _parserCount;
 
-        public Battle EqBattle { get; }
-        public int ParserCount { get; set; } = 1;
-
-        public EQJobProcessorBlockingCollection(Battle eqBattle, string logPath)
+        public EQJobProcessorBlockingCollection(LineParserFactory parser, int parserCount = 1)
         {
-            EqBattle = eqBattle;
-            _logPath = logPath;
-
-            _parser = new LineParserFactory();
-            _parser.AddParser(new HitParser(EqBattle.YouAre));
-            _parser.AddParser(new MissParser(EqBattle.YouAre));
-            _parser.AddParser(new HealParser(EqBattle.YouAre));
-            _parser.AddParser(new KillParser(EqBattle.YouAre));
-            _parser.AddParser(new WhoParser(EqBattle.YouAre));
+            _parser = parser;
+            _parserCount = parserCount;
         }
 
-        public void StartProcessingJob()
+        public void StartProcessingJob(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {ParserCount} parsers.");
+            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers.");
 
             var swTotal = Stopwatch.StartNew();
             var sw = Stopwatch.StartNew();
             var parserTasks = new List<Task>();
 
-            for (int i = 0; i < ParserCount; i++)
+            for (int i = 0; i < _parserCount; i++)
                 parserTasks.Add(Task.Run(() => ParseLines()));
 
-            Task.Run(() => ReadLines(_logPath));
+            Task.Run(() => ReadLines(logFilePath));
 
             Task.WaitAll(parserTasks.ToArray());
             sw.Stop();
             WriteMessage($"Done parsing lines. {sw.Elapsed} elapsed");
 
             sw = Stopwatch.StartNew();
-            AddParsedLinesToBattle();
+            AddParsedLinesToBattle(eqBattle);
             sw.Stop();
             WriteMessage($"Done adding sorted lines. {sw.Elapsed} elapsed");
 
-            WriteMessage($"Done processing EQBattle. {swTotal.Elapsed} elapsed");
+            WriteMessage($"Total processing EQBattle. {swTotal.Elapsed} elapsed");
         }
 
         private void ReadLines(string logPath)
@@ -106,11 +101,10 @@ namespace EqbConsole
 
         private void AddLineToCollection(ILine line)
         {
-            // EqBattle.AddLine(line);
             _parsedLines.Enqueue(line);
         }
 
-        private void AddParsedLinesToBattle()
+        private void AddParsedLinesToBattle(Battle eqBattle)
         {
             // Bottleneck here, having to wait for everything to be parsed, then added to the Bag, then sort all at once to add to EQBattle
             // Would like to chunk it up as we go ... get a chunk of 5000 lines, sort, take the first 1000 ... repeat
@@ -120,7 +114,7 @@ namespace EqbConsole
                 ;
 
             foreach (var line in sortedLines)
-                EqBattle.AddLine(line);
+                eqBattle.AddLine(line);
         }
 
         private void WriteMessage(string format, params object[] args) // DI this

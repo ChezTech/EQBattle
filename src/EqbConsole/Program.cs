@@ -46,9 +46,9 @@ namespace EqbConsole
 
         private void RunProgram(string logPath, int numberOfParsers)
         {
-            var eqJob = new EQJobProcessorBlockingCollection(_eqBattle, logPath);
-            eqJob.ParserCount = numberOfParsers;
-            eqJob.StartProcessingJob();
+            var parser = CreateLineParser(_youAre);
+            var eqJob = new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+            eqJob.StartProcessingJob(logPath, _eqBattle);
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
@@ -84,6 +84,17 @@ namespace EqbConsole
             // ShowNamedFighters();
             // ShowMobHeals();
             // ShowUnknownDamage();
+        }
+
+        private LineParserFactory CreateLineParser(YouResolver youAre)
+        {
+            var parser = new LineParserFactory();
+            parser.AddParser(new HitParser(youAre));
+            parser.AddParser(new MissParser(youAre));
+            parser.AddParser(new HealParser(youAre));
+            parser.AddParser(new KillParser(youAre));
+            parser.AddParser(new WhoParser(youAre));
+            return parser;
         }
 
         // private void ShowMobHeals()
