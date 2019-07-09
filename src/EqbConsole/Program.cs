@@ -64,34 +64,11 @@ namespace EqbConsole
 
         private void RunProgram(string logPath, int numberOfParsers)
         {
-            WriteMessage("Starting EQBattle with {0} parsers", numberOfParsers);
+            var eqJob = new EQJobProcessorBlockingCollection(_eqBattle, logPath);
+            eqJob.ParserCount = numberOfParsers;
+            eqJob.StartProcessingJob();
 
-            var lineCount = 0;
-
-            var sw = Stopwatch.StartNew();
-            var readElapsed = sw.Elapsed;
-
-            var parserTasks = new List<Task>();
-
-            for (int i = 0; i < numberOfParsers; i++)
-                parserTasks.Add(Task.Run(() => ParseLines()));
-
-            Task.Run(() => readElapsed = ReadLines(logPath, out lineCount, sw));
-
-            Task.WaitAll(parserTasks.ToArray());
-            var parseElapsed = sw.Elapsed;
-
-            sw = Stopwatch.StartNew();
-            AddParsedLinesToBattle();
-            sw.Stop();
-            var battleElapsed = sw.Elapsed;
-
-            WriteMessage("Read Elapsed: {0}", readElapsed);
-            WriteMessage("Parse Elapsed: {0}", parseElapsed);
-            WriteMessage("Battle Elapsed: {0}", battleElapsed);
-            WriteMessage("Line count: {0:N0}", lineCount);
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
-            // WriteMessage("Job Queue: {0:N0}", _jobQueueLogLines.Count);
 
             // WriteMessage("Line collection count: {0}", _lineCollection.Count);
             // WriteMessage("Unknown collection count: {0}", _unknownCollection.Count);
@@ -139,8 +116,10 @@ namespace EqbConsole
             // Bottleneck here, having to wait for everything to be parsed, then added to the Bag, then sort all at once to add to EQBattle
             // Would like to chunk it up as we go ... get a chunk of 5000 lines, sort, take the first 1000 ... repeat
             var sortedLines = _parsedLines
-                .ToList()
-                .OrderBy(x => x.LogLine.LineNumber);
+                // .OrderBy(x => x.LogLine.LineNumber)
+                // .ToList()
+                ;
+
             foreach (var line in sortedLines)
                 _eqBattle.AddLine(line);
         }
