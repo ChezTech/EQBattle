@@ -22,16 +22,12 @@ namespace EqbConsole
 
     class Program
     {
-        //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test.txt";
-        private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_test_medium.txt";
-        //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
-
         private YouResolver _youAre;
         private Battle _eqBattle;
 
         static void Main(string[] args)
         {
-            var logPath = args.Length > 0 ? args[0] : LogFilePathName;
+            var logPath = args[0];
             var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
             new Program(logPath).RunProgram(logPath, numberOfParsers);
         }
