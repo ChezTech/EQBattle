@@ -42,8 +42,7 @@ namespace EqbConsole
 
         private void RunProgram(string logPath, int numberOfParsers)
         {
-            var parser = CreateLineParser(_youAre);
-            var eqJob = new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+            var eqJob = CreateJobProcessor(numberOfParsers);
             eqJob.StartProcessingJob(logPath, _eqBattle);
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
@@ -71,6 +70,12 @@ namespace EqbConsole
             parser.AddParser(new KillParser(youAre));
             parser.AddParser(new WhoParser(youAre));
             return parser;
+        }
+
+        private IJobProcessor CreateJobProcessor(int numberOfParsers)
+        {
+            var parser = CreateLineParser(_youAre);
+            return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
         }
 
         // private void ShowMobHeals()

@@ -8,31 +8,21 @@ using System.Threading.Tasks;
 using BizObjects.Battle;
 using BizObjects.Lines;
 using LineParser;
-using LineParser.Parsers;
 using LogFileReader;
 using LogObjects;
 
 namespace EqbConsole
 {
-    public interface IJobProcessor
-    {
-        void StartProcessingJob(string logFilePath, Battle eqBattle);
-    }
-
-    public class EQJobProcessorBlockingCollection : IJobProcessor
+    public class EQJobProcessorBlockingCollection : JobProcessor
     {
         private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
         private ConcurrentQueue<ILine> _parsedLines = new ConcurrentQueue<ILine>();
-        protected readonly LineParserFactory _parser;
-        private readonly int _parserCount;
 
-        public EQJobProcessorBlockingCollection(LineParserFactory parser, int parserCount = 1)
+        public EQJobProcessorBlockingCollection(LineParserFactory parser, int parserCount = 1) : base(parser, parserCount)
         {
-            _parser = parser;
-            _parserCount = parserCount;
         }
 
-        public void StartProcessingJob(string logFilePath, Battle eqBattle)
+        public override void StartProcessingJob(string logFilePath, Battle eqBattle)
         {
             WriteMessage($"Starting to process EQBattle with {_parserCount} parsers.");
 
