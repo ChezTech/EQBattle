@@ -22,7 +22,7 @@ namespace BizObjects.Battle
         // How can I split out different mobs into different fights?
         // Can I make the Skirmish object, inherit from a fight, then replace the Fight object with a Skirmish one in the fight list?
 
-        private readonly YouResolver YouAre;
+        public readonly YouResolver YouAre;
         public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
         private readonly CharacterTracker _charTracker;
         private readonly TimeSpan _skirmishGap = new TimeSpan(0, 0, 5); // Make this configurable
