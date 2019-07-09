@@ -27,17 +27,6 @@ namespace EqbConsole
         //private const string LogFilePathName = @"C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs\eqlog_Khadaji_erollisi_2019-03-25-182700.txt";
 
         private YouResolver _youAre;
-        private LineParserFactory _parser;
-        private ConcurrentQueue<ILine> _lineCollection = new ConcurrentQueue<ILine>();
-        private ConcurrentQueue<Unknown> _unknownCollection = new ConcurrentQueue<Unknown>();
-        private ConcurrentQueue<Hit> _hitCollection = new ConcurrentQueue<Hit>();
-        private ConcurrentQueue<Kill> _killCollection = new ConcurrentQueue<Kill>();
-        private ConcurrentQueue<Miss> _missCollection = new ConcurrentQueue<Miss>();
-        private ConcurrentQueue<Heal> _healCollection = new ConcurrentQueue<Heal>();
-
-        private BlockingCollection<LogDatum> _jobQueueLogLines = new BlockingCollection<LogDatum>();
-        private ConcurrentBag<ILine> _parsedLines = new ConcurrentBag<ILine>();
-
         private Battle _eqBattle;
 
         static void Main(string[] args)
@@ -53,13 +42,6 @@ namespace EqbConsole
             _eqBattle = new Battle(_youAre);
 
             WriteMessage("You are: {0}", _youAre.Name);
-
-            _parser = new LineParserFactory();
-            _parser.UnknownCreated += x => { _unknownCollection.Enqueue(x); };
-            _parser.AddParser(new KillParser(_youAre), x => { _killCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new HitParser(_youAre), x => { _hitCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new MissParser(_youAre), x => { _missCollection.Enqueue((dynamic)x); });
-            _parser.AddParser(new HealParser(_youAre), x => { _healCollection.Enqueue((dynamic)x); });
         }
 
         private void RunProgram(string logPath, int numberOfParsers)
@@ -104,47 +86,27 @@ namespace EqbConsole
             // ShowUnknownDamage();
         }
 
-        private void AddParsedLinesToBattle()
-        {
-            // foreach (var kvLine in _parsedLines)
-            //     _eqBattle.AddLine(kvLine.Value);
+        // private void ShowMobHeals()
+        // {
+        //     WriteMessage("");
+        //     WriteMessage("===== Mob Heals ======");
+        //     var heals = _healCollection.Where(x => x.Patient.IsMob || x.Healer.IsMob);
+        //     WriteMessage($"Count: {heals.Count()}");
 
-            // var e = _parsedLines.GetEnumerator();
-            // while (e.MoveNext())
-            //     _eqBattle.AddLine(e.Current);
+        //     foreach (var heal in heals)
+        //         WriteMessage($"{heal.LogLine.LogMessage}");
+        // }
 
-            // Bottleneck here, having to wait for everything to be parsed, then added to the Bag, then sort all at once to add to EQBattle
-            // Would like to chunk it up as we go ... get a chunk of 5000 lines, sort, take the first 1000 ... repeat
-            var sortedLines = _parsedLines
-                // .OrderBy(x => x.LogLine.LineNumber)
-                // .ToList()
-                ;
+        // private void ShowUnknownDamage()
+        // {
+        //     WriteMessage("");
+        //     WriteMessage("===== Unknown lines containing Damage ======");
+        //     var unknownDamage = _unknownCollection.Where(x => x.LogLine.LogMessage.Contains("damage"));
+        //     WriteMessage($"Count: {unknownDamage.Count()}");
 
-            foreach (var line in sortedLines)
-                _eqBattle.AddLine(line);
-        }
-
-        private void ShowMobHeals()
-        {
-            WriteMessage("");
-            WriteMessage("===== Mob Heals ======");
-            var heals = _healCollection.Where(x => x.Patient.IsMob || x.Healer.IsMob);
-            WriteMessage($"Count: {heals.Count()}");
-
-            foreach (var heal in heals)
-                WriteMessage($"{heal.LogLine.LogMessage}");
-        }
-
-        private void ShowUnknownDamage()
-        {
-            WriteMessage("");
-            WriteMessage("===== Unknown lines containing Damage ======");
-            var unknownDamage = _unknownCollection.Where(x => x.LogLine.LogMessage.Contains("damage"));
-            WriteMessage($"Count: {unknownDamage.Count()}");
-
-            foreach (var dmg in unknownDamage)
-                WriteMessage($"{dmg.LogLine.LogMessage}");
-        }
+        //     foreach (var dmg in unknownDamage)
+        //         WriteMessage($"{dmg.LogLine.LogMessage}");
+        // }
 
         private void ShowSkirmishDetail(Skirmish skirmish)
         {
@@ -206,11 +168,11 @@ namespace EqbConsole
                 nameTitle = string.Format("Not {0}", name);
             }
 
-            WriteMessage("{0,-15} : Yeet {1,12:N0}  Ouch: {2,12:N0}  Heals: {3,12:N0}",
-                nameTitle,
-                _hitCollection.Where(x => fToUse(x.Attacker)).Sum(x => x.Damage),
-                _hitCollection.Where(x => fToUse(x.Defender)).Sum(x => x.Damage),
-                _healCollection.Where(x => fToUse(x.Patient)).Sum(x => x.Amount));
+            // WriteMessage("{0,-15} : Yeet {1,12:N0}  Ouch: {2,12:N0}  Heals: {3,12:N0}",
+            //     nameTitle,
+            //     _hitCollection.Where(x => fToUse(x.Attacker)).Sum(x => x.Damage),
+            //     _hitCollection.Where(x => fToUse(x.Defender)).Sum(x => x.Damage),
+            //     _healCollection.Where(x => fToUse(x.Patient)).Sum(x => x.Amount));
         }
 
         private string WhoseLogFile(string logPath)
@@ -225,48 +187,6 @@ namespace EqbConsole
                 return null;
 
             return logPath.Substring(firstUnder + 1, secondUnder - firstUnder - 1);
-        }
-
-        private void ParseLines()
-        {
-            WriteMessage("Starting to parse lines...");
-            while (!_jobQueueLogLines.IsCompleted)
-            {
-                try
-                {
-                    var logLine = _jobQueueLogLines.Take();
-                    var line = _parser.ParseLine(logLine);
-                    // _eqBattle.AddLine(line);
-                    _parsedLines.Add(line);
-
-                    // if (logLine.LineNumber % 10000 == 0)
-                    //     WriteMessage("Parsed {0:N0} lines...", logLine.LineNumber);
-                }
-                catch (InvalidOperationException) { }
-            }
-        }
-
-        private TimeSpan ReadLines(string logPath, out int lineCount, Stopwatch sw)
-        {
-            WriteMessage("Reading log file: {0}", logPath);
-
-            int count = 0;
-            using (LogReader logReader = new LogReader(logPath))
-            {
-                logReader.LineRead += (s, e) =>
-                {
-                    count++;
-                    var logLine = new LogDatum(e.LogLine, count);
-                    _jobQueueLogLines.Add(logLine);
-                };
-                logReader.EoFReached += (s, e) => { logReader.StopReading(); };
-                logReader.StartReading();
-            }
-            _jobQueueLogLines.CompleteAdding();
-            lineCount = count;
-
-            WriteMessage("Done reading log file");
-            return sw.Elapsed;
         }
 
         private void WriteMessage(string format, params object[] args)
