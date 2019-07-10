@@ -46,8 +46,15 @@ namespace EqbConsole
             for (int i = 0; i < _parserCount; i++)
                 parserTasks.Add(Task.Run(() => ParseLines(logLinesChannel.Reader)));
 
-            await Task.Run(() => ReadLines(logFilePath, logLinesChannel.Writer));
+            var readLinesTask = Task.Run(() => ReadLines(logFilePath, logLinesChannel.Writer));
 
+            // Can start other code here while the ReadLines task starts going.
+            // The readers/ParseLine are already waiting and will spin up
+
+            // This is where we can put the batch sorter that then feeds into the Battle
+            // (currently, this is done after the Read/Parse is complete, the await just below.)
+
+            await readLinesTask;
             Task.WaitAll(parserTasks.ToArray());
 
             sw.Stop();
@@ -61,7 +68,7 @@ namespace EqbConsole
             WriteMessage($"Total processing EQBattle. {swTotal.Elapsed} elapsed");
         }
 
-        private async Task ReadLines(string logPath, ChannelWriter<LogDatum> writer)
+        private void ReadLines(string logPath, ChannelWriter<LogDatum> writer)
         {
             WriteMessage("Reading log file: {0}", logPath);
 
@@ -73,51 +80,21 @@ namespace EqbConsole
             using (var sr = new StreamReader(fs))
             {
                 string line;
-                while ((line = await sr.ReadLineAsync()) != null)
+                while ((line = sr.ReadLine()) != null)
                 {
                     count++;
                     if (line == String.Empty)
                         continue;
                     var logLine = new LogDatum(line, count);
-                    await writer.WriteAsync(logLine);
+                    writer.TryWrite(logLine);
                 }
             }
 
-
-            writer.Complete();
+            writer.Complete(); // We won't do this if this is a live file that's still being written to (how do we tell? Do we need to know?)
             sw.Stop();
 
             WriteMessage($"Done reading log file. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
-
-
-
-        private async Task<string> ReadTextAsync(string filePath)
-        {
-
-            using (var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            using (var sr = new StreamReader(fs))
-            {
-                string logLine = await sr.ReadLineAsync();
-            }
-
-            using (FileStream sourceStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, bufferSize: 4096, useAsync: true))
-            {
-                StringBuilder sb = new StringBuilder();
-
-                byte[] buffer = new byte[0x1000];
-                int numRead;
-                while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                {
-                    string text = Encoding.Unicode.GetString(buffer, 0, numRead);
-                    sb.Append(text);
-                }
-
-                return sb.ToString();
-            }
-        }
-
-
 
         private async Task ParseLines(ChannelReader<LogDatum> reader)
         {
