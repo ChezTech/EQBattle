@@ -25,11 +25,11 @@ namespace EqbConsole
         private YouResolver _youAre;
         private Battle _eqBattle;
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var logPath = args[0];
             var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
-            new Program(logPath).RunProgram(logPath, numberOfParsers);
+            await new Program(logPath).RunProgramAsync(logPath, numberOfParsers);
         }
 
         private Program(string logPath)
@@ -40,10 +40,14 @@ namespace EqbConsole
             WriteMessage("You are: {0}", _youAre.Name);
         }
 
-        private void RunProgram(string logPath, int numberOfParsers)
+        private async Task RunProgramAsync(string logPath, int numberOfParsers)
         {
-            var eqJob = CreateJobProcessor(numberOfParsers);
-            eqJob.StartProcessingJob(logPath, _eqBattle);
+            // var eqJob = CreateJobProcessor(numberOfParsers);
+            // eqJob.StartProcessingJob(logPath, _eqBattle);
+
+            var parser = CreateLineParser(_youAre);
+            var eqJob = new EQJobProcessorChannels(parser, numberOfParsers);
+            await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
@@ -75,7 +79,8 @@ namespace EqbConsole
         private IJobProcessor CreateJobProcessor(int numberOfParsers)
         {
             var parser = CreateLineParser(_youAre);
-            return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+            // return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+            return new EQJobProcessorChannels(parser, numberOfParsers);
         }
 
         // private void ShowMobHeals()

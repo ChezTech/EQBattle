@@ -24,7 +24,7 @@ namespace EqbConsole
 
         public override void StartProcessingJob(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers.");
+            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorBlockingCollection)");
 
             var swTotal = Stopwatch.StartNew();
             var sw = Stopwatch.StartNew();
