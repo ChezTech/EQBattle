@@ -46,6 +46,8 @@ namespace EqbConsole
             // eqJob.StartProcessingJob(logPath, _eqBattle);
             await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
 
+            WriteMessage($"EQBattle line count: {_eqBattle.LineCount:N0}");
+
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
             WriteMessage("===== Skirmishes ======");

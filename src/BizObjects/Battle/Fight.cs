@@ -20,6 +20,7 @@ namespace BizObjects.Battle
 
         public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
         public string Zone { get; }
+        public override int LineCount => Statistics.Lines.Count();
 
         public Fight(YouResolver youAre, CharacterResolver charResolver)
         {

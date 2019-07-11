@@ -23,6 +23,7 @@ namespace BizObjects.Battle
         public IList<IFight> Fights { get; } = new List<IFight>();
         public override bool IsFightOver => Fights.All(x => x.IsFightOver);
         public override DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
+        public override int LineCount => Fights.Sum(x => x.LineCount);
         public override string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
 
         public override void AddLine(Attack line)

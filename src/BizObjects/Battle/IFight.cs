@@ -13,6 +13,7 @@ namespace BizObjects.Battle
         Character PrimaryMob { get; }
         string Title { get; }
         DateTime LastAttackTime { get; }
+        int LineCount { get; }
 
         void AddLine(ILine line);
         void AddLine(Attack line);

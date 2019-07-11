@@ -30,6 +30,7 @@ namespace BizObjects.Battle
         private IFight _currentSkirmish;
 
         public IList<IFight> Skirmishes { get; } = new List<IFight>();
+        public int LineCount => Skirmishes.Sum(x => x.LineCount);
         public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
         public Battle(YouResolver youAre)

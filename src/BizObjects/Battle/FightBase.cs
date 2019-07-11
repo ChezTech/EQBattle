@@ -16,6 +16,7 @@ namespace BizObjects.Battle
         public Character PrimaryMob { get; protected set; } = Character.Unknown;
         public abstract string Title { get; }
         public abstract DateTime LastAttackTime { get; }
+        public abstract int LineCount { get; }
 
         public void AddLine(ILine line) { }
         public abstract void AddLine(Attack line);
