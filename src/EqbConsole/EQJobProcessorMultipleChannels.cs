@@ -59,6 +59,7 @@ namespace EqbConsole
             var parserTasks = new List<Task>();
 
             // Setup our worker blocks, they won't start until they receive input into their channels
+            // NOTE: it is barely worth using 2 parsers vs 1 (< 100ms for a 11MB/130k line file). More than 2 parsers is even slower.
             for (int i = 0; i < _parserCount; i++)
             {
                 var parserID = i;
@@ -151,7 +152,7 @@ namespace EqbConsole
             var sw = Stopwatch.StartNew();
             int count = 0;
 
-            var lines = new List<ILine>();
+            var lines = new Dictionary<int, ILine>();
 
             // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
             // because async methods use a state machine to handle awaits
@@ -162,7 +163,7 @@ namespace EqbConsole
                 {
                     count++;
 
-                    lines.Add(line);
+                    lines.Add(line.LogLine.LineNumber, line);
 
                     if (lines.Count >= SortBatchSize * 2)
                         SortBatch(lines, writer);
@@ -198,11 +199,11 @@ namespace EqbConsole
             WriteMessage($"Done sorting lines. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
-        private void SortBatch(List<ILine> lines, ChannelWriter<ILine> writer, bool processAllLines = false)
+        private void SortBatch(Dictionary<int, ILine> lines, ChannelWriter<ILine> writer, bool processAllLines = false)
         {
             // Get a double batch of lines, sort them, then take a single batch and feed it on (to the Battle)
             // Or if we need to process all lines, just sort them all w/o batches
-            IEnumerable<ILine> sortedLines = lines;
+            IEnumerable<ILine> sortedLines = lines.Values;
 
             if (!processAllLines)
                 sortedLines = sortedLines
@@ -218,7 +219,7 @@ namespace EqbConsole
             foreach (var line in sortedLines)
             {
                 writer.TryWrite(line);
-                lines.Remove(line); // slow: O(n)
+                lines.Remove(line.LogLine.LineNumber); // fast: O(1)
             }
         }
 
