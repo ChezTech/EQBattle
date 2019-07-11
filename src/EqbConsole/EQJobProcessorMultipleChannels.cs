@@ -89,9 +89,6 @@ namespace EqbConsole
 
         private void ReadLines(string logPath, ChannelWriter<LogDatum> writer)
         {
-            WriteMessage("Reading log file: {0}", logPath);
-
-            var sw = Stopwatch.StartNew();
             int count = 0;
 
             using (var fs = File.Open(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
@@ -105,27 +102,14 @@ namespace EqbConsole
                         continue;
                     var logLine = new LogDatum(line, count);
                     writer.TryWrite(logLine);
-
-                    // if (count % 100 == 0)
-                    // {
-                    //     WriteMessage($"Read {count} liness");
-                    //     Thread.Sleep(_Random.Next(30, 70));
-                    // }
                 }
             }
 
             writer.Complete(); // We won't do this if this is a live file that's still being written to (how do we tell? Do we need to know?)
-
-            sw.Stop();
-            WriteMessage($"Done reading log file. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
         private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer, int parserID)
         {
-            WriteMessage($"Starting to parse lines [{parserID}]...");
-            var sw = Stopwatch.StartNew();
-            int count = 0;
-
             // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
             // because async methods use a state machine to handle awaits
             // it is safe to await in an infinte loop. Thank you C# compiler gods!
@@ -135,68 +119,29 @@ namespace EqbConsole
                 {
                     var line = _parser.ParseLine(logLine);
                     writer.TryWrite(line);
-                    count++;
-
-                    // if (count % 50 == 0)
-                    //     WriteMessage($"Parsed {count} lines [{parserID}]");
                 }
             }
-
-            sw.Stop();
-            WriteMessage($"Done parsing lines [{parserID}]. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
         private async void SortLines(ChannelReader<ILine> reader, ChannelWriter<ILine> writer)
         {
-            WriteMessage("Starting to sort lines...");
-            var sw = Stopwatch.StartNew();
-            int count = 0;
-
             var lines = new Dictionary<int, ILine>();
 
-            // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
-            // because async methods use a state machine to handle awaits
-            // it is safe to await in an infinte loop. Thank you C# compiler gods!
             while (await reader.WaitToReadAsync())
             {
                 while (reader.TryRead(out var line))
                 {
-                    count++;
-
                     lines.Add(line.LogLine.LineNumber, line);
 
                     if (lines.Count >= SortBatchSize * 2)
                         SortBatch(lines, writer);
-
-
-
-                    // don't sort for now
-                    // writer.TryWrite(line);
-
-
-
-                    // if (count % 100 == 0)
-                    //     WriteMessage($"Sorted {count} lines");
                 }
             }
 
             // Do the remainder of the lines
             SortBatch(lines, writer, true);
 
-            // This creates a bottle neck, but we'll use it to validate
-            // var sortedLines = lines
-            //     .OrderBy(x => x.LogLine.LineNumber)
-            //     // .ToList()
-            //     ;
-
-            // foreach (var line in sortedLines)
-            //     writer.TryWrite(line);
-
-
             writer.Complete();
-
-            sw.Stop();
-            WriteMessage($"Done sorting lines. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
         private void SortBatch(Dictionary<int, ILine> lines, ChannelWriter<ILine> writer, bool processAllLines = false)
@@ -220,27 +165,13 @@ namespace EqbConsole
 
         private async Task AddLinesToBattleAsync(ChannelReader<ILine> reader, Battle eqBattle)
         {
-            WriteMessage("Starting adding lines to EQ Battle...");
-            var sw = Stopwatch.StartNew();
-            int count = 0;
-
-            // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
-            // because async methods use a state machine to handle awaits
-            // it is safe to await in an infinte loop. Thank you C# compiler gods!
             while (await reader.WaitToReadAsync())
             {
                 while (reader.TryRead(out var line))
                 {
                     eqBattle.AddLine(line);
-                    count++;
-
-                    // if (count % 100 == 0)
-                    //     WriteMessage($"Added {count} lines to Battle");
                 }
             }
-
-            sw.Stop();
-            WriteMessage($"Done adding lines to EQ Battle. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
         private void WriteMessage(string format, params object[] args) // DI this
