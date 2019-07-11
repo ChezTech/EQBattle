@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -19,9 +17,12 @@ namespace EqbConsole
     {
         // Thanks: https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
 
+        private const int SortBatchSize = 5000;
+
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
         private readonly Channel<ILine> _sortedLinesChannel;
+        private static Random _Random = new Random();
 
 
         public EQJobProcessorMultipleChannels(LineParserFactory parser, int parserCount = 1) : base(parser, parserCount)
@@ -59,7 +60,10 @@ namespace EqbConsole
 
             // Setup our worker blocks, they won't start until they receive input into their channels
             for (int i = 0; i < _parserCount; i++)
-                parserTasks.Add(Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer)));
+            {
+                var parserID = i;
+                parserTasks.Add(Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer, parserID)));
+            }
 
             var sortTask = Task.Run(() => SortLines(_parsedLinesChannel.Reader, _sortedLinesChannel.Writer));
             var battleTask = Task.Run(() => AddLinesToBattleAsync(_sortedLinesChannel.Reader, eqBattle));
@@ -101,8 +105,11 @@ namespace EqbConsole
                     var logLine = new LogDatum(line, count);
                     writer.TryWrite(logLine);
 
-                    if (count % 100 == 0)
-                        Thread.Sleep(100);
+                    // if (count % 100 == 0)
+                    // {
+                    //     WriteMessage($"Read {count} liness");
+                    //     Thread.Sleep(_Random.Next(30, 70));
+                    // }
                 }
             }
 
@@ -112,9 +119,9 @@ namespace EqbConsole
             WriteMessage($"Done reading log file. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
-        private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer)
+        private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer, int parserID)
         {
-            WriteMessage("Starting to parse lines...");
+            WriteMessage($"Starting to parse lines [{parserID}]...");
             var sw = Stopwatch.StartNew();
             int count = 0;
 
@@ -128,11 +135,14 @@ namespace EqbConsole
                     var line = _parser.ParseLine(logLine);
                     writer.TryWrite(line);
                     count++;
+
+                    // if (count % 50 == 0)
+                    //     WriteMessage($"Parsed {count} lines [{parserID}]");
                 }
             }
 
             sw.Stop();
-            WriteMessage($"Done parsing lines. {count,10:N0} lines {sw.Elapsed} elapsed");
+            WriteMessage($"Done parsing lines [{parserID}]. {count,10:N0} lines {sw.Elapsed} elapsed");
         }
 
         private async void SortLines(ChannelReader<ILine> reader, ChannelWriter<ILine> writer)
@@ -150,19 +160,66 @@ namespace EqbConsole
             {
                 while (reader.TryRead(out var line))
                 {
-                    // lines.Add(line);
+                    count++;
+
+                    lines.Add(line);
+
+                    if (lines.Count >= SortBatchSize * 2)
+                        SortBatch(lines, writer);
+
+
 
                     // don't sort for now
-                    writer.TryWrite(line);
+                    // writer.TryWrite(line);
+
+
+
+                    // if (count % 100 == 0)
+                    //     WriteMessage($"Sorted {count} lines");
                 }
             }
 
+            // Do the remainder of the lines
+            SortBatch(lines, writer, true);
+
             // This creates a bottle neck, but we'll use it to validate
+            // var sortedLines = lines
+            //     .OrderBy(x => x.LogLine.LineNumber)
+            //     // .ToList()
+            //     ;
+
+            // foreach (var line in sortedLines)
+            //     writer.TryWrite(line);
+
 
             writer.Complete();
 
             sw.Stop();
             WriteMessage($"Done sorting lines. {count,10:N0} lines {sw.Elapsed} elapsed");
+        }
+
+        private void SortBatch(List<ILine> lines, ChannelWriter<ILine> writer, bool processAllLines = false)
+        {
+            // Get a double batch of lines, sort them, then take a single batch and feed it on (to the Battle)
+            // Or if we need to process all lines, just sort them all w/o batches
+            IEnumerable<ILine> sortedLines = lines;
+
+            if (!processAllLines)
+                sortedLines = sortedLines
+                    .Take(SortBatchSize * 2);
+
+            sortedLines = sortedLines
+                .OrderBy(x => x.LogLine.LineNumber);
+
+            if (!processAllLines)
+                sortedLines = sortedLines
+                  .Take(SortBatchSize);
+
+            foreach (var line in sortedLines)
+            {
+                writer.TryWrite(line);
+                lines.Remove(line); // slow: O(n)
+            }
         }
 
         private async Task AddLinesToBattleAsync(ChannelReader<ILine> reader, Battle eqBattle)
@@ -180,6 +237,9 @@ namespace EqbConsole
                 {
                     eqBattle.AddLine(line);
                     count++;
+
+                    // if (count % 100 == 0)
+                    //     WriteMessage($"Added {count} lines to Battle");
                 }
             }
 
