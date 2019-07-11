@@ -53,7 +53,7 @@ namespace EqbConsole
 
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorChannels)");
+            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorMultipleChannels)");
 
             var sw = Stopwatch.StartNew();
             var parserTasks = new List<Task>();
