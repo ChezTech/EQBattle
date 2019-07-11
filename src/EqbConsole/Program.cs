@@ -77,7 +77,8 @@ namespace EqbConsole
         {
             var parser = CreateLineParser(_youAre);
             // return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
-            return new EQJobProcessorChannels(parser, numberOfParsers);
+            // return new EQJobProcessorChannels(parser, numberOfParsers);
+            return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
         }
 
         // private void ShowMobHeals()
