@@ -42,11 +42,8 @@ namespace EqbConsole
 
         private async Task RunProgramAsync(string logPath, int numberOfParsers)
         {
-            // var eqJob = CreateJobProcessor(numberOfParsers);
+            var eqJob = CreateJobProcessor(numberOfParsers);
             // eqJob.StartProcessingJob(logPath, _eqBattle);
-
-            var parser = CreateLineParser(_youAre);
-            var eqJob = new EQJobProcessorChannels(parser, numberOfParsers);
             await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);

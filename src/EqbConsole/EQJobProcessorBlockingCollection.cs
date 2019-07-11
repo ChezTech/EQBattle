@@ -22,6 +22,11 @@ namespace EqbConsole
         {
         }
 
+        public override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void StartProcessingJob(string logFilePath, Battle eqBattle)
         {
             WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorBlockingCollection)");
