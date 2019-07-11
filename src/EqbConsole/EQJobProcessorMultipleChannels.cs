@@ -131,15 +131,21 @@ namespace EqbConsole
             {
                 while (reader.TryRead(out var line))
                 {
-                    lines.Add(line.LogLine.LineNumber, line);
+                    if (_parserCount == 1)
+                        writer.TryWrite(line);
+                    else
+                    {
+                        lines.Add(line.LogLine.LineNumber, line);
 
-                    if (lines.Count >= SortBatchSize * 2)
-                        SortBatch(lines, writer);
+                        if (lines.Count >= SortBatchSize * 2)
+                            SortBatch(lines, writer);
+                    }
                 }
             }
 
             // Do the remainder of the lines
-            SortBatch(lines, writer, true);
+            if (_parserCount != 1)
+                SortBatch(lines, writer, true);
 
             writer.Complete();
         }
