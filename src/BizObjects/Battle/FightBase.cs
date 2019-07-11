@@ -27,7 +27,7 @@ namespace BizObjects.Battle
         }
         protected void AddFighterLine(Character fighterChar, Action<Fighter> addLine)
         {
-            var fighter = _fighters.GetOrAdd(fighterChar, new Fighter(fighterChar, this));
+            var fighter = _fighters.GetOrAdd(fighterChar, k => new Fighter(fighterChar, this));
             addLine(fighter);
         }
     }
