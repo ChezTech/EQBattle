@@ -203,18 +203,13 @@ namespace EqbConsole
         {
             // Get a double batch of lines, sort them, then take a single batch and feed it on (to the Battle)
             // Or if we need to process all lines, just sort them all w/o batches
-            IEnumerable<ILine> sortedLines = lines.Values;
-
-            if (!processAllLines)
-                sortedLines = sortedLines
-                    .Take(SortBatchSize * 2);
-
-            sortedLines = sortedLines
-                .OrderBy(x => x.LogLine.LineNumber);
-
-            if (!processAllLines)
-                sortedLines = sortedLines
-                  .Take(SortBatchSize);
+            IEnumerable<ILine> sortedLines = processAllLines
+                ? lines.Values
+                    .OrderBy(x => x.LogLine.LineNumber)
+                : lines.Values
+                    .Take(SortBatchSize * 2)
+                    .OrderBy(x => x.LogLine.LineNumber)
+                    .Take(SortBatchSize);
 
             foreach (var line in sortedLines)
             {
