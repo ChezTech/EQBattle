@@ -103,7 +103,7 @@ namespace EqbConsole
 
             // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
             // because async methods use a state machine to handle awaits
-            // it is safe to await in an infinte loop. Thank you C# compiler gods! 
+            // it is safe to await in an infinte loop. Thank you C# compiler gods!
             while (await reader.WaitToReadAsync())
             {
                 while (reader.TryRead(out var logLine))
