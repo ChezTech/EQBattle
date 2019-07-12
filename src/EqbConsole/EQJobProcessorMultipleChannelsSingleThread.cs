@@ -16,8 +16,6 @@ namespace EqbConsole
     {
         // Thanks: https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
 
-        private const int SortBatchSize = 5000;
-
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
 
