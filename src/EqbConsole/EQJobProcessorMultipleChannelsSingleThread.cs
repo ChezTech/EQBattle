@@ -79,12 +79,14 @@ namespace EqbConsole
                     writer.TryWrite(logLine);
                 }
             }
+            WriteMessage($"Lines read: {count}");
 
             writer.Complete(); // We won't do this if this is a live file that's still being written to (how do we tell? Do we need to know?)
         }
 
         private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer)
         {
+            int count = 0;
             // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
             // because async methods use a state machine to handle awaits
             // it is safe to await in an infinte loop. Thank you C# compiler gods!
@@ -92,23 +94,28 @@ namespace EqbConsole
             {
                 while (reader.TryRead(out var logLine))
                 {
+                    count++;
                     var line = _parser.ParseLine(logLine);
                     writer.TryWrite(line);
                 }
             }
+            WriteMessage($"Lines parsed: {count}");
 
             writer.Complete();
         }
 
         private async Task AddLinesToBattleAsync(ChannelReader<ILine> reader, Battle eqBattle)
         {
+            int count = 0;
             while (await reader.WaitToReadAsync())
             {
                 while (reader.TryRead(out var line))
                 {
+                    count++;
                     eqBattle.AddLine(line);
                 }
             }
+            WriteMessage($"Lines added to Battle: {count}");
         }
 
         /// <summary>
