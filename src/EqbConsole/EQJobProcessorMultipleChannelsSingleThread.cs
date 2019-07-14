@@ -70,7 +70,7 @@ namespace EqbConsole
             using (var sr = new StreamReader(fs))
             {
                 string line;
-                while ((line = sr.ReadLine()) != null)
+                while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     if (line == String.Empty)
