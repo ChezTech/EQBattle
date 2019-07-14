@@ -47,11 +47,11 @@ namespace EqbConsole
             var parserTasks = new List<Task>();
 
             // Setup our worker blocks, they won't start until they receive input into their channels
-            var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
-            var battleTask = Task.Run(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
+            var parseTask = RunTask(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
+            var battleTask = RunTask(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
 
             // Start our main guy up, this starts the whole pipeline flow going
-            var readTask = Task.Run(() => ReadLines(logFilePath, _logLinesChannel.Writer));
+            var readTask = RunTask(() => ReadLines(logFilePath, _logLinesChannel.Writer));
 
             // Wait for everything to finish up
             await readTask;
@@ -109,6 +109,25 @@ namespace EqbConsole
                     eqBattle.AddLine(line);
                 }
             }
+        }
+
+        /// <summary>
+        /// Run a task using our CancellationTokenSource
+        /// </summary>
+        private Task RunTask(Func<Task> runnable)
+        {
+            return Task.Factory.StartNew(async () =>
+             {
+                 await runnable();
+             }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
+
+        private Task RunTask(Action runnable)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                runnable();
+            }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void WriteMessage(string format, params object[] args) // DI this
