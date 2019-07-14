@@ -42,10 +42,47 @@ namespace EqbConsole
 
         private async Task RunProgramAsync(string logPath, int numberOfParsers)
         {
-            var eqJob = CreateJobProcessor(numberOfParsers);
-            // eqJob.StartProcessingJob(logPath, _eqBattle);
-            await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
+            var ctSource = new CancellationTokenSource();
 
+            var eqJob = CreateJobProcessor(numberOfParsers);
+            eqJob.CancelSource = ctSource;
+
+            // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
+            var listener = Task.Factory.StartNew(async () =>
+            {
+                // eqJob.StartProcessingJob(logPath, _eqBattle);
+                await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
+            }, ctSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+            WaitUserInput(ctSource);
+
+            await listener.ContinueWith(t => ShowBattleSummary());
+        }
+
+        private void WaitUserInput(CancellationTokenSource ctSource)
+        {
+            WriteMessage("=============== Press <Esc> to quit, 's' to get current stats. =============== ");
+
+            ConsoleKeyInfo cki;
+            do
+            {
+                cki = Console.ReadKey(true);
+
+                switch (cki.Key)
+                {
+                    case ConsoleKey.S:
+                        WriteMessage("S key pressed");
+                        // TODO: call into Job or Battle to get update message.
+                        break;
+                }
+
+            } while (cki.Key != ConsoleKey.Escape);
+
+            ctSource.Cancel();
+        }
+
+        private void ShowBattleSummary()
+        {
             WriteMessage($"EQBattle line count: {_eqBattle.LineCount:N0}");
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
