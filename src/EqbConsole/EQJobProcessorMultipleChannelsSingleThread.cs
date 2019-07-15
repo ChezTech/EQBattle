@@ -62,26 +62,42 @@ namespace EqbConsole
             WriteMessage($"Total processing EQBattle. {sw.Elapsed} elapsed");
         }
 
-        private void ReadLines(string logPath, ChannelWriter<LogDatum> writer)
+        private async Task ReadLines(string logPath, ChannelWriter<LogDatum> writer)
         {
-            int count = 0;
+            int totalCount = 0;
 
             using (var fs = File.Open(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             using (var sr = new StreamReader(fs))
             {
-                string line;
-                while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
+                while (!CancelSource.IsCancellationRequested)
                 {
-                    count++;
-                    if (line == String.Empty)
-                        continue;
-                    var logLine = new LogDatum(line, count);
-                    writer.TryWrite(logLine);
+                    ReadCurrentSetOfFileLines(sr, writer, out var count);
+                    totalCount += count;
+
+                    WriteMessage("Sleeping 3s");
+                    await Task.Delay(3000);
                 }
             }
-            WriteMessage($"Lines read: {count}");
+            WriteMessage($"Total Lines read: {totalCount}");
 
             writer.Complete(); // We won't do this if this is a live file that's still being written to (how do we tell? Do we need to know?)
+        }
+
+        private void ReadCurrentSetOfFileLines(StreamReader sr, ChannelWriter<LogDatum> writer, out int count)
+        {
+            string line;
+            count = 0;
+
+            while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
+            {
+                count++;
+                if (line == String.Empty)
+                    continue;
+                var logLine = new LogDatum(line, count);
+                writer.TryWrite(logLine);
+            }
+
+            WriteMessage($"Lines read: {count}");
         }
 
         private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer)
@@ -125,7 +141,15 @@ namespace EqbConsole
         {
             return Task.Factory.StartNew(async () =>
              {
-                 await runnable();
+                 try
+                 {
+                     await runnable();
+
+                 }
+                 catch (Exception ex)
+                 {
+                     WriteMessage(ex.Message);
+                 }
              }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
