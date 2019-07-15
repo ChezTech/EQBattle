@@ -73,6 +73,11 @@ namespace EqbConsole
                     case ConsoleKey.S:
                         WriteMessage("S key pressed");
                         // TODO: call into Job or Battle to get update message.
+                        WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
+                        break;
+
+                    case ConsoleKey.Escape:
+                        WriteMessage("Esc key pressed");
                         break;
                 }
 
@@ -83,7 +88,7 @@ namespace EqbConsole
 
         private void ShowBattleSummary()
         {
-            WriteMessage($"EQBattle line count: {_eqBattle.LineCount:N0}");
+            WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
 
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
