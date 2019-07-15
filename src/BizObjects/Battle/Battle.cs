@@ -31,6 +31,7 @@ namespace BizObjects.Battle
 
         public IList<IFight> Skirmishes { get; } = new List<IFight>();
         public int LineCount => Skirmishes.Sum(x => x.LineCount);
+        public int RawLineCount = 0;
         public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
         public Battle(YouResolver youAre)
@@ -44,6 +45,8 @@ namespace BizObjects.Battle
 
         public void AddLine(ILine line)
         {
+            RawLineCount++;
+
             VerifyLineOrder(line);
 
 
