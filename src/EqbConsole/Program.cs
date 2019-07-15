@@ -42,21 +42,22 @@ namespace EqbConsole
 
         private async Task RunProgramAsync(string logPath, int numberOfParsers)
         {
-            var ctSource = new CancellationTokenSource();
-
-            var eqJob = CreateJobProcessor(numberOfParsers);
-            eqJob.CancelSource = ctSource;
-
-            // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
-            var listener = Task.Factory.StartNew(async () =>
+            using (var ctSource = new CancellationTokenSource())
             {
-                // eqJob.StartProcessingJob(logPath, _eqBattle);
-                await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
-            }, ctSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                var eqJob = CreateJobProcessor(numberOfParsers);
+                eqJob.CancelSource = ctSource;
 
-            WaitUserInput(ctSource);
+                // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
+                var listener = Task.Factory.StartNew(async () =>
+                {
+                    // eqJob.StartProcessingJob(logPath, _eqBattle);
+                    await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
+                }, ctSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-            await listener.ContinueWith(t => ShowBattleSummary());
+                WaitUserInput(ctSource);
+
+                await listener.ContinueWith(t => ShowBattleSummary());
+            }
         }
 
         private void WaitUserInput(CancellationTokenSource ctSource)
