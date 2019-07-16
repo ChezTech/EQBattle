@@ -113,9 +113,9 @@ namespace EqbConsole
             // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
             // because async methods use a state machine to handle awaits
             // it is safe to await in an infinte loop. Thank you C# compiler gods!
-            while (await reader.WaitToReadAsync())
+            while (await reader.WaitToReadAsync() && !CancelSource.IsCancellationRequested)
             {
-                while (reader.TryRead(out var logLine))
+                while (reader.TryRead(out var logLine) && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     var line = _parser.ParseLine(logLine);
@@ -130,9 +130,9 @@ namespace EqbConsole
         private async Task AddLinesToBattleAsync(ChannelReader<ILine> reader, Battle eqBattle)
         {
             int count = 0;
-            while (await reader.WaitToReadAsync())
+            while (await reader.WaitToReadAsync() && !CancelSource.IsCancellationRequested)
             {
-                while (reader.TryRead(out var line))
+                while (reader.TryRead(out var line) && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     eqBattle.AddLine(line);
