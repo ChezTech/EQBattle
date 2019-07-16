@@ -62,44 +62,11 @@ namespace EqbConsole
             // // Start our main guy up, this starts the whole pipeline flow going
             var readTask = ReadLines(logFilePath, _logLinesChannel.Writer);
 
-            // var readTask = WaitingTask(logFilePath, _logLinesChannel.Writer);
-
             // Wait for everything to finish up
             // await Task.WhenAll(readTask, parseTask, battleTask);
             await Task.WhenAll(readTask);
 
             WriteMessage($"Total processing EQBattle, {_sw.Elapsed} elapsed");
-        }
-
-        private async Task WaitingTask(string logPath, ChannelWriter<LogDatum> writer)
-        {
-
-            WriteMessage("Starting WaitingTask");
-            int i = 0;
-
-
-            using (var fs = File.Open(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            using (var sr = new StreamReader(fs))
-            {
-                while (!CancelSource.IsCancellationRequested && i < 4)
-                {
-                    i++;
-                    WriteMessage($"In WaitingTask: {i}");
-
-                    // Do some work here
-                    ReadCurrentSetOfFileLines(sr, writer);
-
-                    try
-                    {
-                        await Task.Delay(2000, CancelSource.Token); // Ensures early exit if cancelled
-                    }
-                    catch (TaskCanceledException ex)
-                    {
-                        WriteMessage($"EX: {ex.Message}");
-                    }
-                }
-            }
-            WriteMessage("Finished WaitingTask");
         }
 
         private async Task ReadLines(string logPath, ChannelWriter<LogDatum> writer)
