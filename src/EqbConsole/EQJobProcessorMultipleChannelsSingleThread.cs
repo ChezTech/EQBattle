@@ -74,8 +74,15 @@ namespace EqbConsole
                     ReadCurrentSetOfFileLines(sr, writer, out var count);
                     totalCount += count;
 
-                    WriteMessage("Sleeping 3s");
-                    await Task.Delay(3000);
+                    try
+                    {
+                        WriteMessage("Sleeping 3s");
+                        await Task.Delay(3000, CancelSource.Token); // Ensures early exit if cancelled
+                    }
+                    catch (TaskCanceledException ex)
+                    {
+                        WriteMessage($"EX: {ex.Message}");
+                    }
                 }
             }
             WriteMessage($"Total Lines read: {totalCount}");
@@ -140,17 +147,16 @@ namespace EqbConsole
         private Task RunTask(Func<Task> runnable)
         {
             return Task.Factory.StartNew(async () =>
-             {
-                 try
-                 {
-                     await runnable();
-
-                 }
-                 catch (Exception ex)
-                 {
-                     WriteMessage(ex.Message);
-                 }
-             }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            {
+                try
+                {
+                    await runnable();
+                }
+                catch (Exception ex)
+                {
+                    WriteMessage(ex.Message);
+                }
+            }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private Task RunTask(Action runnable)
