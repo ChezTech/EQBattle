@@ -105,11 +105,11 @@ namespace EqbConsole
 
         private void ShowBattleSummary()
         {
-            WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
-
+            WriteMessage("=-=-=-=- EQ Battle Summary =-=-=-=-");
+            ShowBattleStatus();
             WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
-            WriteMessage("===== Skirmishes ======");
+            WriteMessage("== Skirmishes");
             WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             // foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
             // {
