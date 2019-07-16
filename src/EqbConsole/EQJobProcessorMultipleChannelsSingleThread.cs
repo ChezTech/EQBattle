@@ -19,6 +19,8 @@ namespace EqbConsole
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
 
+        private int _rawLineCount = 0;
+
         public EQJobProcessorMultipleChannelsSingleThread(LineParserFactory parser, int parserCount = 1) : base(parser, parserCount)
         {
             _logLinesChannel = Channel.CreateUnbounded<LogDatum>(new UnboundedChannelOptions()
@@ -98,9 +100,11 @@ namespace EqbConsole
             while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
             {
                 count++;
+                _rawLineCount++;
+
                 if (line == String.Empty)
                     continue;
-                var logLine = new LogDatum(line, count);
+                var logLine = new LogDatum(line, _rawLineCount);
                 writer.TryWrite(logLine);
             }
 
