@@ -19,7 +19,7 @@ namespace EqbConsole
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
 
-        private Stopwatch _sw;
+        private Stopwatch _sw = new Stopwatch();
         private int _lastLineNumber = 0;
         private int _rawLineCount = 0;
 
@@ -71,7 +71,7 @@ namespace EqbConsole
 
         private async Task ReadLines(string logPath, ChannelWriter<LogDatum> writer)
         {
-            _sw = Stopwatch.StartNew();
+            _sw.Start();
 
             int totalCount = 0;
 
