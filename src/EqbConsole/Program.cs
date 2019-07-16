@@ -53,44 +53,54 @@ namespace EqbConsole
                 var eqJob = CreateJobProcessor(numberOfParsers);
                 eqJob.CancelSource = ctSource;
 
+                // Get started waiting for user input
+                // When the user quits, then cancel our CTS (which will cause our JobTask to be cancelled)
+                var consoleTask = GetConsoleUserInputAsync()
+                    .ContinueWith(_ =>
+                    {
+                        ctSource.Cancel();
+                    });
+
                 // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
-                var listener = Task.Factory.StartNew(async () =>
-                {
-                    // eqJob.StartProcessingJob(logPath, _eqBattle);
-                    await eqJob.StartProcessingJobAsync(logPath, _eqBattle);
-                }, ctSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                // When it's done, show the summary
+                var jobTask = eqJob.StartProcessingJobAsync(logPath, _eqBattle)
+                    .ContinueWith(_ => ShowBattleSummary());
 
-                WaitUserInput(ctSource);
-
-                await listener.ContinueWith(t => ShowBattleSummary());
+                // Wait for everything to finish.
+                await Task.WhenAll(consoleTask, jobTask);
             }
         }
 
-        private void WaitUserInput(CancellationTokenSource ctSource)
+        private async Task GetConsoleUserInputAsync()
         {
-            WriteMessage("=============== Press <Esc> to quit, 's' to get current stats. =============== ");
+            WriteMessage("====== Press <Esc> to quit; 's' to get status ======");
 
-            ConsoleKeyInfo cki;
+            await Task.Yield(); // Hack to make this method async. Cleaner to just call Task.Run() on this method (non-async), but I like the symmetry this provides
+
+            bool done = false;
             do
             {
-                cki = Console.ReadKey(true);
+                var cki = Console.ReadKey(true);
 
                 switch (cki.Key)
                 {
                     case ConsoleKey.S:
-                        WriteMessage("S key pressed");
-                        // TODO: call into Job or Battle to get update message.
-                        WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
+                        ShowBattleStatus();
                         break;
 
+                    case ConsoleKey.Q:
                     case ConsoleKey.Escape:
-                        WriteMessage("Esc key pressed");
+                        done = true;
+                        WriteMessage("<Esc> pressed. Exiting...");
                         break;
+
                 }
+            } while (!done);
+        }
 
-            } while (cki.Key != ConsoleKey.Escape);
-
-            ctSource.Cancel();
+        private void ShowBattleStatus()
+        {
+            WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
         }
 
         private void ShowBattleSummary()
