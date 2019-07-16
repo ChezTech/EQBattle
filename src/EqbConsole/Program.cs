@@ -27,6 +27,12 @@ namespace EqbConsole
 
         static async Task Main(string[] args)
         {
+            if (args.Length < 1)
+            {
+                Console.WriteLine("Please specify a log file to read");
+                return;
+            }
+
             var logPath = args[0];
             var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
             await new Program(logPath).RunProgramAsync(logPath, numberOfParsers);
