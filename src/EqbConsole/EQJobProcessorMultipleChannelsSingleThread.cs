@@ -20,6 +20,7 @@ namespace EqbConsole
         private readonly Channel<ILine> _parsedLinesChannel;
 
         private Stopwatch _sw;
+        private int _lastLineNumber = 0;
         private int _rawLineCount = 0;
 
         public EQJobProcessorMultipleChannelsSingleThread(LineParserFactory parser, int parserCount = 1) : base(parser, parserCount)
@@ -111,6 +112,9 @@ namespace EqbConsole
                 writer.TryWrite(logLine);
             }
 
+            // Track so we can print debug message in other channels
+            _lastLineNumber = _rawLineCount;
+
             if (sessionCount > 0)
                 WriteMessage($"Lines read: {count:N0} / {sessionCount:N0}, {_sw.Elapsed} elapsed");
         }
@@ -141,11 +145,16 @@ namespace EqbConsole
             int count = 0;
             while (await reader.WaitToReadAsync() && !CancelSource.IsCancellationRequested)
             {
-                while (reader.TryRead(out var line) && !CancelSource.IsCancellationRequested)
+                ILine line;
+                while (reader.TryRead(out line) && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     eqBattle.AddLine(line);
                 }
+                // This gets called too many times since the ParseLines() method is the bottleneck, which means the parsed lines comes in small spurts into this channel
+                // Just update when we process the last line we've gotten (so far)
+                if (line.LogLine.LineNumber == _lastLineNumber)
+                    WriteMessage($"Lines added to Battle: {count:N0}, {_sw.Elapsed} elapsed");
             }
             WriteMessage($"Total Lines added to Battle: {count:N0}");
         }
