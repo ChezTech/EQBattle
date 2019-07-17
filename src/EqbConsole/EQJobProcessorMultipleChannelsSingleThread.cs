@@ -53,14 +53,16 @@ namespace EqbConsole
 
             var parseTask = Task.Run(async () =>
             {
-                await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
+                // await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
+                await ChannelWaitToReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
                 _parsedLinesChannel.Writer.Complete();
                 WriteMessage($"Total Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
             });
 
             var battleTask = Task.Run(async () =>
             {
-                await ChannelReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
+                // await ChannelReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
+                await ChannelWaitToReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
                 WriteMessage($"Total Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
             });
 
