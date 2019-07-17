@@ -135,7 +135,7 @@ namespace EqbConsole
 
             while (await reader.WaitToReadAsync())
             {
-                while (reader.TryRead(out var logLine))
+                while (reader.TryRead(out var logLine) && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     var line = _parser.ParseLine(logLine);
@@ -158,10 +158,10 @@ namespace EqbConsole
             // {
             //     while (reader.TryRead(out var line) && !CancelSource.IsCancellationRequested)
 
+            ILine line = null;
             while (await reader.WaitToReadAsync())
             {
-                ILine line;
-                while (reader.TryRead(out line))
+                while (reader.TryRead(out line) && !CancelSource.IsCancellationRequested)
                 {
                     count++;
                     eqBattle.AddLine(line);
