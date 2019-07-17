@@ -171,32 +171,6 @@ namespace EqbConsole
             WriteMessage($"Total Lines added to Battle: {count:N0}");
         }
 
-        /// <summary>
-        /// Run a task using our CancellationTokenSource
-        /// </summary>
-        private Task RunTask(Func<Task> runnable)
-        {
-            return Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await runnable();
-                }
-                catch (Exception ex)
-                {
-                    WriteMessage(ex.Message);
-                }
-            }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
-
-        private Task RunTask(Action runnable)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                runnable();
-            }, CancelSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        }
-
         private void WriteMessage(string format, params object[] args) // DI this
         {
             Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
