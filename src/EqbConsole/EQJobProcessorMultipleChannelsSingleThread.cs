@@ -87,7 +87,7 @@ namespace EqbConsole
                 }
             }
             WriteMessage($"Total Lines read: {totalCount:N0}");
-            WriteMessage($"IsCancelled? {CancelSource.IsCancellationRequested}");
+            WriteMessage($"LastLineNumber: {_lastLineNumber:N0}");
 
             // We've been cancelled at this point, close out the channel
             writer.Complete();
@@ -111,10 +111,10 @@ namespace EqbConsole
 
                 var logLine = new LogDatum(line, _rawLineCount);
                 writer.TryWrite(logLine);
-            }
 
-            // Track so we can print debug message in other channels
-            _lastLineNumber = _rawLineCount;
+                // Track so we can print debug message in other channels
+                _lastLineNumber = logLine.LineNumber;
+            }
 
             if (sessionCount > 0)
                 WriteMessage($"Lines read: {count:N0} / {sessionCount:N0}, {_sw.Elapsed} elapsed");
@@ -140,10 +140,13 @@ namespace EqbConsole
                     count++;
                     var line = _parser.ParseLine(logLine);
                     writer.TryWrite(line);
+
+                    // if (count % 1000 == 0)
+                    //     WriteMessage($"Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
                 }
-                // WriteMessage($"Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
+                WriteMessage($"Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
             }
-            WriteMessage($"Total Lines parsed: {count:N0}");
+            WriteMessage($"Total Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
 
             writer.Complete();
         }
@@ -162,13 +165,18 @@ namespace EqbConsole
                 {
                     count++;
                     eqBattle.AddLine(line);
+
+                    if (count % 1000 == 0)
+                        WriteMessage($"Lines added to Battle: {count:N0}, {_sw.Elapsed} elapsed");
                 }
+
                 // This gets called too many times since the ParseLines() method is the bottleneck, which means the parsed lines comes in small spurts into this channel
                 // Just update when we process the last line we've gotten (so far)
                 if (line.LogLine.LineNumber == _lastLineNumber)
                     WriteMessage($"Lines added to Battle: {count:N0}, {_sw.Elapsed} elapsed");
             }
-            WriteMessage($"Total Lines added to Battle: {count:N0}");
+            WriteMessage($"Total Lines added to Battle: {count:N0}, {_sw.Elapsed} elapsed");
+            WriteMessage($"LastLineNumber added to Battle: {line?.LogLine.LineNumber}");
         }
 
         private void WriteMessage(string format, params object[] args) // DI this
