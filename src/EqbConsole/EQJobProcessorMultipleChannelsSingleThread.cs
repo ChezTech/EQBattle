@@ -48,23 +48,14 @@ namespace EqbConsole
             WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorMultipleChannelsSingleThread)");
 
             // Setup our worker blocks, they won't start until they receive input into their channels
-            // var parseTask = RunTask(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
-            // var battleTask = RunTask(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
+            var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
+            var battleTask = Task.Run(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
 
             // Start our main guy up, this starts the whole pipeline flow going
-            // var readTask = RunTask(() => ReadLines(logFilePath, _logLinesChannel.Writer));
-
-
-            // // Setup our worker blocks, they'll wait until they receive input into their channels
-            // var parseTask = ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer);
-            // var battleTask = AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle);
-
-            // // Start our main guy up, this starts the whole pipeline flow going
-            var readTask = ReadLines(logFilePath, _logLinesChannel.Writer);
+            var readTask = Task.Run(() => ReadLines(logFilePath, _logLinesChannel.Writer));
 
             // Wait for everything to finish up
-            // await Task.WhenAll(readTask, parseTask, battleTask);
-            await Task.WhenAll(readTask);
+            await Task.WhenAll(readTask, parseTask, battleTask);
 
             WriteMessage($"Total processing EQBattle, {_sw.Elapsed} elapsed");
         }
