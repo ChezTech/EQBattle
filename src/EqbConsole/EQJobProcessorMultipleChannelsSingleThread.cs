@@ -18,6 +18,7 @@ namespace EqbConsole
 
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
+        private FileInfo LogFile { get; set; }
 
         private Stopwatch _sw = new Stopwatch();
         private int _lastLineNumber = 0;
@@ -45,7 +46,12 @@ namespace EqbConsole
 
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorMultipleChannelsSingleThread)");
+            LogFile = new FileInfo(logFilePath);
+
+            if (!LogFile.Exists)
+                throw new FileNotFoundException("File does not exist", logFilePath);
+
+            WriteMessage($"Starting to process EQBattle. (EQJobProcessorMultipleChannelsSingleThread)");
 
             // Setup our worker blocks, they won't start until they receive input into their channels
             // var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
@@ -80,23 +86,26 @@ namespace EqbConsole
 
         private async Task ReadLines(string logPath, ChannelWriter<LogDatum> writer)
         {
+            WriteMessage($"Starting channel reader - ReadLines");
+
             _sw.Start();
 
             int totalCount = 0;
 
-            using (var fs = File.Open(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+            using (var fs = LogFile.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             using (var sr = new StreamReader(fs))
             {
                 // This sets up our infinite loop of reading the file for new changes (until cancelled)
                 while (!CancelSource.IsCancellationRequested)
                 {
                     var count = ReadCurrentSetOfFileLines(sr, writer);
+                    // var count = await ReadCurrentSetOfFileLinesAsync(sr, writer);
                     totalCount += count;
 
                     try
                     {
                         // Console.Write(".");
-                        await Task.Delay(1000, CancelSource.Token); // Ensures early exit if cancelled
+                        await Task.Delay(500, CancelSource.Token); // Ensures early exit if cancelled
                     }
                     catch (Exception ex) when (ex is ChannelClosedException || ex is OperationCanceledException || ex is TaskCanceledException)
                     {
@@ -108,6 +117,7 @@ namespace EqbConsole
 
             // We've been cancelled at this point, close out the channel
             writer.Complete();
+            WriteMessage($"Finished channel reader - ReadLines");
         }
 
         private int ReadCurrentSetOfFileLines(StreamReader sr, ChannelWriter<LogDatum> writer)
@@ -117,6 +127,35 @@ namespace EqbConsole
             var count = 0;
 
             while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
+            {
+                _rawLineCount++;
+                sessionCount++;
+
+                if (line == String.Empty)
+                    continue;
+
+                count++;
+
+                var logLine = new LogDatum(line, _rawLineCount);
+                writer.TryWrite(logLine);
+
+                // Track so we can print debug message in other channels
+                _lastLineNumber = logLine.LineNumber;
+            }
+
+            if (sessionCount > 0)
+                WriteMessage($"Lines read: {count:N0} / {sessionCount:N0}, {_sw.Elapsed} elapsed");
+
+            return count;
+        }
+
+        private async Task<int> ReadCurrentSetOfFileLinesAsync(StreamReader sr, ChannelWriter<LogDatum> writer)
+        {
+            string line;
+            int sessionCount = 0;
+            var count = 0;
+
+            while ((line = await sr.ReadLineAsync()) != null && !CancelSource.IsCancellationRequested)
             {
                 _rawLineCount++;
                 sessionCount++;
@@ -232,11 +271,16 @@ namespace EqbConsole
         {
             try
             {
+                WriteMessage($"Starting channel reader - {title}");
                 await readLoop(reader, action);
             }
             catch (Exception ex) when (ex is ChannelClosedException || ex is OperationCanceledException || ex is TaskCanceledException)
             {
                 WriteMessage($"ERROR: {title} - {ex.Message}, {ex.GetType()}");
+            }
+            finally
+            {
+                WriteMessage($"Finished channel reader - {title}");
             }
         }
 
