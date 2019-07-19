@@ -24,12 +24,14 @@ namespace EqbConsole
     {
         enum ProgramMode
         {
-            Unknown,
-            JobMultiChannel,
+            JobBlockingConnection,
+            JobBasicChannel,
+            JobMultiChannelMultiParser,
+            JobMultiChannelSingleParser,
             JobMoreChannel,
         }
 
-        private static ProgramMode _programMode = ProgramMode.Unknown;
+        private static ProgramMode _programMode = ProgramMode.JobMoreChannel;
 
         private YouResolver _youAre;
         private Battle _eqBattle;
@@ -44,7 +46,7 @@ namespace EqbConsole
 
             _programMode = GetProgramMode(args);
             var logPath = args[0];
-            var numberOfParsers = 1; //args.Length > 1 ? int.Parse(args[1]) : 1;
+            var numberOfParsers = args.Length > 2 ? int.Parse(args[2]) : 1;
             await new Program(logPath).RunProgramAsync(logPath, numberOfParsers);
         }
 
@@ -55,8 +57,14 @@ namespace EqbConsole
 
             switch (args[1])
             {
-                case "mu":
-                    return ProgramMode.JobMultiChannel;
+                case "bc":
+                    return ProgramMode.JobBlockingConnection;
+                case "ba":
+                    return ProgramMode.JobBasicChannel;
+                case "mm":
+                    return ProgramMode.JobMultiChannelMultiParser;
+                case "ms":
+                    return ProgramMode.JobMultiChannelSingleParser;
                 case "mo":
                 default:
                     return ProgramMode.JobMoreChannel;
@@ -162,16 +170,17 @@ namespace EqbConsole
         private IJobProcessor CreateJobProcessor(int numberOfParsers)
         {
             var parser = CreateLineParser(_youAre);
-            // return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
-            // return new EQJobProcessorChannels(parser, numberOfParsers);
-            // return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
-            // return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
-            // return new EQJobEvenMoreChannels(parser);
 
             switch (_programMode)
             {
-                case ProgramMode.JobMultiChannel:
-                    return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
+                case ProgramMode.JobBlockingConnection:
+                    return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+                case ProgramMode.JobBasicChannel:
+                    return new EQJobProcessorChannels(parser, numberOfParsers);
+                case ProgramMode.JobMultiChannelMultiParser:
+                    return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
+                case ProgramMode.JobMultiChannelSingleParser:
+                    return new EQJobProcessorMultipleChannelsSingleThread(parser);
 
                 case ProgramMode.JobMoreChannel:
                 default:
