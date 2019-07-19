@@ -140,7 +140,8 @@ namespace EqbConsole
             // return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
             // return new EQJobProcessorChannels(parser, numberOfParsers);
             // return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
-            return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
+            // return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
+            return new EQJobEvenMoreChannels(parser);
         }
 
         // private void ShowMobHeals()
