@@ -22,14 +22,14 @@ namespace EqbConsole
         {
         }
 
-        public override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
+        public override async Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            throw new NotImplementedException();
+            await Task.Run(()=>StartProcessingJob(logFilePath, eqBattle));
         }
 
-        public override void StartProcessingJob(string logFilePath, Battle eqBattle)
+        private void StartProcessingJob(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorBlockingCollection)");
+            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. ({this.GetType().Name})");
 
             var swTotal = Stopwatch.StartNew();
             var sw = Stopwatch.StartNew();

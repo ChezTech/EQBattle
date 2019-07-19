@@ -39,11 +39,6 @@ namespace EqbConsole
             });
         }
 
-        public override void StartProcessingJob(string logFilePath, Battle eqBattle)
-        {
-            throw new NotImplementedException();
-        }
-
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
             LogFile = new FileInfo(logFilePath);
@@ -51,7 +46,7 @@ namespace EqbConsole
             if (!LogFile.Exists)
                 throw new FileNotFoundException("File does not exist", logFilePath);
 
-            WriteMessage($"Starting to process EQBattle. (EQJobProcessorMultipleChannelsSingleThread)");
+            WriteMessage($"Starting to process EQBattle. ({this.GetType().Name})");
 
             // Setup our worker blocks, they won't start until they receive input into their channels
             // var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));

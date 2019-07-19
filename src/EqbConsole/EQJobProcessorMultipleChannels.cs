@@ -46,14 +46,9 @@ namespace EqbConsole
             });
         }
 
-        public override void StartProcessingJob(string logFilePath, Battle eqBattle)
-        {
-            throw new NotImplementedException();
-        }
-
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. (EQJobProcessorMultipleChannels)");
+            WriteMessage($"Starting to process EQBattle with {_parserCount} parsers. ({this.GetType().Name})");
 
             var sw = Stopwatch.StartNew();
             var parserTasks = new List<Task>();
