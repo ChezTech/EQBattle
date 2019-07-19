@@ -22,6 +22,15 @@ namespace EqbConsole
 
     class Program
     {
+        enum ProgramMode
+        {
+            Unknown,
+            JobMultiChannel,
+            JobMoreChannel,
+        }
+
+        private static ProgramMode _programMode = ProgramMode.Unknown;
+
         private YouResolver _youAre;
         private Battle _eqBattle;
 
@@ -33,9 +42,25 @@ namespace EqbConsole
                 return;
             }
 
+            _programMode = GetProgramMode(args);
             var logPath = args[0];
-            var numberOfParsers = args.Length > 1 ? int.Parse(args[1]) : 1;
+            var numberOfParsers = 1; //args.Length > 1 ? int.Parse(args[1]) : 1;
             await new Program(logPath).RunProgramAsync(logPath, numberOfParsers);
+        }
+
+        private static ProgramMode GetProgramMode(string[] args)
+        {
+            if (args.Length < 2)
+                return ProgramMode.JobMoreChannel;
+
+            switch (args[1])
+            {
+                case "mu":
+                    return ProgramMode.JobMultiChannel;
+                case "mo":
+                default:
+                    return ProgramMode.JobMoreChannel;
+            }
         }
 
         private Program(string logPath)
@@ -141,7 +166,17 @@ namespace EqbConsole
             // return new EQJobProcessorChannels(parser, numberOfParsers);
             // return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
             // return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
-            return new EQJobEvenMoreChannels(parser);
+            // return new EQJobEvenMoreChannels(parser);
+
+            switch (_programMode)
+            {
+                case ProgramMode.JobMultiChannel:
+                    return new EQJobProcessorMultipleChannelsSingleThread(parser, numberOfParsers);
+
+                case ProgramMode.JobMoreChannel:
+                default:
+                    return new EQJobEvenMoreChannels(parser);
+            }
         }
 
         // private void ShowMobHeals()
