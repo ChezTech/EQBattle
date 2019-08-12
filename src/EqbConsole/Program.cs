@@ -35,6 +35,7 @@ namespace EqbConsole
 
         private YouResolver _youAre;
         private Battle _eqBattle;
+        IJobProcessor _eqJob;
 
         static async Task Main(string[] args)
         {
@@ -82,38 +83,83 @@ namespace EqbConsole
         private async Task RunProgramAsync(string logPath, int numberOfParsers)
         {
             using (var ctSource = new CancellationTokenSource())
-            {
-                var eqJob = CreateJobProcessor(numberOfParsers);
-                eqJob.CancelSource = ctSource;
-
-                // Get started waiting for user input
-                // When the user quits, then cancel our CTS (which will cause our JobTask to be cancelled)
-                var consoleTask = GetConsoleUserInputAsync()
-                    .ContinueWith(_ =>
-                    {
-                        ctSource.Cancel();
-                    });
-
-                // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
-                // When it's done, show the summary
-                var jobTask = eqJob.StartProcessingJobAsync(logPath, _eqBattle)
-                    .ContinueWith(_ => ShowBattleSummary());
-
-                // Wait for everything to finish.
-                await Task.WhenAll(consoleTask, jobTask);
-            }
+                await RunProgramAsync(logPath, numberOfParsers, ctSource);
         }
 
-        private async Task GetConsoleUserInputAsync()
+        private async Task RunProgramAsync(string logPath, int numberOfParsers, CancellationTokenSource ctSource)
         {
+            _eqJob = CreateJobProcessor(numberOfParsers);
+            _eqJob.CancelSource = ctSource;
+
+            // Get started waiting for user input
+            // When the user quits, then cancel our CTS (which will cause our JobTask to be cancelled)
+            var consoleTask = GetConsoleUserInputAsync(ctSource.Token);
+            var ctComplete = consoleTask.ContinueWith(_ => ctSource.Cancel(), TaskContinuationOptions.OnlyOnRanToCompletion);
+            var ctContinue = consoleTask.ContinueWith(_ => { }); // Empty task to await upon
+
+            // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
+            // When it's done, show the summary
+            var jobTask = _eqJob.StartProcessingJobAsync(logPath, _eqBattle);
+            var jtError = jobTask.ContinueWith(_ => WriteMessage($"{_.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
+
+            // Either the log file wasn't found, or we finished reading the log file. It either case,
+            // we need to cancel the 'consoleTask' so we don't wait for the user when we know we're done.
+            var jtNotCancelled = jobTask.ContinueWith(_ => ctSource.Cancel(), TaskContinuationOptions.NotOnCanceled);
+            var jtComplete = jobTask.ContinueWith(_ => ShowBattleSummary(), TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            try
+            {
+                // Wait for everything to finish.
+                // await Task.WhenAll(ctComplete, ctContinue, jtError, jtNotCancelled, jtComplete);
+                // await ctContinue;
+                // ctSource.CancelAfter(7*1000);
+                await Task.WhenAny(jtNotCancelled, jtComplete);
+            }
+            // catch (TaskCanceledException)
+            // {
+            //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
+            // }
+            // catch (OperationCanceledException)
+            // {
+            //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
+            // }
+            catch (Exception ex)
+            {
+                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}\n{ex}");
+            }
+            finally
+            {
+                WriteMessage("Program Finally Block");
+            }
+
+
+            DumpTaskInfo(consoleTask, "consoleTask");
+            // DumpTaskInfo(ctComplete, "ctComplete");
+            // DumpTaskInfo(ctContinue, "ctContinue");
+            DumpTaskInfo(jobTask, "jobTask");
+            // DumpTaskInfo(jtError, "jtError");
+            // DumpTaskInfo(jtNotCancelled, "jtNotCancelled");
+            // DumpTaskInfo(jtComplete, "jtComplete");
+        }
+        public static void DumpTaskInfo(Task t, string title)
+        {
+            WriteMessage($"Task: {title,-17} ({t.Id,2})  Cncl: {t.IsCanceled,-5}  Cmplt: {t.IsCompleted,-5}  Sccs: {t.IsCompletedSuccessfully,-5}  Flt: {t.IsFaulted,-5}  Sts: {t.Status}{(t.Exception == null ? "" : $"  Ex: {t.Exception?.Message}")}");
+            // if (t.Exception != null)
+            //     WriteMessage($"Task Exception: {t.Exception}");
+        }
+        private async Task GetConsoleUserInputAsync(CancellationToken token)
+        {
+            // Pop this onto another thread which gives the job task a chance to detect that the file wasn't found (before writing out this message)
+            await Task.Delay(20);
+            token.ThrowIfCancellationRequested();
             WriteMessage("====== Press <Esc> to quit; 's' to get status ======");
 
-            await Task.Yield(); // Hack to make this method async. Cleaner to just call Task.Run() on this method (non-async), but I like the symmetry this provides
+            var conReader = new ConsoleReader();
 
             bool done = false;
             do
             {
-                var cki = Console.ReadKey(true);
+                var cki = await conReader.ReadKeyAsync(true, token);
 
                 switch (cki.Key)
                 {
@@ -133,6 +179,7 @@ namespace EqbConsole
 
         private void ShowBattleStatus()
         {
+            _eqJob?.ShowStatus();
             WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
         }
 
@@ -259,9 +306,30 @@ namespace EqbConsole
             return logPath.Substring(firstUnder + 1, secondUnder - firstUnder - 1);
         }
 
-        private void WriteMessage(string format, params object[] args)
+        public static void WriteMessage(string format, params object[] args)
         {
             Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
+        }
+
+        public static async Task Delay(int delayTimeMs, CancellationToken token, string title = "")
+        {
+            try
+            {
+                // WriteMessage($"Delay-Start ({delayTimeMs}ms) - {title}");
+                // Wait a bit of time before looking for the next chunk of items
+                await Task.Delay(delayTimeMs, token);
+                // WriteMessage($"Delay-Finish - {title}");
+            }
+            catch (TaskCanceledException ex)
+            {
+                // Catch the cancel, handle cleanup and proper closing ...
+                // WriteMessage($"Delay-Cancel - {title}: {ex.GetType().Name} - {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                // WriteMessage($"Delay-Finally - {title}");
+            }
         }
     }
 }

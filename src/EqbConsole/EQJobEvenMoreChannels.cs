@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BizObjects.Battle;
 using BizObjects.Lines;
 using LineParser;
+using LogFileReader;
 using LogObjects;
 
 namespace EqbConsole
@@ -24,6 +25,14 @@ namespace EqbConsole
         private Stopwatch _sw = new Stopwatch();
         private int _lastLineNumber = 0;
         private int _rawLineCount = 0;
+        private int _datumLineCount = 0;
+        private int _parsedLineCount = 0;
+        private int _battleLinesCount = 0;
+        private ILine _lastLineAddedToBattle = null;
+
+
+
+
 
         public EQJobEvenMoreChannels(LineParserFactory parser) : base(parser)
         {
@@ -46,204 +55,328 @@ namespace EqbConsole
             });
         }
 
+        public override void ShowStatus()
+        {
+            WriteMessage($"Job status: log lines read: {_rawLineCount,10:N0}, datum'd: {_datumLineCount,10:N0}, parsed {_parsedLineCount,10:N0}, battled: {_battleLinesCount,10:N0}, elapsed: {_sw.Elapsed}");
+        }
+
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            LogFile = new FileInfo(logFilePath);
+            // LogFile = new FileInfo(logFilePath);
 
-            if (!LogFile.Exists)
-                throw new FileNotFoundException("File does not exist", logFilePath);
+            // if (!LogFile.Exists)
+            //     throw new FileNotFoundException($"File not found: {logFilePath}", logFilePath);
 
             WriteMessage($"Starting to process EQBattle. ({this.GetType().Name})");
 
-            // Setup our worker blocks, they won't start until they receive input into their channels
-            // var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
-            // var battleTask = Task.Run(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
-
-            var datumTask = Task.Run(async () =>
+            // Trying a new CTS just for these jobs, separate from the this.CancelSource
+            using (var ctSource = new CancellationTokenSource())
             {
-                // await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
-                await ChannelWaitToReadAsync(_rawLinesChannel.Reader, line => DatumLine(line, _logLinesChannel.Writer), "DatumLine");
-                _logLinesChannel.Writer.Complete();
-                WriteMessage($"Total Lines datum'd: {_datumLineCount:N0}, {_sw.Elapsed} elapsed");
-            });
+                // var ctSource = CancelSource;
+                // Setup our worker blocks, they won't start until they receive input into their channels
+                // var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
+                // var battleTask = Task.Run(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
 
-            var parseTask = Task.Run(async () =>
-            {
-                // await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
-                await ChannelWaitToReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
-                _parsedLinesChannel.Writer.Complete();
-                WriteMessage($"Total Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
-            });
+                // var datumTask = Task.Run(async () =>
+                // {
+                //     // await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
+                //     await ChannelWaitToReadAsync(_rawLinesChannel.Reader, line => DatumLine(line, _logLinesChannel.Writer), "DatumLine");
+                //     _logLinesChannel.Writer.Complete();
+                //     WriteMessage($"Total Lines datum'd: {_datumLineCount:N0}, {_sw.Elapsed} elapsed");
+                // });
 
-            var battleTask = Task.Run(async () =>
-            {
-                // await ChannelReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
-                await ChannelWaitToReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
-                WriteMessage($"Total Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
-            });
+                // var parseTask = Task.Run(async () =>
+                // {
+                //     // await ChannelReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
+                //     await ChannelWaitToReadAsync(_logLinesChannel.Reader, line => ParseLine(line, _parsedLinesChannel.Writer), "ParseLine");
+                //     _parsedLinesChannel.Writer.Complete();
+                //     WriteMessage($"Total Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
+                // });
+
+                // var battleTask = Task.Run(async () =>
+                // {
+                //     // await ChannelReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
+                //     await ChannelWaitToReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
+                //     WriteMessage($"Total Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
+                // });
 
 
-            // Start our main guy up, this starts the whole pipeline flow going
-            var readTask = Task.Run(() => ReadLines(logFilePath, _rawLinesChannel.Writer));
+                // // Start our main guy up, this starts the whole pipeline flow going
+                // var readTask = Task.Run(() => ReadLines(logFilePath, _rawLinesChannel.Writer));
 
-            // Wait for everything to finish up
-            await Task.WhenAll(readTask, datumTask, parseTask, battleTask);
+
+
+                // var cp = new ChannelProcessor(CancelSource.Token);
+                var cp = new ChannelProcessor(ctSource.Token);
+
+                // var cancelTask = CheckForCancel();
+                var cancelTask = Task.Delay(-1, CancelSource.Token);
+                var ctCancel = cancelTask.ContinueWith(_ =>
+                {
+                    WriteMessage("CancelTask cancelling...");
+
+                    // Mark all the channels complete.
+                    // Marking the first will cause them all to trickle down and close.
+                    // However the parser is the bottle neck, so if we want them to close promptly (and abandon any raw log lines in the parser channel queue), we need to close them all here.
+                    // _rawLinesChannel.Writer.TryComplete();
+                    // _logLinesChannel.Writer.TryComplete();
+                    // _parsedLinesChannel.Writer.TryComplete();
+
+                    // Cancel our Token, this will cancel the Log Reader and close its channel (which will cause all others to close)
+                    ctSource.Cancel();
+
+                    WriteMessage("CancelTask cancelled");
+                }, TaskContinuationOptions.OnlyOnCanceled);
+
+                cp.Message += m => WriteMessage(m);
+                var datumTask = cp.Process(_rawLinesChannel.Reader, _logLinesChannel.Writer, item => TransformLogLineToDatum(item), "Datum");
+                var dtCancel = datumTask.ContinueWith(_ => WriteMessage("DatumTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
+                var dtComplete = datumTask.ContinueWith(_ => WriteMessage("DatumTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var dtContinue = datumTask.ContinueWith(_ =>
+                {
+                    WriteMessage($"DatumTask done. {_datumLineCount:N0} datum lines, {_sw.Elapsed} elapsed");
+                    _logLinesChannel.Writer.TryComplete();
+                });
+
+                var parseTask = cp.Process(_logLinesChannel.Reader, _parsedLinesChannel.Writer, item => TransformDatumToLine(item), "Parser");
+                var ptCancel = parseTask.ContinueWith(_ => WriteMessage("ParseTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
+                var ptComplete = parseTask.ContinueWith(_ => WriteMessage("ParseTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var ptContinue = parseTask.ContinueWith(_ =>
+                {
+                    WriteMessage($"ParseTask done. {_parsedLineCount:N0} parse lines, {_sw.Elapsed} elapsed");
+                    _parsedLinesChannel.Writer.TryComplete();
+                });
+
+                var battleTask = cp.Process(_parsedLinesChannel.Reader, item => AddLineToBattle(item, eqBattle), "Battle");
+                var btCancel = battleTask.ContinueWith(_ => WriteMessage("BattleTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
+                var btComplete = battleTask.ContinueWith(_ => WriteMessage("BattleTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var btContinue = battleTask.ContinueWith(_ =>
+                {
+                    WriteMessage($"BattleTask done. {_battleLinesCount:N0} battle lines, {_sw.Elapsed} elapsed");
+                });
+
+
+                // WriteMessage("Waiting 1 ...");
+                // await Task.Delay(4000, ctSource.Token);
+                // WriteMessage("Done waiting 1");
+
+
+                // Start our main guy up, this starts the whole pipeline flow going
+                _sw.Start();
+                // var readTask = cp.Process(_rawLinesChannel.Writer, ct => ReadLogLines(logFilePath, ct));
+                var readTask = ReadLogLinesWrapper(_rawLinesChannel.Writer, logFilePath, ctSource.Token, 10 * 1000);
+                var rtCancel = readTask.ContinueWith(_ => WriteMessage("ReadTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
+                var rtComplete = readTask.ContinueWith(_ => WriteMessage("ReadTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);
+                var rtContinue = readTask.ContinueWith(_ =>
+                {
+                    WriteMessage($"ReadTask done. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
+                    _rawLinesChannel.Writer.TryComplete();
+                });
+
+
+
+                try
+                {
+                    // WriteMessage("Waiting 2");
+                    // await Program.Delay(3000, ctSource.Token, "Waiting 2");
+                    // WriteMessage("Done waiting 2");
+
+
+                    // Wait for everything to finish up
+                    await Task.WhenAll(readTask, datumTask, parseTask, battleTask);
+
+                    WriteMessage("All tasks that we're waiting for are done");
+                }
+                // catch (TaskCanceledException ex)
+                // {
+                //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
+                // }
+                catch (OperationCanceledException ex)
+                {
+                    WriteMessage($"Operation Cancelled: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                    // throw;
+                }
+                catch (Exception ex)
+                {
+                    WriteMessage($"Job Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                    WriteMessage($"Inner: {ex.InnerException}");
+                }
+                finally
+                {
+                    WriteMessage("Job done");
+                    await Task.Delay(20); // Give all continuation tasks a chance to finish
+
+                    Program.DumpTaskInfo(readTask, "readTask");
+                    Program.DumpTaskInfo(datumTask, "datumTask");
+                    Program.DumpTaskInfo(parseTask, "parseTask");
+                    Program.DumpTaskInfo(battleTask, "battleTask");
+
+                    DumpChannelInfo(_rawLinesChannel, "_rawLinesChannel");
+                    DumpChannelInfo(_logLinesChannel, "_logLinesChannel");
+                    DumpChannelInfo(_parsedLinesChannel, "_parsedLinesChannel");
+                }
+            }
 
             WriteMessage($"Total processing EQBattle, {_sw.Elapsed} elapsed");
             WriteMessage($"LastLineNumber read: {_lastLineNumber:N0}");
             WriteMessage($"LastLineNumber added to Battle: {_lastLineAddedToBattle?.LogLine.LineNumber:N0}");
+            ShowStatus();
+
+            CancelSource.Token.ThrowIfCancellationRequested();
         }
 
-        private async Task ReadLines(string logPath, ChannelWriter<string> writer)
+        public static void DumpChannelInfo<T>(Channel<T> channel, string title)
         {
-            WriteMessage($"Starting channel reader - ReadLines");
+            WriteMessage($"Channel: {title,-20} reader status: {channel.Reader.Completion.Status}");
+        }
 
-            _sw.Start();
+        private async Task ReadLogLinesWrapper(ChannelWriter<string> writer, string logPath, CancellationToken token, int delayTimeMs = 250)
+        {
+            WriteMessage("Writing channel: Reader");
+            var startingLineCount = 0;
 
-            int totalCount = 0;
+            var lr = new LogReader(logPath, token);
+            lr.LineRead += line =>
+            {
+                _rawLineCount++;
+                writer.TryWrite(line);
+            };
+
+            // int delayCount = 0;
+            // lr.EoFReached += async () => await Delay(delayTimeMs, token);
+            lr.EoFReached += async () =>
+            {
+                // delayCount++;
+                // if (delayCount <= 4)
+                // {
+                var eofLineCount = _rawLineCount - startingLineCount;
+                if (eofLineCount > 0)
+                    WriteMessage($"LogReader EOF - waiting to read next chunk. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
+
+                startingLineCount = _rawLineCount;
+                await Program.Delay(5000, token, "EOF");
+                //     // Thread.Sleep(10 * 1000);
+                // }
+                // else
+                // {
+                //     // WriteMessage("Stopping the LogReader");
+                //     // lr.StopReading();
+                //     // ctSource.Cancel();
+                // }
+            };
+
+            // lr.EoFReached += async () => WriteMessage("Eof Handler #2");
+            // lr.EoFReached += async () => WriteMessage("Eof Handler #3");
+
+            // var cancelTask = Task
+            //     .Delay(-1, CancelSource.Token)
+            //     .ContinueWith(_ =>
+            //     {
+            //         WriteMessage("Stopping LogReader");
+            //         // lr.StopReading();
+            //         ctSource.Cancel();
+            //     });
+
+            // await Program.Delay(3000, ctSource.Token, "Before start reading");s
+
+            WriteMessage("About to start reading");
+            startingLineCount = _rawLineCount;
+            var lrTask = lr.StartReadingAsync();
+            try
+            {
+                WriteMessage("Task'd LR reading");
+                await lrTask;
+                WriteMessage("LR reading completed successfully");
+
+            }
+            catch (OperationCanceledException ex)
+            {
+                WriteMessage($"ReadLogLinesWrapper - Operation Cancelled: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                WriteMessage($"ReadLogLinesWrapper - Job Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
+            }
+            finally
+            {
+                WriteMessage("Finally done with LR reading");
+                Program.DumpTaskInfo(lrTask, "lrTask");
+            }
+        }
+
+        private async Task ReadLogLinesWrapper1(ChannelWriter<string> writer, string logPath, CancellationToken token, int delayTimeMs = 250)
+        {
+            WriteMessage("Writing channel: Reader");
+
+            // Yield to get off the main thread context right away. This will continue on a thread pool.
+            await Task.Yield();
+            WriteMessage("Writing channel: Reader - after yield");
+
+            while (!token.IsCancellationRequested)
+            {
+                // Get all the items currently available and add them to our channel
+                foreach (var item in ReadLogLines(logPath, token))
+                    writer.TryWrite(item);
+
+                try
+                {
+                    WriteMessage($"Waiting to read next source chunk: {delayTimeMs}ms");
+                    // Wait a bit of time before looking for the next chunk of items
+                    await Task.Delay(delayTimeMs, token);
+                }
+                catch (TaskCanceledException ex)
+                {
+                    // Catch the cancel, handle cleanup and proper closing ...
+                    WriteMessage($"ReadLogLinesWrapper-Cancel: {ex.GetType().Name} - {ex.Message}");
+                }
+            }
+
+            writer.TryComplete();
+            WriteMessage("Done writing channel: Reader");
+
+            // token.ThrowIfCancellationRequested();
+        }
+
+        private IEnumerable<string> ReadLogLines(string logPath, CancellationToken token)
+        {
+            if (token.IsCancellationRequested)
+                yield break;
 
             using (var fs = LogFile.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             using (var sr = new StreamReader(fs))
             {
-                // This sets up our infinite loop of reading the file for new changes (until cancelled)
-                while (!CancelSource.IsCancellationRequested)
+                // This double loop (with yield break in the middle) allows the caller to iterate over
+                // every item we have, then pause and see if we have more
+                string line;
+                while (!token.IsCancellationRequested)
                 {
-                    var count = ReadCurrentSetOfFileLines(sr, writer);
-                    // var count = await ReadCurrentSetOfFileLinesAsync(sr, writer);
-                    totalCount += count;
+                    int sessionCount = 0;
+                    while (!token.IsCancellationRequested && (line = sr.ReadLine()) != null)
+                    {
+                        _rawLineCount++;
+                        sessionCount++;
+                        yield return line;
+                    }
 
-                    try
-                    {
-                        // Console.Write(".");
-                        await Task.Delay(500, CancelSource.Token); // Ensures early exit if cancelled
-                    }
-                    catch (Exception ex) when (ex is ChannelClosedException || ex is OperationCanceledException || ex is TaskCanceledException)
-                    {
-                        WriteMessage($"ERROR: ReadLines - {ex.Message}, {ex.GetType()}");
-                    }
+                    if (sessionCount > 0)
+                        WriteMessage($"Current lines read: {sessionCount:N0}, {_sw.Elapsed} elapsed");
+
+                    yield break;
                 }
             }
-            WriteMessage($"Total Lines read: {totalCount:N0}");
-
-            // We've been cancelled at this point, close out the channel
-            writer.Complete();
-            WriteMessage($"Finished channel reader - ReadLines");
         }
 
-        private int ReadCurrentSetOfFileLines(StreamReader sr, ChannelWriter<string> writer)
-        {
-            string line;
-            int sessionCount = 0;
-            var count = 0;
-
-            while ((line = sr.ReadLine()) != null && !CancelSource.IsCancellationRequested)
-            {
-                // _rawLineCount++;
-                sessionCount++;
-
-                if (line == String.Empty)
-                    continue;
-
-                count++;
-                _rawLineCount++;
-
-                writer.TryWrite(line);
-            }
-
-            if (sessionCount > 0)
-                WriteMessage($"Lines read: {count:N0} / {sessionCount:N0}, {_sw.Elapsed} elapsed");
-
-            return count;
-        }
-
-        private async Task<int> ReadCurrentSetOfFileLinesAsync(StreamReader sr, ChannelWriter<LogDatum> writer)
-        {
-            string line;
-            int sessionCount = 0;
-            var count = 0;
-
-            while ((line = await sr.ReadLineAsync()) != null && !CancelSource.IsCancellationRequested)
-            {
-                _rawLineCount++;
-                sessionCount++;
-
-                if (line == String.Empty)
-                    continue;
-
-                count++;
-
-                var logLine = new LogDatum(line, _rawLineCount);
-                writer.TryWrite(logLine);
-
-                // Track so we can print debug message in other channels
-                _lastLineNumber = logLine.LineNumber;
-            }
-
-            if (sessionCount > 0)
-                WriteMessage($"Lines read: {count:N0} / {sessionCount:N0}, {_sw.Elapsed} elapsed");
-
-            return count;
-        }
-
-        private async Task ParseLines(ChannelReader<LogDatum> reader, ChannelWriter<ILine> writer)
-        {
-            int count = 0;
-            try
-            {
-                // https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
-                // because async methods use a state machine to handle awaits
-                // it is safe to await in an infinte loop. Thank you C# compiler gods!
-
-                // while (await reader.WaitToReadAsync() && !CancelSource.IsCancellationRequested)
-                // {
-                //     while (reader.TryRead(out var logLine) && !CancelSource.IsCancellationRequested)
-
-                // while (await reader.WaitToReadAsync(CancelSource.Token))
-                // {
-                //     while (!CancelSource.IsCancellationRequested && reader.TryRead(out var logLine))
-                //     {
-                //         ParseLine(logLine, writer);
-                //     }
-                //     WriteMessage($"Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
-                // }
-
-                while (true)
-                {
-                    var logLine = await reader.ReadAsync(CancelSource.Token);
-                    ParseLine(logLine, writer);
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteMessage($"Parse ERROR: {ex.Message}, {ex.GetType()}");
-            }
-            finally
-            {
-                writer.Complete();
-                WriteMessage($"Total Lines parsed: {count:N0}, {_sw.Elapsed} elapsed");
-            }
-        }
-
-        private int _parsedLineCount = 0;
-        private void ParseLine(LogDatum logLine, ChannelWriter<ILine> writer)
-        {
-            _parsedLineCount++;
-            var line = _parser.ParseLine(logLine);
-            writer.TryWrite(line);
-
-            // if (_parsedLineCount % 10000 == 0)
-            //     WriteMessage($"Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
-
-            if (line.LogLine.LineNumber == _lastLineNumber)
-                WriteMessage($"Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
-        }
-
-        private int _datumLineCount = 0;
-        private void DatumLine(string line, ChannelWriter<LogDatum> writer)
+        private LogDatum TransformLogLineToDatum(string line)
         {
             _datumLineCount++;
-            var datum = new LogDatum(line, _datumLineCount); // TODO: This isn't quite the true/raw log line number. Maybe make a Tuple for this channel
-            writer.TryWrite(datum);
+
+            // Filter out the occasional totally blank line (not even a timestamp)
+            // The ChannelProcessor will not put <null> responses into the next Channel
+            if (String.IsNullOrEmpty(line))
+                return null;
+
+            var datum = new LogDatum(line, _datumLineCount);
 
             // Track so we can print debug message in other channels
             _lastLineNumber = datum.LineNumber;
@@ -251,91 +384,26 @@ namespace EqbConsole
             // if (_datumLineCount % 10000 == 0)
             //     WriteMessage($"Lines datum'd: {_datumLineCount:N0}, {_sw.Elapsed} elapsed");
 
-            if (_rawLineCount == _lastLineNumber)
-                WriteMessage($"Lines datum'd: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
+            if (_datumLineCount == _rawLineCount)
+                WriteMessage($"Log lines transformed into LogDatums: {_datumLineCount:N0}, {_sw.Elapsed} elapsed");
+
+            return datum;
         }
 
-        private async Task AddLinesToBattleAsync(ChannelReader<ILine> reader, Battle eqBattle)
+        private ILine TransformDatumToLine(LogDatum datum)
         {
-            ILine line = null;
-            try
-            {
-                int count = 0;
-                // while (await reader.WaitToReadAsync() && !CancelSource.IsCancellationRequested)
-                // {
-                //     while (reader.TryRead(out var line) && !CancelSource.IsCancellationRequested)
+            _parsedLineCount++;
+            var line = _parser.ParseLine(datum);
 
-                while (await reader.WaitToReadAsync(CancelSource.Token))
-                {
-                    while (!CancelSource.IsCancellationRequested && reader.TryRead(out line))
-                    {
-                        AddLineToBattle(line, eqBattle);
+            // if (_parsedLineCount % 10000 == 0)
+            //     WriteMessage($"Lines parsed: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
 
+            if (line.LogLine.LineNumber == _lastLineNumber)
+                WriteMessage($"LogDatum's parsed into ILine's: {_parsedLineCount:N0}, {_sw.Elapsed} elapsed");
 
-                        // This gets called too many times since the ParseLines() method is the bottleneck, which means the parsed lines comes in small spurts into this channel
-                        // Just update when we process the last line we've gotten (so far)
-                        if (line.LogLine.LineNumber == _lastLineNumber)
-                            WriteMessage($"Lines added to Battle: {count:N0}, {_sw.Elapsed} elapsed");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteMessage($"Battle ERROR: {ex.Message}, {ex.GetType()}");
-                WriteMessage(ex.StackTrace);
-            }
-            finally
-            {
-                WriteMessage($"Total Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
-                WriteMessage($"LastLineNumber added to Battle: {line?.LogLine.LineNumber}");
-            }
+            return line;
         }
 
-        private async Task ChannelRead<T>(Func<ChannelReader<T>, Action<T>, Task> readLoop, ChannelReader<T> reader, Action<T> action, string title)
-        {
-            try
-            {
-                WriteMessage($"Starting channel reader - {title}");
-                await readLoop(reader, action);
-            }
-            catch (Exception ex) when (ex is ChannelClosedException || ex is OperationCanceledException || ex is TaskCanceledException)
-            {
-                WriteMessage($"ERROR: {title} - {ex.Message}, {ex.GetType()}");
-            }
-            finally
-            {
-                WriteMessage($"Finished channel reader - {title}");
-            }
-        }
-
-        private async Task ChannelReadAsync<T>(ChannelReader<T> reader, Action<T> action, string title)
-        {
-            await ChannelRead(async (r, a) =>
-            {
-                while (true)
-                {
-                    var item = await reader.ReadAsync(CancelSource.Token);
-                    action(item);
-                }
-            }, reader, action, title);
-        }
-
-        private async Task ChannelWaitToReadAsync<T>(ChannelReader<T> reader, Action<T> action, string title)
-        {
-            await ChannelRead(async (r, a) =>
-            {
-                while (await reader.WaitToReadAsync(CancelSource.Token))
-                {
-                    while (!CancelSource.IsCancellationRequested && reader.TryRead(out var item))
-                    {
-                        action(item);
-                    }
-                }
-            }, reader, action, title);
-        }
-
-        private int _battleLinesCount = 0;
-        private ILine _lastLineAddedToBattle = null;
         private void AddLineToBattle(ILine line, Battle eqBattle)
         {
             _battleLinesCount++;
@@ -348,9 +416,10 @@ namespace EqbConsole
             if (line.LogLine.LineNumber == _lastLineNumber)
                 WriteMessage($"Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
         }
-        private void WriteMessage(string format, params object[] args) // DI this
+
+        private static void WriteMessage(string format, params object[] args) // DI this
         {
-            Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
+            Program.WriteMessage(format, args);
         }
     }
 }
