@@ -59,17 +59,17 @@ namespace EqbConsole
             var sw = Stopwatch.StartNew();
 
             int count = 0;
-            using (LogReader logReader = new LogReader(logPath))
-            {
-                logReader.LineRead += (s, e) =>
-                {
-                    count++;
-                    var logLine = new LogDatum(e.LogLine, count);
-                    _jobQueueLogLines.Add(logLine);
-                };
-                logReader.EoFReached += (s, e) => { logReader.StopReading(); };
-                logReader.StartReading();
-            }
+            // using (LogReader logReader = new LogReader(logPath))
+            // {
+            //     logReader.LineRead += (s, e) =>
+            //     {
+            //         count++;
+            //         var logLine = new LogDatum(e.LogLine, count);
+            //         _jobQueueLogLines.Add(logLine);
+            //     };
+            //     logReader.EoFReached += (s, e) => { logReader.StopReading(); };
+            //     logReader.StartReading();
+            // }
             _jobQueueLogLines.CompleteAdding();
             sw.Stop();
 
