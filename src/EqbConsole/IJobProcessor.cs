@@ -8,5 +8,6 @@ namespace EqbConsole
     {
         Task StartProcessingJobAsync(string logFilePath, Battle eqBattle);
         CancellationTokenSource CancelSource { get; set; }
+        void ShowStatus();
     }
 }
