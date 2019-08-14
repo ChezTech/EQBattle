@@ -66,7 +66,7 @@ namespace EqbConsole
 
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            WatchFile = false;
+            // WatchFile = false;
 
             // LogFile = new FileInfo(logFilePath);
 
