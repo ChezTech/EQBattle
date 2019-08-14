@@ -31,6 +31,10 @@ namespace EqbConsole
         private ILine _lastLineAddedToBattle = null;
 
 
+        /// <Summary>
+        /// Keep watching log file for updates after reading through once.
+        /// </Summary>
+        public bool WatchFile { get; set; } = true;
 
 
 
@@ -62,6 +66,8 @@ namespace EqbConsole
 
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
+            WatchFile = false;
+
             // LogFile = new FileInfo(logFilePath);
 
             // if (!LogFile.Exists)
@@ -254,7 +260,12 @@ namespace EqbConsole
                     WriteMessage($"LogReader EOF - waiting to read next chunk. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
 
                 startingLineCount = _rawLineCount;
-                await Program.Delay(5000, token, "EOF");
+
+                if (WatchFile)
+                    await Program.Delay(5000, token, "EOF");
+                else
+                    CancelSource.Cancel(); // Not the best way I don't think. Perhaps just a return of 'False'
+
                 //     // Thread.Sleep(10 * 1000);
                 // }
                 // else
