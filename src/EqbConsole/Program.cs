@@ -113,6 +113,9 @@ namespace EqbConsole
                 // await Task.WhenAll(ctComplete, ctContinue, jtError, jtNotCancelled, jtComplete);
                 // await ctContinue;
                 // ctSource.CancelAfter(7*1000);
+
+                await Task.WhenAll(consoleTask, jobTask);
+
                 await Task.WhenAny(jtNotCancelled, jtComplete);
             }
             // catch (TaskCanceledException)
