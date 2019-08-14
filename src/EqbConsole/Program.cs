@@ -100,7 +100,7 @@ namespace EqbConsole
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
             // When it's done, show the summary
             var jobTask = _eqJob.StartProcessingJobAsync(logPath, _eqBattle);
-            var jtError = jobTask.ContinueWith(_ => WriteMessage($"{_.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
+            var jtError = jobTask.ContinueWith(_ => WriteMessage($"JobTask Error: {_.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
 
             // Either the log file wasn't found, or we finished reading the log file. It either case,
             // we need to cancel the 'consoleTask' so we don't wait for the user when we know we're done.
@@ -125,7 +125,9 @@ namespace EqbConsole
             // }
             catch (Exception ex)
             {
-                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}");
+                // WriteMessage($"Exception: {ex}");
+                // WriteMessage($"Inner: {ex.InnerException}");
             }
             finally
             {

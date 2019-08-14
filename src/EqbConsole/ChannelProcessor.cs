@@ -32,7 +32,7 @@ namespace EqbConsole
             }
             catch (OperationCanceledException ex)
             {
-                RaiseMessage($"ChannelProcessor: {title} Operation Cancelled: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                RaiseMessage($"ChannelProcessor: {title} Operation Cancelled: {ex.GetType().Name} - {ex.Message}");
                 throw;
             }
             finally

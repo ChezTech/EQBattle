@@ -199,13 +199,17 @@ namespace EqbConsole
                 // }
                 catch (OperationCanceledException ex)
                 {
-                    WriteMessage($"Operation Cancelled: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                    WriteMessage($"EQ Job Operation Cancelled: {ex.GetType().Name} - {ex.Message}");
+                    // WriteMessage($"Exception: {ex}");
+                    // WriteMessage($"Inner: {ex.InnerException}");
                     // throw;
                 }
                 catch (Exception ex)
                 {
-                    WriteMessage($"Job Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
-                    WriteMessage($"Inner: {ex.InnerException}");
+                    WriteMessage($"EQ Job Exception: {ex.GetType().Name} - {ex.Message}");
+                    // WriteMessage($"Exception: {ex}");
+                    // WriteMessage($"Inner: {ex.InnerException}");
+                    throw;
                 }
                 finally
                 {
@@ -302,12 +306,12 @@ namespace EqbConsole
             }
             catch (OperationCanceledException ex)
             {
-                WriteMessage($"ReadLogLinesWrapper - Operation Cancelled: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                WriteMessage($"ReadLogLinesWrapper - Operation Cancelled: {ex.GetType().Name} - {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
-                WriteMessage($"ReadLogLinesWrapper - Job Exception: {ex.GetType().Name} - {ex.Message}\n{ex}");
+                WriteMessage($"ReadLogLinesWrapper - Job Exception: {ex.GetType().Name} - {ex.Message}");
             }
             finally
             {
