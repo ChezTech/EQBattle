@@ -116,23 +116,23 @@ namespace EqbConsole
                 var cp = new ChannelProcessor(ctSource.Token);
 
                 // var cancelTask = CheckForCancel();
-                var cancelTask = Task.Delay(-1, CancelSource.Token);
-                var ctCancel = cancelTask.ContinueWith(_ =>
-                {
-                    WriteMessage("CancelTask cancelling...");
+                // var cancelTask = Task.Delay(-1, CancelSource.Token);
+                // var ctCancel = cancelTask.ContinueWith(_ =>
+                // {
+                //     WriteMessage("CancelTask cancelling...");
 
-                    // Mark all the channels complete.
-                    // Marking the first will cause them all to trickle down and close.
-                    // However the parser is the bottle neck, so if we want them to close promptly (and abandon any raw log lines in the parser channel queue), we need to close them all here.
-                    // _rawLinesChannel.Writer.TryComplete();
-                    // _logLinesChannel.Writer.TryComplete();
-                    // _parsedLinesChannel.Writer.TryComplete();
+                //     // Mark all the channels complete.
+                //     // Marking the first will cause them all to trickle down and close.
+                //     // However the parser is the bottle neck, so if we want them to close promptly (and abandon any raw log lines in the parser channel queue), we need to close them all here.
+                //     // _rawLinesChannel.Writer.TryComplete();
+                //     // _logLinesChannel.Writer.TryComplete();
+                //     // _parsedLinesChannel.Writer.TryComplete();
 
-                    // Cancel our Token, this will cancel the Log Reader and close its channel (which will cause all others to close)
-                    ctSource.Cancel();
+                //     // Cancel our Token, this will cancel the Log Reader and close its channel (which will cause all others to close)
+                //     ctSource.Cancel();
 
-                    WriteMessage("CancelTask cancelled");
-                }, TaskContinuationOptions.OnlyOnCanceled);
+                //     WriteMessage("CancelTask cancelled");
+                // }, TaskContinuationOptions.OnlyOnCanceled);
 
                 cp.Message += m => WriteMessage(m);
                 var datumTask = cp.Process(_rawLinesChannel.Reader, _logLinesChannel.Writer, item => TransformLogLineToDatum(item), "Datum");
