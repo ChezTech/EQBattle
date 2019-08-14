@@ -76,9 +76,9 @@ namespace EqbConsole
             WriteMessage($"Starting to process EQBattle. ({this.GetType().Name})");
 
             // Trying a new CTS just for these jobs, separate from the this.CancelSource
-            using (var ctSource = new CancellationTokenSource())
+            // using (var ctSource = new CancellationTokenSource())
             {
-                // var ctSource = CancelSource;
+                var ctSource = CancelSource;
                 // Setup our worker blocks, they won't start until they receive input into their channels
                 // var parseTask = Task.Run(() => ParseLines(_logLinesChannel.Reader, _parsedLinesChannel.Writer));
                 // var battleTask = Task.Run(() => AddLinesToBattleAsync(_parsedLinesChannel.Reader, eqBattle));
