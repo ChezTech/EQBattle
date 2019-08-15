@@ -16,7 +16,7 @@ namespace EqbConsole
     {
         // Thanks: https://gist.github.com/AlgorithmsAreCool/b0960ce8a3400305e43fe8ffdf89b32c
 
-        private readonly Channel<string> _rawLinesChannel;
+        private readonly Channel<RawLogLineInfo> _rawLinesChannel;
         private readonly Channel<LogDatum> _logLinesChannel;
         private readonly Channel<ILine> _parsedLinesChannel;
         private FileInfo LogFile { get; set; }
@@ -35,11 +35,17 @@ namespace EqbConsole
         /// </Summary>
         public bool WatchFile { get; set; } = true;
 
+        private class RawLogLineInfo
+        {
+            public string LogLine;
+            public int LineNumber;
+        }
+
 
 
         public EQJobEvenMoreChannels(LineParserFactory parser) : base(parser)
         {
-            _rawLinesChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions()
+            _rawLinesChannel = Channel.CreateUnbounded<RawLogLineInfo>(new UnboundedChannelOptions()
             {
                 SingleWriter = true,
                 SingleReader = true,
@@ -167,7 +173,7 @@ namespace EqbConsole
             WriteMessage($"Channel: {title,-20} reader status: {channel.Reader.Completion.Status}");
         }
 
-        private async Task ReadLogLinesWrapper(ChannelWriter<string> writer, string logPath, CancellationToken token, int delayTimeMs = 250)
+        private async Task ReadLogLinesWrapper(ChannelWriter<RawLogLineInfo> writer, string logPath, CancellationToken token, int delayTimeMs = 250)
         {
             WriteMessage("Writing channel: Reader");
             var startingLineCount = 0;
@@ -176,7 +182,15 @@ namespace EqbConsole
             lr.LineRead += line =>
             {
                 _rawLineCount++;
-                writer.TryWrite(line);
+
+                // Filter out the occasional totally blank line (not even a timestamp)
+                if (!String.IsNullOrEmpty(line))
+                {
+                    writer.TryWrite(new RawLogLineInfo() { LogLine = line, LineNumber = _rawLineCount, });
+
+                    // Track so we can print debug message in other channels
+                    _lastLineNumber = _rawLineCount;
+                }
             };
 
             // lr.EoFReached += async () => await Delay(delayTimeMs, token);
@@ -221,21 +235,12 @@ namespace EqbConsole
             }
         }
 
-        private LogDatum TransformLogLineToDatum(string line)
+        private LogDatum TransformLogLineToDatum(RawLogLineInfo lineInfo)
         {
             _datumLineCount++;
+            var datum = new LogDatum(lineInfo.LogLine, lineInfo.LineNumber);
 
-            // Filter out the occasional totally blank line (not even a timestamp)
-            // The ChannelProcessor will not put <null> responses into the next Channel
-            if (String.IsNullOrEmpty(line))
-                return null;
-
-            var datum = new LogDatum(line, _datumLineCount);
-
-            // Track so we can print debug message in other channels
-            _lastLineNumber = datum.LineNumber;
-
-            if (_datumLineCount == _rawLineCount)
+            if (datum.LineNumber == _lastLineNumber)
                 WriteMessage($"Log lines transformed into LogDatums: {_datumLineCount:N0}, {_sw.Elapsed} elapsed");
 
             return datum;
