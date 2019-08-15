@@ -214,7 +214,10 @@ namespace EqbConsole
                 finally
                 {
                     WriteMessage("Job done");
-                    await Task.Delay(20); // Give all continuation tasks a chance to finish
+                    // await Task.Delay(20); // Give all continuation tasks a chance to finish
+
+                    await Task.WhenAll(rtContinue, dtContinue, ptContinue, btContinue);
+
 
                     Program.DumpTaskInfo(readTask, "readTask");
                     Program.DumpTaskInfo(datumTask, "datumTask");
