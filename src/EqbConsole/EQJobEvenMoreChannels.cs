@@ -133,7 +133,7 @@ namespace EqbConsole
                 WriteMessage($"EQ Job Operation Cancelled: {ex.GetType().Name} - {ex.Message}");
                 // WriteMessage($"Exception: {ex}");
                 // WriteMessage($"Inner: {ex.InnerException}");
-                // throw;
+                throw;
             }
             catch (Exception ex)
             {
@@ -157,15 +157,13 @@ namespace EqbConsole
                 DumpChannelInfo(_rawLinesChannel, "_rawLinesChannel");
                 DumpChannelInfo(_logLinesChannel, "_logLinesChannel");
                 DumpChannelInfo(_parsedLinesChannel, "_parsedLinesChannel");
+
+
+                WriteMessage($"Total processing EQBattle, {_sw.Elapsed} elapsed");
+                WriteMessage($"LastLineNumber read: {_lastLineNumber:N0}");
+                WriteMessage($"LastLineNumber added to Battle: {_lastLineAddedToBattle?.LogLine.LineNumber:N0}");
+                ShowStatus();
             }
-
-
-            WriteMessage($"Total processing EQBattle, {_sw.Elapsed} elapsed");
-            WriteMessage($"LastLineNumber read: {_lastLineNumber:N0}");
-            WriteMessage($"LastLineNumber added to Battle: {_lastLineAddedToBattle?.LogLine.LineNumber:N0}");
-            ShowStatus();
-
-            CancelSource.Token.ThrowIfCancellationRequested();
         }
 
         public static void DumpChannelInfo<T>(Channel<T> channel, string title)
@@ -227,6 +225,7 @@ namespace EqbConsole
             catch (Exception ex)
             {
                 WriteMessage($"ReadLogLinesWrapper - Job Exception: {ex.GetType().Name} - {ex.Message}");
+                throw;
             }
             finally
             {
