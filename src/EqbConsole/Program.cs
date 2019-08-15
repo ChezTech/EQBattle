@@ -95,7 +95,7 @@ namespace EqbConsole
             // When the user quits, then cancel our CTS (which will cause our JobTask to be cancelled)
             var consoleTask = GetConsoleUserInputAsync(ctSource.Token);
             var ctComplete = consoleTask.ContinueWith(_ => ctSource.Cancel(), TaskContinuationOptions.OnlyOnRanToCompletion);
-            var ctContinue = consoleTask.ContinueWith(_ => { }); // Empty task to await upon
+            // var ctContinue = consoleTask.ContinueWith(_ => { }); // Empty task to await upon
 
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
             // When it's done, show the summary
@@ -105,7 +105,11 @@ namespace EqbConsole
             // Either the log file wasn't found, or we finished reading the log file. It either case,
             // we need to cancel the 'consoleTask' so we don't wait for the user when we know we're done.
             var jtNotCancelled = jobTask.ContinueWith(_ => ctSource.Cancel(), TaskContinuationOptions.NotOnCanceled);
-            var jtComplete = jobTask.ContinueWith(_ => ShowBattleSummary(), TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            // When everything completed successfully (which doesn't reall happen) or cancelled (which is the normal path), show the final status
+            var jtComplete = jobTask.ContinueWith(_ => ShowBattleSummary(), TaskContinuationOptions.NotOnFaulted);
+
+            ConcurrentBag<Task> tasksToWaitFor = new ConcurrentBag<Task>();
 
             try
             {
@@ -116,35 +120,53 @@ namespace EqbConsole
 
                 await Task.WhenAll(consoleTask, jobTask);
 
-                await Task.WhenAny(jtNotCancelled, jtComplete);
+                tasksToWaitFor.Add(jtNotCancelled);
+                tasksToWaitFor.Add(jtComplete);
+
             }
             // catch (TaskCanceledException)
             // {
             //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
             // }
-            // catch (OperationCanceledException)
-            // {
-            //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
-            // }
+            catch (OperationCanceledException ex)
+            {
+                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}");
+
+                if (jobTask.IsCanceled)
+                    tasksToWaitFor.Add(jtComplete);
+
+
+
+            }
             catch (Exception ex)
             {
                 WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}");
                 // WriteMessage($"Exception: {ex}");
                 // WriteMessage($"Inner: {ex.InnerException}");
+
+                if (jobTask.IsFaulted)
+                {
+                    tasksToWaitFor.Add(jtNotCancelled);
+                    tasksToWaitFor.Add(jtError);
+                }
             }
             finally
             {
+
                 WriteMessage("Program Finally Block");
+                // await Task.WhenAny(jtNotCancelled, jtComplete);
+                // await Task.WhenAny(jtError, jtComplete);
+                // await jtComplete;
+                await Task.WhenAll(tasksToWaitFor);
+
+                DumpTaskInfo(consoleTask, "consoleTask");
+                // DumpTaskInfo(ctComplete, "ctComplete");
+                // DumpTaskInfo(ctContinue, "ctContinue");
+                DumpTaskInfo(jobTask, "jobTask");
+                DumpTaskInfo(jtError, "jtError");
+                DumpTaskInfo(jtNotCancelled, "jtNotCancelled");
+                DumpTaskInfo(jtComplete, "jtComplete");
             }
-
-
-            DumpTaskInfo(consoleTask, "consoleTask");
-            // DumpTaskInfo(ctComplete, "ctComplete");
-            // DumpTaskInfo(ctContinue, "ctContinue");
-            DumpTaskInfo(jobTask, "jobTask");
-            // DumpTaskInfo(jtError, "jtError");
-            // DumpTaskInfo(jtNotCancelled, "jtNotCancelled");
-            // DumpTaskInfo(jtComplete, "jtComplete");
         }
         public static void DumpTaskInfo(Task t, string title)
         {
@@ -325,7 +347,7 @@ namespace EqbConsole
                 await Task.Delay(delayTimeMs, token);
                 // WriteMessage($"Delay-Finish - {title}");
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 // Catch the cancel, handle cleanup and proper closing ...
                 // WriteMessage($"Delay-Cancel - {title}: {ex.GetType().Name} - {ex.Message}");
