@@ -125,7 +125,7 @@ namespace EqbConsole
             _youAre = new YouResolver(WhoseLogFile(logPath));
             _eqBattle = new Battle(_youAre);
 
-            WriteMessage("You are: {0}", _youAre.Name);
+            Log.Information($"Detected character name: {_youAre.Name}, from log file: {logPath}");
         }
 
         private async Task RunProgramAsync(string logPath, int numberOfParsers)
@@ -148,7 +148,7 @@ namespace EqbConsole
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
             // When it's done, show the summary
             var jobTask = _eqJob.StartProcessingJobAsync(logPath, _eqBattle);
-            var jtError = jobTask.ContinueWith(_ => WriteMessage($"JobTask Error: {_.Exception.InnerException.Message}"), TaskContinuationOptions.OnlyOnFaulted);
+            var jtError = jobTask.ContinueWith(_ => Log.Error(_.Exception, $"JobTask Error"), TaskContinuationOptions.OnlyOnFaulted);
 
             // Either the log file wasn't found, or we finished reading the log file. It either case,
             // we need to cancel the 'consoleTask' so we don't wait for the user when we know we're done.
@@ -178,19 +178,14 @@ namespace EqbConsole
             // }
             catch (OperationCanceledException ex)
             {
-                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}");
+                Log.Information(ex, $"Program OperationCanceledException");
 
                 if (jobTask.IsCanceled)
                     tasksToWaitFor.Add(jtComplete);
-
-
-
             }
             catch (Exception ex)
             {
-                WriteMessage($"Program Ex: {ex.GetType().Name} - {ex.Message}");
-                // WriteMessage($"Exception: {ex}");
-                // WriteMessage($"Inner: {ex.InnerException}");
+                Log.Warning(ex, $"Program Exception");
 
                 if (jobTask.IsFaulted)
                 {
@@ -200,8 +195,7 @@ namespace EqbConsole
             }
             finally
             {
-
-                WriteMessage("Program Finally Block");
+                Log.Verbose("Program Finally Block");
                 // await Task.WhenAny(jtNotCancelled, jtComplete);
                 // await Task.WhenAny(jtError, jtComplete);
                 // await jtComplete;
@@ -218,7 +212,7 @@ namespace EqbConsole
         }
         public static void DumpTaskInfo(Task t, string title)
         {
-            WriteMessage($"Task: {title,-17} ({t.Id,2})  Cncl: {t.IsCanceled,-5}  Cmplt: {t.IsCompleted,-5}  Sccs: {t.IsCompletedSuccessfully,-5}  Flt: {t.IsFaulted,-5}  Sts: {t.Status}{(t.Exception == null ? "" : $"  Ex: {t.Exception?.Message}")}");
+            Log.Verbose($"Task: {title,-17} ({t.Id,2})  Cncl: {t.IsCanceled,-5}  Cmplt: {t.IsCompleted,-5}  Sccs: {t.IsCompletedSuccessfully,-5}  Flt: {t.IsFaulted,-5}  Sts: {t.Status}{(t.Exception == null ? "" : $"  Ex: {t.Exception?.Message}")}");
             // if (t.Exception != null)
             //     WriteMessage($"Task Exception: {t.Exception}");
         }
@@ -246,6 +240,7 @@ namespace EqbConsole
                     case ConsoleKey.Escape:
                         done = true;
                         WriteMessage("<Esc> pressed. Exiting...");
+                        Log.Verbose("<Esc> pressed. Exiting...");
                         break;
 
                 }
@@ -255,17 +250,17 @@ namespace EqbConsole
         private void ShowBattleStatus()
         {
             _eqJob?.ShowStatus();
-            WriteMessage($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
+            Log.Verbose($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
         }
 
         private void ShowBattleSummary()
         {
-            WriteMessage("=-=-=-=- EQ Battle Summary =-=-=-=-");
+            Log.Verbose("=-=-=-=- EQ Battle Summary =-=-=-=-");
             ShowBattleStatus();
-            WriteMessage("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
+            Log.Verbose("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
-            WriteMessage("== Skirmishes");
-            WriteMessage("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
+            Log.Verbose("== Skirmishes");
+            Log.Verbose("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             // foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
             // {
             //     ShowSkirmishDetail(skirmish);
@@ -334,12 +329,12 @@ namespace EqbConsole
 
         private void ShowSkirmishDetail(Skirmish skirmish)
         {
-            WriteMessage($"---- Skirmish: {skirmish.Title,-30}");
+            Log.Verbose($"---- Skirmish: {skirmish.Title,-30}");
         }
 
         private void ShowFightDetail(Fight fight)
         {
-            WriteMessage($"--------- Fight: ({fight.Statistics.Duration.FightDuration:mm\\:ss})  {fight.Title,-30}");
+            Log.Verbose($"--------- Fight: ({fight.Statistics.Duration.FightDuration:mm\\:ss})  {fight.Title,-30}");
 
             foreach (var fighter in fight.Fighters.OrderBy(x => x.Character.Name))
                 ShowFighterDetail(fighter);
@@ -347,7 +342,7 @@ namespace EqbConsole
 
         private void ShowFighterDetail(Fighter fighter)
         {
-            WriteMessage(" {0,-30}  Off: {1,8:N0} ({2,4:P0}) {3,9:N2}    Def: {4,8:N0} ({5,4:P0})    Heals: {6,8:N0} / {7,8:N0}",
+            Log.Verbose(" {0,-30}  Off: {1,8:N0} ({2,4:P0}) {3,9:N2}    Def: {4,8:N0} ({5,4:P0})    Heals: {6,8:N0} / {7,8:N0}",
                 fighter.Character,
                 fighter.OffensiveStatistics.Hit.Total, fighter.OffensiveStatistics.HitPercentage, fighter.OffensiveStatistics.PerTime.FightDPS,
                 fighter.DefensiveStatistics.Hit.Total, fighter.DefensiveStatistics.HitPercentage,
@@ -356,15 +351,15 @@ namespace EqbConsole
 
         private void ShowNamedFighters()
         {
-            WriteMessage("===== Named Fights ======");
+            Log.Verbose("===== Named Fights ======");
             var namedFighters = _eqBattle.Fighters
                 .Where(x => !x.Name.StartsWith("a "))
                 .Where(x => !x.Name.StartsWith("an "))
                 .Where(x => !x.IsPet)
                 .Distinct()
                 .OrderBy(x => x.Name);
-            WriteMessage("Named fighter count: {0}", namedFighters.Count());
-            WriteMessage("Named fighter count: \n{0}", string.Join("\t\n", namedFighters.Select(x => x.Name)));
+            Log.Verbose("Named fighter count: {0}", namedFighters.Count());
+            Log.Verbose("Named fighter count: \n{0}", string.Join("\t\n", namedFighters.Select(x => x.Name)));
         }
 
         private string WhoseLogFile(string logPath)
@@ -384,6 +379,7 @@ namespace EqbConsole
         public static void WriteMessage(string format, params object[] args)
         {
             Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
+            // Log.Information(string.Format(format, args));
         }
 
         public static async Task Delay(int delayTimeMs, CancellationToken token, string title = "")
