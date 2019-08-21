@@ -2,7 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using BizObjects.Battle;
@@ -12,6 +14,8 @@ using LineParser;
 using LineParser.Parsers;
 using LogFileReader;
 using LogObjects;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace EqbConsole
 {
@@ -32,31 +36,75 @@ namespace EqbConsole
         }
 
         private static ProgramMode _programMode = ProgramMode.JobMoreChannel;
+        private const int FileLimitBytes = 1024 * 1024 * 100;// 100 MiB
 
         private YouResolver _youAre;
         private Battle _eqBattle;
         IJobProcessor _eqJob;
+        public static IConfigurationRoot Configuration { get; private set; }
+        public static AppSettings AppSettings { get; private set; }
+        public static LogSettings LogSettings { get; private set; }
 
         static async Task Main(string[] args)
         {
-            if (args.Length < 1)
+            LoadAppSettings(args);
+            SetupLogger();
+            DumpSettings();
+
+            if (string.IsNullOrEmpty(AppSettings.EQLog))
             {
-                Console.WriteLine("Please specify a log file to read");
+                Log.Fatal("No EQ Log file specified. Use 'eqlog=<EQLogPath>' argument");
                 return;
             }
 
-            _programMode = GetProgramMode(args);
-            var logPath = args[0];
-            var numberOfParsers = args.Length > 2 ? int.Parse(args[2]) : 1;
-            await new Program(logPath).RunProgramAsync(logPath, numberOfParsers);
+            _programMode = GetProgramMode();
+
+            await new Program(AppSettings.EQLog).RunProgramAsync(AppSettings.EQLog, AppSettings.ParserCount);
         }
 
-        private static ProgramMode GetProgramMode(string[] args)
+        private static void DumpSettings()
         {
-            if (args.Length < 2)
-                return ProgramMode.JobMoreChannel;
+            if (!Log.IsEnabled(Serilog.Events.LogEventLevel.Verbose))
+                return;
 
-            switch (args[1])
+            Log.Verbose(AppSettings.ToJson());
+            Log.Verbose(LogSettings.ToJson());
+        }
+
+        private static void LoadAppSettings(string[] args)
+        {
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddCommandLine(args);
+
+            Configuration = configBuilder
+                .Build();
+
+            AppSettings = new AppSettings();
+            Configuration.Bind(AppSettings);
+
+            LogSettings = new LogSettings();
+            Configuration.GetSection("Logging").Bind(LogSettings);
+        }
+
+        private static void SetupLogger()
+        {
+            var logConfig = new LoggerConfiguration()
+                .MinimumLevel(LogSettings.LogLevel)
+                .Enrich.WithThreadId()
+                .WriteTo.File(LogSettings.LogFileName,
+                    rollOnFileSizeLimit: true,
+                    fileSizeLimitBytes: FileLimitBytes,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] ({ThreadId}) {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] ({ThreadId}) {Message:lj}{NewLine}{Exception}");
+
+            Log.Logger = logConfig.CreateLogger();
+        }
+
+        private static ProgramMode GetProgramMode()
+        {
+            switch (AppSettings.Mode)
             {
                 case "bc":
                     return ProgramMode.JobBlockingConnection;
@@ -358,5 +406,82 @@ namespace EqbConsole
                 // WriteMessage($"Delay-Finally - {title}");
             }
         }
+    }
+
+    public static class SerilogExtensions
+    {
+        public static LoggerConfiguration MinimumLevel(this LoggerConfiguration logConfig, string logLevel)
+        {
+
+            // Serilog.Events.LogEventLevel
+            // Microsoft.Extensions.Logging.LogLevel
+            switch (logLevel)
+            {
+                case "Verbose": // Serilog
+                case "Trace": // Microsoft
+                    return logConfig.MinimumLevel.Verbose();
+
+                case "Debug":
+                    return logConfig.MinimumLevel.Debug();
+
+                case "Information":
+                case "Info":
+                    return logConfig.MinimumLevel.Information();
+
+                case "Warning":
+                case "Warn":
+                default:
+                    return logConfig.MinimumLevel.Warning();
+
+                case "Error":
+                case "Err":
+                    return logConfig.MinimumLevel.Error();
+
+                case "Fatal": // Serilog
+                case "Critical": // Microsoft
+                    return logConfig.MinimumLevel.Fatal();
+
+                case "None": // Microsoft
+                    return logConfig.MinimumLevel.Fatal(); // Not an exact interpretation. Not sure how to disable Serilog at this point
+            }
+        }
+    }
+
+    public static class MyExtensions
+    {
+        public static string ToJson(this Object obj)
+        {
+            var stream1 = new MemoryStream();
+            var ser = new DataContractJsonSerializer(obj.GetType());
+            ser.WriteObject(stream1, obj);
+            stream1.Position = 0;
+            var sr = new StreamReader(stream1);
+            var json = sr.ReadToEnd();
+            return json;
+        }
+    }
+
+    public class LogSettings
+    {
+        private string _logFileName;
+
+        public string LogLevel { get; set; } = "Warning";
+        public string LogFileName
+        {
+            get
+            {
+                return (string.IsNullOrEmpty(_logFileName))
+                    ? $"{System.AppDomain.CurrentDomain.FriendlyName}.log"
+                    : _logFileName;
+            }
+            set => _logFileName = value;
+        }
+    }
+
+    public class AppSettings
+    {
+        public string EQLog { get; set; }
+        public string Mode { get; set; } = "mo";
+        public int ParserCount { get; set; } = 1;
     }
 }
