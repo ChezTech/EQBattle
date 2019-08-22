@@ -411,33 +411,33 @@ namespace EqbConsole
 
             // Serilog.Events.LogEventLevel
             // Microsoft.Extensions.Logging.LogLevel
-            switch (logLevel)
+            switch (logLevel.ToLowerInvariant())
             {
-                case "Verbose": // Serilog
-                case "Trace": // Microsoft
+                case "verbose": // Serilog
+                case "trace": // Microsoft
                     return logConfig.MinimumLevel.Verbose();
 
-                case "Debug":
+                case "debug":
                     return logConfig.MinimumLevel.Debug();
 
-                case "Information":
-                case "Info":
+                case "information":
+                case "info":
                     return logConfig.MinimumLevel.Information();
 
-                case "Warning":
-                case "Warn":
+                case "warning":
+                case "warn":
                 default:
                     return logConfig.MinimumLevel.Warning();
 
-                case "Error":
-                case "Err":
+                case "error":
+                case "err":
                     return logConfig.MinimumLevel.Error();
 
-                case "Fatal": // Serilog
-                case "Critical": // Microsoft
+                case "fatal": // Serilog
+                case "critical": // Microsoft
                     return logConfig.MinimumLevel.Fatal();
 
-                case "None": // Microsoft
+                case "none": // Microsoft
                     return logConfig.MinimumLevel.Fatal(); // Not an exact interpretation. Not sure how to disable Serilog at this point
             }
         }
