@@ -81,7 +81,6 @@ namespace EqbConsole
 
             var cp = new ChannelProcessor(ctSource.Token);
 
-            cp.Message += m => Log.Verbose(m);
             var datumTask = cp.Process(_rawLinesChannel.Reader, _logLinesChannel.Writer, item => TransformLogLineToDatum(item), "Datum");
             var dtCancel = datumTask.ContinueWith(_ => Log.Verbose("DatumTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
             var dtComplete = datumTask.ContinueWith(_ => Log.Verbose("DatumTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);

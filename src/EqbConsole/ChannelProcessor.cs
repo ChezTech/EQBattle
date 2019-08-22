@@ -12,7 +12,6 @@ namespace EqbConsole
     {
         private CancellationToken _token;
 
-        public event Action<string> Message;
         public ChannelProcessor(CancellationToken token)
         {
             _token = token;
@@ -74,11 +73,6 @@ namespace EqbConsole
                 // Wait a bit of time before looking for the next chunk of items
                 await Task.Delay(delayTimeMs, _token);
             }
-        }
-
-        private void RaiseMessage(string message = "")
-        {
-            Message?.Invoke(message);
         }
     }
 }
