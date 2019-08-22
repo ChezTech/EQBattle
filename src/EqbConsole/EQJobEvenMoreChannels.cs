@@ -160,7 +160,6 @@ namespace EqbConsole
                 Log.Debug($"Total processing EQBattle, {_sw.Elapsed} elapsed");
                 Log.Verbose($"LastLineNumber read: {_lastLineNumber:N0}");
                 Log.Verbose($"LastLineNumber added to Battle: {_lastLineAddedToBattle?.LogLine.LineNumber:N0}");
-                ShowStatus();
             }
         }
 
