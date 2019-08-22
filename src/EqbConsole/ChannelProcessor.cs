@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace EqbConsole
 {
@@ -19,7 +20,7 @@ namespace EqbConsole
 
         public async Task Process<T>(ChannelReader<T> reader, Action<T> transformAction, string title = "")
         {
-            RaiseMessage($"Reading channel: {title}");
+            Log.Verbose($"Reading channel: {title}");
             try
             {
                 while (await reader.WaitToReadAsync(_token))
@@ -32,18 +33,18 @@ namespace EqbConsole
             }
             catch (OperationCanceledException ex)
             {
-                RaiseMessage($"ChannelProcessor: {title} Operation Cancelled: {ex.GetType().Name} - {ex.Message}");
+                Log.Verbose(ex, $"ChannelProcessor: {title} Operation Cancelled");
                 throw;
             }
             finally
             {
-                RaiseMessage($"Done reading channel: {title}");
+                Log.Verbose($"Done reading channel: {title}");
             }
         }
 
         public async Task Process<T, U>(ChannelReader<T> reader, ChannelWriter<U> writer, Func<T, U> transformFunc, string title = "")
         {
-            RaiseMessage($"Transforming channel: {title}");
+            Log.Verbose($"Transforming channel: {title}");
             await Process(reader, item =>
             {
                 var uItem = transformFunc(item);
@@ -51,16 +52,16 @@ namespace EqbConsole
                     writer.TryWrite(uItem);
             }, title);
 
-            RaiseMessage($"Done transforming channel: {title}");
+            Log.Verbose($"Done transforming channel: {title}");
         }
 
         public async Task Process<T>(ChannelWriter<T> writer, Func<CancellationToken, IEnumerable<T>> transformFunc, int delayTimeMs = 250)
         {
-            RaiseMessage("Writing channel");
+            Log.Verbose("Writing channel");
 
             // Yield to get off the main thread context right away. This will continue on a thread pool.
             await Task.Yield();
-            RaiseMessage("Writing channel - after yield");
+            Log.Verbose("Writing channel - after yield");
 
             while (!_token.IsCancellationRequested)
             {
@@ -69,7 +70,7 @@ namespace EqbConsole
                     writer.TryWrite(item);
 
                 delayTimeMs = 15000;
-                RaiseMessage($"Waiting to read next source chunk: {delayTimeMs}ms");
+                Log.Verbose($"Waiting to read next source chunk: {delayTimeMs}ms");
                 // Wait a bit of time before looking for the next chunk of items
                 await Task.Delay(delayTimeMs, _token);
             }
