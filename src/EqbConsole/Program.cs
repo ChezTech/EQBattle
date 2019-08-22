@@ -16,6 +16,7 @@ using LogFileReader;
 using LogObjects;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using Serilog.Events;
 
 namespace EqbConsole
 {
@@ -136,6 +137,7 @@ namespace EqbConsole
 
         private async Task RunProgramAsync(string logPath, int numberOfParsers, CancellationTokenSource ctSource)
         {
+            WriteLog(LogEventLevel.Information, $"Starting to process EQ Log file: {logPath}");
             _eqJob = CreateJobProcessor(numberOfParsers);
             _eqJob.CancelSource = ctSource;
 
@@ -148,7 +150,11 @@ namespace EqbConsole
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
             // When it's done, show the summary
             var jobTask = _eqJob.StartProcessingJobAsync(logPath, _eqBattle);
-            var jtError = jobTask.ContinueWith(_ => Log.Error(_.Exception, $"JobTask Error"), TaskContinuationOptions.OnlyOnFaulted);
+            var jtError = jobTask.ContinueWith(_ =>
+            {
+                Log.Error(_.Exception, $"JobTask Error");
+                WriteMessage($"ERROR: {_.Exception.InnerException.Message}");
+            }, TaskContinuationOptions.OnlyOnFaulted);
 
             // Either the log file wasn't found, or we finished reading the log file. It either case,
             // we need to cancel the 'consoleTask' so we don't wait for the user when we know we're done.
@@ -239,8 +245,7 @@ namespace EqbConsole
                     case ConsoleKey.Q:
                     case ConsoleKey.Escape:
                         done = true;
-                        WriteMessage("<Esc> pressed. Exiting...");
-                        Log.Verbose("<Esc> pressed. Exiting...");
+                        WriteLog(LogEventLevel.Verbose, "<Esc> pressed. Exiting...");
                         break;
 
                 }
@@ -250,17 +255,17 @@ namespace EqbConsole
         private void ShowBattleStatus()
         {
             _eqJob?.ShowStatus();
-            Log.Verbose($"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
+            WriteLog(LogEventLevel.Verbose, $"EQBattle raw line count: {_eqBattle.RawLineCount:N0}, line count: {_eqBattle.LineCount:N0}");
         }
 
         private void ShowBattleSummary()
         {
-            Log.Verbose("=-=-=-=- EQ Battle Summary =-=-=-=-");
+            WriteLog(LogEventLevel.Verbose, "=-=-=-=- EQ Battle Summary =-=-=-=-");
             ShowBattleStatus();
             Log.Verbose("Out of order count: {0:N0}, MaxDelta: {1}", _eqBattle.OutOfOrderCount, _eqBattle.MaxDelta);
 
-            Log.Verbose("== Skirmishes");
-            Log.Verbose("Skirmish count: {0}", _eqBattle.Skirmishes.Count);
+            WriteLog(LogEventLevel.Verbose, "== Skirmishes");
+            WriteLog(LogEventLevel.Verbose, "Skirmish count: {0}", _eqBattle.Skirmishes.Count);
             // foreach (Skirmish skirmish in _eqBattle.Skirmishes.Where(x => x.Statistics.Duration.FightDuration > new TimeSpan(0, 0, 7)))
             // {
             //     ShowSkirmishDetail(skirmish);
@@ -378,8 +383,14 @@ namespace EqbConsole
 
         public static void WriteMessage(string format, params object[] args)
         {
-            Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
-            // Log.Information(string.Format(format, args));
+            // Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));
+            Console.WriteLine(format, args);
+        }
+
+        public static void WriteLog(LogEventLevel logLevel, string format, params object[] args)
+        {
+            Console.WriteLine(format, args);
+            Log.Write(logLevel, format, args);
         }
 
         public static async Task Delay(int delayTimeMs, CancellationToken token, string title = "")
