@@ -129,9 +129,9 @@ namespace EqbConsole
 
                 Log.Verbose("All tasks that we're waiting for are done");
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                Log.Verbose(ex, "EQ Job Operation Cancelled");
+                Log.Verbose("EQ Job Operation Cancelled");
                 throw;
             }
             catch (Exception ex)
@@ -213,9 +213,9 @@ namespace EqbConsole
                 Log.Verbose("LR reading completed successfully");
 
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                Log.Verbose(ex, "ReadLogLinesWrapper");
+                Log.Verbose("ReadLogLinesWrapper");
                 throw;
             }
             catch (Exception ex)

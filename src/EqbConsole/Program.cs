@@ -50,6 +50,7 @@ namespace EqbConsole
         {
             LoadAppSettings(args);
             SetupLogger();
+            Log.Information("==============================================================");
             DumpSettings();
 
             if (string.IsNullOrEmpty(AppSettings.EQLog))
@@ -178,9 +179,9 @@ namespace EqbConsole
             // {
             //     WriteMessage($"{ex.GetType().Name} - {ex.Message}");
             // }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                Log.Information(ex, $"Program OperationCanceledException");
+                Log.Information("Program OperationCanceledException");
 
                 if (jobTask.IsCanceled)
                     tasksToWaitFor.Add(jtComplete);

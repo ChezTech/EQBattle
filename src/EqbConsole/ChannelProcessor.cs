@@ -30,9 +30,9 @@ namespace EqbConsole
                     }
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                Log.Verbose(ex, $"ChannelProcessor: {title} Operation Cancelled");
+                Log.Verbose($"ChannelProcessor: {title} Operation Cancelled");
                 throw;
             }
             finally
