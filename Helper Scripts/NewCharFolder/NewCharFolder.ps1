@@ -1,25 +1,39 @@
 
 # Is there a registry entry for EQ?
 $BaseEQFolder = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P"
-$BoxCharName = "Bob"
-
+#$BaseEQFolder = "C:\Program Files (x86)\Steam\steamapps\common\EQSource"
+$BoxCharName = "Balymoor"
 $BoxEQFolder = $BaseEQFolder + "-" + $BoxCharName
-$BoxEQClient = Join-Path -Path $BaseEQFolder -ChildPath "eqclient.ini"
-$BaseEQClient = Join-Path -Path $BoxEQFolder -ChildPath ($BoxCharName + "_eqclient.ini")
 
-# Create the directory junction (hard links to all the files in the folder)
-$dirLink = New-Item -ItemType Directory -Path $BoxEQFolder -Target $BaseEQFolder
+# Create the folder
+$null = New-Item -ItemType Directory -Path $BoxEQFolder
 
+# Make sym links for each file and folder
+$EQFiles = Get-ChildItem -Path $BaseEQFolder
+foreach ($file in $EQFiles)
+{
+    $boxFilePath = Join-Path -Path $BoxEQFolder -ChildPath $file.Name
+    if (!(Test-Path -Path $boxFilePath))
+    {
+        $null = New-Item -ItemType SymbolicLink -Path $boxFilePath -Target $file.FullName
+    }
+}
 
-# Now, override the couple of files we need to
-# This is 'eqclient.ini' for each client
-# we want to make a link from 'eqclient.ini' in the box folder to '<CharName>_eqclient.ini' in the main EQ folder
-$fileLink = New-Item -ItemType SymbolicLink -Path $BoxEQClient -Target $BaseEQClient
+# Now, override the 'eqclient.ini' file to symlink to the named version in the base folder
+$BoxEQClient = Join-Path -Path $BoxEQFolder -ChildPath "eqclient.ini"
+$BaseEQClient = Join-Path -Path $BaseEQFolder -ChildPath "eqclient.ini"
+$BaseCharEQClient = Join-Path -Path $BaseEQFolder -ChildPath ($BoxCharName + "_eqclient.ini")
 
+# First, make sure the named character's 'eqclient.ini' file exists
+if (!(Test-Path -Path $BaseCharEQClient))
+{
+    Copy-Item -Path $BaseEQClient -Destination $BaseCharEQClient
+}
 
-$dirLink | Select-Object LinkType, Target
-$fileLink | Select-Object LinkType, Target
+# Remove the new folder's 'eqclient.ini' that we symlinked above to the base 'eqclient.ini'
+Remove-Item -Path $BoxEQClient
 
-# FileId is the hard link ID that the filenames point to
-# use 'fsutil file queryfileid' or Get-SMBopenFile
-# maybe: Get-ItemProperty C:\Test\Weather.xls | Format-List
+# Now, make the symlink from the new folder's 'eqclient.ini' to the base folder's named 'eqclient.ini'
+$null = New-Item -ItemType SymbolicLink -Path $BoxEQClient -Target $BaseCharEQClient
+
+# All done
