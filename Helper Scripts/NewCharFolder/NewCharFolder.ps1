@@ -1,12 +1,18 @@
 
 # Is there a registry entry for EQ?
+
+# ============================================================================== User Input
 $BaseEQFolder = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P"
-#$BaseEQFolder = "C:\Program Files (x86)\Steam\steamapps\common\EQSource"
 $BoxCharName = "Balymoor"
+
+# ============================================================================== Code
 $BoxEQFolder = $BaseEQFolder + "-" + $BoxCharName
 
 # Create the folder
-$null = New-Item -ItemType Directory -Path $BoxEQFolder
+if (!(Test-Path -Path $BoxEQFolder))
+{
+    $null = New-Item -ItemType Directory -Path $BoxEQFolder
+}
 
 # Make sym links for each file and folder
 $EQFiles = Get-ChildItem -Path $BaseEQFolder
