@@ -2,22 +2,24 @@
 # Ensures log files are moved if too big or too old so that parsing can be done on a reasonably sized file
 
 # ==============================================================================================
+# Usage: .\MoveRun.ps1 -EQFolder "C:\Program Files\Sony\EverQuest Trilogy" -MaxFileSize 5MB -MaxFileAgeDays 7
+# ==============================================================================================
+
+Param (
+    [string] $EQFolder = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P",
+    # [string] $EQFolder = "C:\Program Files\Sony\EverQuest Trilogy",
+    $MaxFileSize = 5MB,
+    $MaxFileAgeDays = 7
+)
+
+# ==============================================================================================
 # Change these values as needed
 # ==============================================================================================
 
-# Default maxinum file size to move if bigger
-$MaxFileSize = 5MB
-
-# Default maximum age
-$MaxFileAgeDays = 7
-
-# Everquest path
-$EQPath = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\LaunchPad.exe"
-#$EQPath = "C:\Program Files\Sony\EverQuest Trilogy\EverQuest.exe"
+$EQPath = Join-Path -Path $EQFolder -ChildPath "LaunchPad.exe"
 
 # Log file location
-$LogFileLocation = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P\Logs"
-# $LogFileLocation = "C:\Program Files\Sony\EverQuest Trilogy\Logs"
+$LogFileLocation = Join-Path -Path $EQFolder -ChildPath "Logs"
 
 # Destination log file path
 # - Blank means to use the same location as the source log file
