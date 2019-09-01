@@ -2,7 +2,7 @@
 # Is there a registry entry for EQ?
 
 # ============================================================================== User Input
-$BaseEQFolder = "C:\Program Files (x86)\Steam\steamapps\common\Everquest F2P"
+$BaseEQFolder = "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
 $BoxCharName = "Balymoor"
 
 # ============================================================================== Code
