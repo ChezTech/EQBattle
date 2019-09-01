@@ -21,7 +21,8 @@ foreach ($file in $EQFiles)
     $boxFilePath = Join-Path -Path $BoxEQFolder -ChildPath $file.Name
     if (!(Test-Path -Path $boxFilePath))
     {
-        $null = New-Item -ItemType SymbolicLink -Path $boxFilePath -Target $file.FullName
+        $linkType = if ($file.Attributes -eq "Directory") {"SymbolicLink"} Else {"HardLink"}
+        $null = New-Item -ItemType $linkType -Path $boxFilePath -Target $file.FullName
     }
 }
 
@@ -37,9 +38,15 @@ if (!(Test-Path -Path $BaseCharEQClient))
 }
 
 # Remove the new folder's 'eqclient.ini' that we symlinked above to the base 'eqclient.ini'
-Remove-Item -Path $BoxEQClient
+if (Test-Path -Path $BoxEQClient)
+{
+    Remove-Item -Path $BoxEQClient
+}
 
 # Now, make the symlink from the new folder's 'eqclient.ini' to the base folder's named 'eqclient.ini'
 $null = New-Item -ItemType SymbolicLink -Path $BoxEQClient -Target $BaseCharEQClient
+
+# Verify
+Get-Item $BoxEQClient | Select-Object Name,LinkType,Target
 
 # All done
