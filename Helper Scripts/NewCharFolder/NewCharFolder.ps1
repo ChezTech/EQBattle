@@ -14,6 +14,8 @@ if (!(Test-Path -Path $BoxEQFolder))
     $null = New-Item -ItemType Directory -Path $BoxEQFolder
 }
 
+$HardExtCollection = ".exe", ".dll"
+
 # Make sym links for each file and folder
 $EQFiles = Get-ChildItem -Path $BaseEQFolder
 foreach ($file in $EQFiles)
@@ -21,7 +23,19 @@ foreach ($file in $EQFiles)
     $boxFilePath = Join-Path -Path $BoxEQFolder -ChildPath $file.Name
     if (!(Test-Path -Path $boxFilePath))
     {
-        $linkType = if ($file.Attributes -eq "Directory") {"SymbolicLink"} Else {"HardLink"}
+        if ($file.Attributes -eq "Directory")
+        {
+            $linkType = "SymbolicLink"
+        }
+        ElseIf ($HardExtCollection -Contains $file.Extension)
+        {
+            $linkType = "HardLink"
+        }
+        Else 
+        {
+            $linkType = "SymbolicLink"
+        }
+        
         $null = New-Item -ItemType $linkType -Path $boxFilePath -Target $file.FullName
     }
 }
