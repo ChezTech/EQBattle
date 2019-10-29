@@ -7,5 +7,26 @@
         mc:Ignorable="d"
         Title="EQ Battle" Height="450" Width="800">
     <Grid>
+        <DockPanel>
+            <Grid  DockPanel.Dock="Top">
+                <ContentControl Content="{Binding HeaderVM}"/>
+            </Grid>
+
+            <Grid  DockPanel.Dock="Bottom">
+                <ContentControl Content="{Binding FooterVM}"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <ContentControl Grid.Column="0" Content="{Binding ListVM}"/>
+                <GridSplitter x:Name="gridSplitter" Grid.Column="1" HorizontalAlignment="Stretch"  Width="5"/>
+                <ContentControl Grid.Column="2" Content="{Binding DetailVM}"/>
+            </Grid>
+        </DockPanel>
     </Grid>
 </Window>
