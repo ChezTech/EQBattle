@@ -5,19 +5,21 @@ VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogFileReader", "LogFileReader\LogFileReader.csproj", "{F35C9860-C732-4246-AD5F-270CE2DCEC28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EqbConsole", "EqbConsole\EqbConsole.csproj", "{EFE3F820-511D-479B-8CDF-C1A252DEED0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EqbConsole", "EqbConsole\EqbConsole.csproj", "{EFE3F820-511D-479B-8CDF-C1A252DEED0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineParser", "LineParser\LineParser.csproj", "{91E80133-D998-4408-927C-D26351ECA72F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineParser", "LineParser\LineParser.csproj", "{91E80133-D998-4408-927C-D26351ECA72F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{D127BE1C-B4A0-4ADE-8D88-0389FDB0FE12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogObjectsTests", "UnitTests\LineParserTests\LogObjectsTests.csproj", "{4E633AD0-9996-49FF-95D1-8EA923A0DA99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogObjectsTests", "UnitTests\LineParserTests\LogObjectsTests.csproj", "{4E633AD0-9996-49FF-95D1-8EA923A0DA99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizObjects", "BizObjects\BizObjects.csproj", "{12FB6473-3678-4658-AFA0-EF6102727E43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BizObjects", "BizObjects\BizObjects.csproj", "{12FB6473-3678-4658-AFA0-EF6102727E43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizObjectsTests", "UnitTests\BizObjectsTests\BizObjectsTests.csproj", "{64BB3FA3-C835-4244-A8BF-30987792AC49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BizObjectsTests", "UnitTests\BizObjectsTests\BizObjectsTests.csproj", "{64BB3FA3-C835-4244-A8BF-30987792AC49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogObjects", "LogObjects\LogObjects.csproj", "{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogObjects", "LogObjects\LogObjects.csproj", "{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EQBattle", "EQBattle\EQBattle.csproj", "{435DE315-09E8-407B-8F36-6F4C5733B133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A9C19D9-F3EC-46E5-9C9C-A2D15C48CCEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{435DE315-09E8-407B-8F36-6F4C5733B133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{435DE315-09E8-407B-8F36-6F4C5733B133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{435DE315-09E8-407B-8F36-6F4C5733B133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{435DE315-09E8-407B-8F36-6F4C5733B133}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
