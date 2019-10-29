@@ -8,7 +8,7 @@ namespace EQBattle.ViewModels
         private ICommand run;
         private ICommand pause;
 
-        public ICommand StartBattle { get => open ?? (open = new RelayCommand(x => OpenFile())); }
+        public ICommand Open { get => open ?? (open = new RelayCommand(x => OpenFile())); }
         public ICommand Run { get => run ?? (run = new RelayCommand(x => RunFileRead())); }
         public ICommand Pause { get => pause ?? (pause = new RelayCommand(x => PauseFileRead())); }
 
