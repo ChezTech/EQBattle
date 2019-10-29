@@ -2,8 +2,23 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:EQBattle"
-             StartupUri="MainWindow.xaml">
+             xmlns:vm="clr-namespace:EQBattle.ViewModels"
+             xmlns:vw="clr-namespace:EQBattle.Views">
     <Application.Resources>
-         
+        <DataTemplate DataType="{x:Type vm:BattleFooterViewModel}">
+            <vw:BattleFooterView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BattleHeaderViewModel}">
+            <vw:BattleHeaderView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FightListViewModel}">
+            <vw:FightListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FightViewModel}">
+            <vw:FightView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MainWindowViewModel}">
+            <local:MainWindow/>
+        </DataTemplate>
     </Application.Resources>
 </Application>
