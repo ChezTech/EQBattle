@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using Microsoft.Win32;
+using System.Windows.Input;
 
 namespace EQBattle.ViewModels
 {
@@ -14,6 +15,15 @@ namespace EQBattle.ViewModels
 
         private void OpenFile()
         {
+            // TODO: make this a DI service for testability)
+            var ofd = new OpenFileDialog();
+            ofd.InitialDirectory = @"C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest\Logs";
+            if (!ofd.ShowDialog().Value)
+                return;
+
+            var fileName = ofd.FileName;
+
+            // Raise Message ....
         }
 
         private void RunFileRead()
