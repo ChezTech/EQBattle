@@ -31,6 +31,8 @@ namespace EQBattle.ViewModels
             //var _youAre = new YouResolver(WhoseLogFile(fileName));
             var _youAre = new YouResolver("Khadaji");
             _battle = new Battle(_youAre);
+
+            Messenger.Instance.Publish("NewBattle", _battle);
         }
 
         public ViewModelBase HeaderVM
