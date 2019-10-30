@@ -1,4 +1,8 @@
-﻿namespace EQBattle.ViewModels
+﻿using BizObjects.Battle;
+using BizObjects.Converters;
+using System;
+
+namespace EQBattle.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
@@ -6,6 +10,8 @@
         private ViewModelBase _listVM;
         private ViewModelBase _detailVM;
         private ViewModelBase _footerVM;
+
+        private Battle _battle;
 
         public MainWindowViewModel()
         {
@@ -16,6 +22,15 @@
             FooterVM = new BattleFooterViewModel();
             ListVM = new FightListViewModel();
             DetailVM = new FightViewModel();
+
+            Messenger.Instance.Subscribe("OpenFile", x => CreateNewBattle(x));
+        }
+
+        private void CreateNewBattle(object fileName)
+        {
+            //var _youAre = new YouResolver(WhoseLogFile(fileName));
+            var _youAre = new YouResolver("Khadaji");
+            _battle = new Battle(_youAre);
         }
 
         public ViewModelBase HeaderVM
