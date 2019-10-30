@@ -1,5 +1,5 @@
-﻿using Microsoft.Win32;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using WpfUIServices;
 
 namespace EQBattle.ViewModels
 {
@@ -15,13 +15,9 @@ namespace EQBattle.ViewModels
 
         private void OpenFile()
         {
-            // TODO: make this a DI service for testability)
-            var ofd = new OpenFileDialog();
-            ofd.InitialDirectory = @"C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest\Logs";
-            if (!ofd.ShowDialog().Value)
-                return;
-
-            var fileName = ofd.FileName;
+            var initDir = @"C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest\Logs";
+            var title = "Open Everquest log file";
+            var fileName = UIService.Instance.GetFileNameFromOpenFileDialog(initDir, title: title);
 
             // Raise Message ....
         }
