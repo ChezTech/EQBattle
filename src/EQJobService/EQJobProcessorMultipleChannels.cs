@@ -11,7 +11,7 @@ using BizObjects.Lines;
 using LineParser;
 using LogObjects;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class EQJobProcessorMultipleChannels : JobProcessor
     {
@@ -23,7 +23,6 @@ namespace EqbConsole
         private readonly Channel<ILine> _parsedLinesChannel;
         private readonly Channel<ILine> _sortedLinesChannel;
         private static Random _Random = new Random();
-
 
         public EQJobProcessorMultipleChannels(LineParserFactory parser, int parserCount = 1) : base(parser, parserCount)
         {

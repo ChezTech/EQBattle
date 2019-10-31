@@ -13,7 +13,7 @@ using BizObjects.Lines;
 using LineParser;
 using LogObjects;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class EQJobProcessorChannels : JobProcessor
     {

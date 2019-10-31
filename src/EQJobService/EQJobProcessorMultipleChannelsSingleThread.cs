@@ -10,7 +10,7 @@ using BizObjects.Lines;
 using LineParser;
 using LogObjects;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class EQJobProcessorMultipleChannelsSingleThread : JobProcessor
     {
@@ -66,7 +66,6 @@ namespace EqbConsole
                 await ChannelWaitToReadAsync(_parsedLinesChannel.Reader, line => AddLineToBattle(line, eqBattle), "AddLineToBattle");
                 WriteMessage($"Total Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
             });
-
 
             // Start our main guy up, this starts the whole pipeline flow going
             var readTask = Task.Run(() => ReadLines(logFilePath, _logLinesChannel.Writer));
@@ -213,6 +212,7 @@ namespace EqbConsole
         }
 
         private int _parsedLineCount = 0;
+
         private void ParseLine(LogDatum logLine, ChannelWriter<ILine> writer)
         {
             _parsedLineCount++;
@@ -241,7 +241,6 @@ namespace EqbConsole
                     while (!CancelSource.IsCancellationRequested && reader.TryRead(out line))
                     {
                         AddLineToBattle(line, eqBattle);
-
 
                         // This gets called too many times since the ParseLines() method is the bottleneck, which means the parsed lines comes in small spurts into this channel
                         // Just update when we process the last line we've gotten (so far)
@@ -307,6 +306,7 @@ namespace EqbConsole
 
         private int _battleLinesCount = 0;
         private ILine _lastLineAddedToBattle = null;
+
         private void AddLineToBattle(ILine line, Battle eqBattle)
         {
             _battleLinesCount++;
@@ -319,6 +319,7 @@ namespace EqbConsole
             if (line.LogLine.LineNumber == _lastLineNumber)
                 WriteMessage($"Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
         }
+
         private void WriteMessage(string format, params object[] args) // DI this
         {
             Console.WriteLine("[{0:yyyy-MM-dd HH:mm:ss.fff}] ({1,6}) {2}", DateTime.Now, Thread.CurrentThread.ManagedThreadId, string.Format(format, args));

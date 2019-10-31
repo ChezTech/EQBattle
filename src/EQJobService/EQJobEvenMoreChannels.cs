@@ -12,7 +12,7 @@ using LogObjects;
 using Serilog;
 using Serilog.Events;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class EQJobEvenMoreChannels : JobProcessor
     {
@@ -31,7 +31,6 @@ namespace EqbConsole
         private int _battleLinesCount = 0;
         private ILine _lastLineAddedToBattle = null;
 
-
         /// <Summary>
         /// Keep watching log file for updates after reading through once.
         /// </Summary>
@@ -42,8 +41,6 @@ namespace EqbConsole
             public string LogLine;
             public int LineNumber;
         }
-
-
 
         public EQJobEvenMoreChannels(LineParserFactory parser) : base(parser)
         {
@@ -68,7 +65,7 @@ namespace EqbConsole
 
         public override void ShowStatus()
         {
-            Program.WriteLog(LogEventLevel.Verbose, $"Job status: log lines read: {_rawLineCount,10:N0}, datum'd: {_datumLineCount,10:N0}, parsed {_parsedLineCount,10:N0}, battled: {_battleLinesCount,10:N0}, elapsed: {_sw.Elapsed}");
+            WriteLog(LogEventLevel.Verbose, $"Job status: log lines read: {_rawLineCount,10:N0}, datum'd: {_datumLineCount,10:N0}, parsed {_parsedLineCount,10:N0}, battled: {_battleLinesCount,10:N0}, elapsed: {_sw.Elapsed}");
         }
 
         public async override Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
@@ -107,7 +104,6 @@ namespace EqbConsole
                 Log.Verbose($"BattleTask done. {_battleLinesCount:N0} battle lines, {_sw.Elapsed} elapsed");
             });
 
-
             // Start our main guy up, this starts the whole pipeline flow going
             _sw.Start();
             // var readTask = cp.Process(_rawLinesChannel.Writer, ct => ReadLogLines(logFilePath, ct));
@@ -119,8 +115,6 @@ namespace EqbConsole
                 Log.Verbose($"ReadTask done. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
                 _rawLinesChannel.Writer.TryComplete();
             });
-
-
 
             try
             {
@@ -146,20 +140,26 @@ namespace EqbConsole
                 // Give all continuation tasks a chance to finish
                 await Task.WhenAll(rtContinue, dtContinue, ptContinue, btContinue);
 
-                Program.DumpTaskInfo(readTask, "readTask");
-                Program.DumpTaskInfo(datumTask, "datumTask");
-                Program.DumpTaskInfo(parseTask, "parseTask");
-                Program.DumpTaskInfo(battleTask, "battleTask");
+                DumpTaskInfo(readTask, "readTask");
+                DumpTaskInfo(datumTask, "datumTask");
+                DumpTaskInfo(parseTask, "parseTask");
+                DumpTaskInfo(battleTask, "battleTask");
 
                 DumpChannelInfo(_rawLinesChannel, "_rawLinesChannel");
                 DumpChannelInfo(_logLinesChannel, "_logLinesChannel");
                 DumpChannelInfo(_parsedLinesChannel, "_parsedLinesChannel");
 
-
                 Log.Debug($"Total processing EQBattle, {_sw.Elapsed} elapsed");
                 Log.Verbose($"LastLineNumber read: {_lastLineNumber:N0}");
                 Log.Verbose($"LastLineNumber added to Battle: {_lastLineAddedToBattle?.LogLine.LineNumber:N0}");
             }
+        }
+
+        public static void DumpTaskInfo(Task t, string title)
+        {
+            Log.Verbose($"Task: {title,-17} ({t.Id,2})  Cncl: {t.IsCanceled,-5}  Cmplt: {t.IsCompleted,-5}  Sccs: {t.IsCompletedSuccessfully,-5}  Flt: {t.IsFaulted,-5}  Sts: {t.Status}{(t.Exception == null ? "" : $"  Ex: {t.Exception?.Message}")}");
+            // if (t.Exception != null)
+            //     WriteMessage($"Task Exception: {t.Exception}");
         }
 
         public static void DumpChannelInfo<T>(Channel<T> channel, string title)
@@ -197,11 +197,10 @@ namespace EqbConsole
                 startingLineCount = _rawLineCount;
 
                 if (WatchFile)
-                    await Program.Delay(5000, token, "EOF");
+                    await Task.Delay(delayTimeMs, token);
                 else
                     CancelSource.Cancel(); // Not the best way I don't think. Perhaps just a return of 'False'
             };
-
 
             Log.Verbose("About to start reading");
             startingLineCount = _rawLineCount;
@@ -211,7 +210,6 @@ namespace EqbConsole
                 Log.Verbose("Task'd LR reading");
                 await lrTask;
                 Log.Verbose("LR reading completed successfully");
-
             }
             catch (OperationCanceledException)
             {
@@ -226,7 +224,7 @@ namespace EqbConsole
             finally
             {
                 Log.Verbose("Finally done with LR reading");
-                Program.DumpTaskInfo(lrTask, "lrTask");
+                DumpTaskInfo(lrTask, "lrTask");
             }
         }
 
@@ -260,6 +258,12 @@ namespace EqbConsole
 
             if (line.LogLine.LineNumber == _lastLineNumber)
                 Log.Verbose($"Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
+        }
+
+        public static void WriteLog(LogEventLevel logLevel, string format, params object[] args)
+        {
+            Console.WriteLine(format, args);
+            Log.Write(logLevel, format, args);
         }
     }
 }

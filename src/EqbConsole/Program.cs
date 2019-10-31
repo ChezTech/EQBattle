@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using BizObjects.Battle;
 using BizObjects.Converters;
 using BizObjects.Lines;
+using EQJobService;
 using LineParser;
 using LineParser.Parsers;
 using LogFileReader;
@@ -27,7 +28,7 @@ namespace EqbConsole
 
     class Program
     {
-        enum ProgramMode
+        private enum ProgramMode
         {
             JobBlockingConnection,
             JobBasicChannel,
@@ -41,12 +42,12 @@ namespace EqbConsole
 
         private YouResolver _youAre;
         private Battle _eqBattle;
-        IJobProcessor _eqJob;
+        private IJobProcessor _eqJob;
         public static IConfigurationRoot Configuration { get; private set; }
         public static AppSettings AppSettings { get; private set; }
         public static LogSettings LogSettings { get; private set; }
 
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             LoadAppSettings(args);
             SetupLogger();
@@ -110,12 +111,16 @@ namespace EqbConsole
             {
                 case "bc":
                     return ProgramMode.JobBlockingConnection;
+
                 case "ba":
                     return ProgramMode.JobBasicChannel;
+
                 case "mm":
                     return ProgramMode.JobMultiChannelMultiParser;
+
                 case "ms":
                     return ProgramMode.JobMultiChannelSingleParser;
+
                 case "mo":
                 default:
                     return ProgramMode.JobMoreChannel;
@@ -173,7 +178,6 @@ namespace EqbConsole
 
                 tasksToWaitFor.Add(jtNotCancelled);
                 tasksToWaitFor.Add(jtComplete);
-
             }
             // catch (TaskCanceledException)
             // {
@@ -214,12 +218,14 @@ namespace EqbConsole
                 DumpTaskInfo(jtComplete, "jtComplete");
             }
         }
+
         public static void DumpTaskInfo(Task t, string title)
         {
             Log.Verbose($"Task: {title,-17} ({t.Id,2})  Cncl: {t.IsCanceled,-5}  Cmplt: {t.IsCompleted,-5}  Sccs: {t.IsCompletedSuccessfully,-5}  Flt: {t.IsFaulted,-5}  Sts: {t.Status}{(t.Exception == null ? "" : $"  Ex: {t.Exception?.Message}")}");
             // if (t.Exception != null)
             //     WriteMessage($"Task Exception: {t.Exception}");
         }
+
         private async Task GetConsoleUserInputAsync(CancellationToken token)
         {
             // Pop this onto another thread which gives the job task a chance to detect that the file wasn't found (before writing out this message)
@@ -245,7 +251,6 @@ namespace EqbConsole
                         done = true;
                         WriteLog(LogEventLevel.Verbose, "<Esc> pressed. Exiting...");
                         break;
-
                 }
             } while (!done);
         }
@@ -295,10 +300,13 @@ namespace EqbConsole
             {
                 case ProgramMode.JobBlockingConnection:
                     return new EQJobProcessorBlockingCollection(parser, numberOfParsers);
+
                 case ProgramMode.JobBasicChannel:
                     return new EQJobProcessorChannels(parser, numberOfParsers);
+
                 case ProgramMode.JobMultiChannelMultiParser:
                     return new EQJobProcessorMultipleChannels(parser, numberOfParsers);
+
                 case ProgramMode.JobMultiChannelSingleParser:
                     return new EQJobProcessorMultipleChannelsSingleThread(parser);
 
@@ -417,7 +425,6 @@ namespace EqbConsole
     {
         public static LoggerConfiguration MinimumLevel(this LoggerConfiguration logConfig, string logLevel)
         {
-
             // Serilog.Events.LogEventLevel
             // Microsoft.Extensions.Logging.LogLevel
             switch (logLevel.ToLowerInvariant())
@@ -471,6 +478,7 @@ namespace EqbConsole
         private string _logFileName;
 
         public string LogLevel { get; set; } = "Warning";
+
         public string LogFileName
         {
             get

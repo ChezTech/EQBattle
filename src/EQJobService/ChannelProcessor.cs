@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,7 +5,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Serilog;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class ChannelProcessor
     {

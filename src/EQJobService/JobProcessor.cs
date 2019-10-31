@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BizObjects.Battle;
 using LineParser;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public abstract class JobProcessor : IJobProcessor
     {
@@ -13,6 +13,7 @@ namespace EqbConsole
         protected readonly int _parserCount;
 
         public CancellationTokenSource CancelSource { get; set; }
+
         public virtual void ShowStatus() { }
 
         public JobProcessor(LineParserFactory parser, int parserCount = 1)

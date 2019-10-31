@@ -11,7 +11,7 @@ using LineParser;
 using LogFileReader;
 using LogObjects;
 
-namespace EqbConsole
+namespace EQJobService
 {
     public class EQJobProcessorBlockingCollection : JobProcessor
     {
@@ -24,7 +24,7 @@ namespace EqbConsole
 
         public override async Task StartProcessingJobAsync(string logFilePath, Battle eqBattle)
         {
-            await Task.Run(()=>StartProcessingJob(logFilePath, eqBattle));
+            await Task.Run(() => StartProcessingJob(logFilePath, eqBattle));
         }
 
         private void StartProcessingJob(string logFilePath, Battle eqBattle)
