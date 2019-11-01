@@ -8,6 +8,7 @@ namespace EQBattle.ViewModels
     class FightListViewModel : ViewModelBase
     {
         private Battle battle;
+        private Skirmish selectedSkirmish;
 
         public FightListViewModel()
         {
@@ -20,5 +21,15 @@ namespace EQBattle.ViewModels
         }
 
         public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
+
+        public Skirmish SelectedSkirmish
+        {
+            get => selectedSkirmish;
+            set
+            {
+                if (SetProperty(ref selectedSkirmish, value))
+                    Messenger.Instance.Publish("OnSelectedSkirmishChanged", SelectedSkirmish);
+            }
+        }
     }
 }
