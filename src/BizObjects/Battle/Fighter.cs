@@ -7,7 +7,7 @@ using System.Linq;
 namespace BizObjects.Battle
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class Fighter
+    public class Fighter : PropertyChangeBase
     {
         private readonly IFight _fight;
 

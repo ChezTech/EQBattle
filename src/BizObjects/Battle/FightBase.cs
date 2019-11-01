@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace BizObjects.Battle
 {
-    public abstract class FightBase : IFight
+    public abstract class FightBase : PropertyChangeBase, IFight
     {
         protected ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         public IEnumerable<Fighter> Fighters => _fighters.Values;
