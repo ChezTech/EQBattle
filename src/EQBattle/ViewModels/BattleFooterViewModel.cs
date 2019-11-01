@@ -1,25 +1,27 @@
 ﻿using BizObjects.Battle;
+using EQJobService;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace EQBattle.ViewModels
 {
     class BattleFooterViewModel : ViewModelBase
     {
+        private EQJob eqJob;
         private Battle battle;
-        private string fileName = @"eqlog_Khadaji_test.txt";
+
+        private string fileName;
         private TimeSpan elapsed = new TimeSpan(0, 0, 0, 4, 807);
         private int skirmishCount = 917;
 
         public BattleFooterViewModel()
         {
-            Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x));
-        }
-
-        private void NewBattle(object x)
-        {
-            Battle = x as Battle;
+            Messenger.Instance.Subscribe("NewEQJob", x =>
+            {
+                eqJob = x as EQJob;
+                FileName = Path.GetFileName(eqJob.FileName);
+            });
+            Messenger.Instance.Subscribe("NewBattle", x => Battle = x as Battle);
         }
 
         public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
