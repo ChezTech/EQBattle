@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BizObjects\BizObjects.csproj" />
+    <ProjectReference Include="..\EQJobService\EQJobService.csproj" />
     <ProjectReference Include="..\WpfUIServices\WpfUIServices.csproj" />
   </ItemGroup>
 

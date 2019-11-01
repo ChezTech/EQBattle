@@ -1,6 +1,9 @@
 ﻿using BizObjects.Battle;
 using BizObjects.Converters;
+using EQJobService;
 using System;
+using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
@@ -11,7 +14,8 @@ namespace EQBattle.ViewModels
         private ViewModelBase _detailVM;
         private ViewModelBase _footerVM;
 
-        private Battle _battle;
+        private EQJob _eqJob;
+        private readonly object _lock = new object();
 
         public MainWindowViewModel()
         {
@@ -28,11 +32,12 @@ namespace EQBattle.ViewModels
 
         private void CreateNewBattle(object fileName)
         {
-            //var _youAre = new YouResolver(WhoseLogFile(fileName));
-            var _youAre = new YouResolver("Khadaji");
-            _battle = new Battle(_youAre);
+            _eqJob = new EQJob(fileName as string);
+            BindingOperations.EnableCollectionSynchronization(_eqJob.Battle.Skirmishes, _lock);
 
-            Messenger.Instance.Publish("NewBattle", _battle);
+            Messenger.Instance.Publish("NewEQJob", _eqJob);
+            Messenger.Instance.Publish("NewBattle", _eqJob.Battle);
+            _ = _eqJob.ReadFileIntoBattleAsync();
         }
 
         public ViewModelBase HeaderVM
