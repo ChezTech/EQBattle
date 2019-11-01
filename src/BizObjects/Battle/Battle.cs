@@ -2,6 +2,7 @@ using BizObjects.Converters;
 using BizObjects.Lines;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BizObjects.Battle
@@ -29,7 +30,7 @@ namespace BizObjects.Battle
 
         private IFight _currentSkirmish;
 
-        public IList<IFight> Skirmishes { get; } = new List<IFight>();
+        public ObservableCollection<IFight> Skirmishes { get; } = new ObservableCollection<IFight>();
         public int LineCount => Skirmishes.Sum(x => x.LineCount);
         public int RawLineCount = 0;
         public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }
@@ -49,7 +50,6 @@ namespace BizObjects.Battle
 
             VerifyLineOrder(line);
 
-
             _charTracker.TrackLine((dynamic)line);
 
             if (IsNewSkirmishNeeded((dynamic)line))
@@ -61,6 +61,7 @@ namespace BizObjects.Battle
         private ILine _previousLine = null;
         public int OutOfOrderCount = 0;
         public int MaxDelta = 0;
+
         private void VerifyLineOrder(ILine line)
         {
             if (_previousLine != null)
@@ -95,19 +96,12 @@ namespace BizObjects.Battle
             if (!_currentSkirmish.Statistics.Lines.Any())
                 return false;
 
-
             // If the current Skirmish (most recent fight) looks like a Pull, then don't start a new skirmish
             // Or, move that pull line into a new skirmish for this new fight
             // Q: what does a pull look like?
             // A: one or two hits of low damage
             // A: maybe not necessarily low damage (bow shot pull, spell pull)
             // A: still within a period of time, just a longer one
-
-
-
-
-
-
 
             // A new Skirmish is needed if it's been too long since the last mob died
             // If you're fighting mobs without a break, they all get grouped into one skirmish
@@ -121,9 +115,6 @@ namespace BizObjects.Battle
             // If it's been enough time since the last attack and this attack, then a new Skirmish is needed
             if (line.Time - _currentSkirmish.LastAttackTime > _skirmishGap)
                 return true;
-
-
-
 
             // We want to allow loot lines on a fight even when the fight is over (the mob is dead)
             // if (_currentSkirmish.IsFightOver)
