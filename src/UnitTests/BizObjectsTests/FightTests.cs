@@ -170,6 +170,51 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        public void GenericMobWithoutIndefiniteArticleShouldNotBeCapitalizedMobFirst()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:37:55 2019] Molten steel hits YOU for 6017 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:37:55 2019] You strike molten steel for 2306 points of damage.");
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Khadaji"));
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "molten steel"));
+
+            Assert.AreEqual("molten steel", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void GenericMobWithoutIndefiniteArticleShouldNotBeCapitalizedMobLast()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:37:55 2019] You strike molten steel for 2306 points of damage.");
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:37:55 2019] Molten steel hits YOU for 6017 points of damage.");
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Khadaji"));
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "molten steel"));
+
+            Assert.AreEqual("molten steel", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
+        public void GenericMobWithoutIndefiniteArticleShouldNotBeCapitalizedNotYou()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:40:27 2019] Molten steel hits Kelanna for 4214 points of damage. (Riposte)");
+            AddFightTrackLine(fight, charTracker, "[Sun Sep 15 09:40:27 2019] Kelanna pierces molten steel for 980 points of damage.");
+
+            Assert.AreEqual(2, fight.Fighters.Count());
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "Kelanna"));
+            Assert.IsTrue(fight.Fighters.Any(x => x.Character.Name == "molten steel"));
+
+            Assert.AreEqual("molten steel", fight.PrimaryMob.Name);
+        }
+
+        [TestMethod]
         public void DontConfusePetsWithGenericMobs()
         {
             var fight = SetupNewFight(out CharacterTracker charTracker);
