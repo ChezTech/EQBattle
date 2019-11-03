@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Core.Extensions;
 
 namespace BizObjects.Converters
 {
@@ -20,14 +20,22 @@ namespace BizObjects.Converters
             "warder"
         };
 
+        private static Func<string, string> nameNormalizer = name => NormalizeNameInternal(name);
+        private static Func<string, string> memoizedNormalization = nameNormalizer.Memoize();
+
         public string NormalizeName(string name)
+        {
+            return memoizedNormalization(name);
+        }
+
+        private static string NormalizeNameInternal(string name)
         {
             string normalizedName = CleanName(name);
             normalizedName = RemoveCapitalizedNameDueToSentence(normalizedName);
             return normalizedName;
         }
 
-        private string CleanName(string name)
+        private static string CleanName(string name)
         {
             return name
                 .Replace("A ", "a ") // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
@@ -46,7 +54,7 @@ namespace BizObjects.Converters
         // For generic monster names without an indefinite ariticle, it's harder to distinugish them from a named mob.
         // E.g. "Molten steel"
         // What we'll do is look for a lowercase to the rest of their name (excluding "of", "the") and if we find it, we'll lowercase their first word too.
-        private string RemoveCapitalizedNameDueToSentence(string name)
+        private static string RemoveCapitalizedNameDueToSentence(string name)
         {
             var words = name.Split(' ');
 
