@@ -175,5 +175,27 @@ namespace BizObjectsTests
             // We can tell by looking at other log lines, but that's over conext of a whole fight, not solely the name.
             Assert.IsTrue(c.IsMob);
         }
+
+        [TestMethod]
+        public void DetectGenericMobCapitalizedAtStartOfLine()
+        {
+            var c1 = new Character("Molten steel");
+            var c2 = new Character("molten steel");
+            Assert.AreEqual(c1, c2);
+            Assert.AreEqual(c1.GetHashCode(), c2.GetHashCode());
+            Assert.IsFalse(c1.IsPet);
+            Assert.IsTrue(c1.IsMob);
+        }
+
+        [TestMethod]
+        public void DetectGenericMobCapitalizedAtStartOfLineReverse()
+        {
+            var c1 = new Character("molten steel");
+            var c2 = new Character("Molten steel");
+            Assert.AreEqual(c1, c2);
+            Assert.AreEqual(c1.GetHashCode(), c2.GetHashCode());
+            Assert.IsFalse(c1.IsPet);
+            Assert.IsTrue(c1.IsMob);
+        }
     }
 }
