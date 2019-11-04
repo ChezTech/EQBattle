@@ -173,6 +173,12 @@ namespace EQJobService
             var startingLineCount = 0;
 
             var lr = new LogReader(logPath, token);
+            lr.StartReading += () =>
+            {
+                Log.Verbose($"LogReader starting to read the next chunk. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
+                OnStartReading();
+            };
+
             lr.LineRead += line =>
             {
                 _rawLineCount++;
@@ -195,6 +201,8 @@ namespace EQJobService
                     Log.Verbose($"LogReader EOF - waiting to read next chunk. {_rawLineCount:N0} read lines, {_sw.Elapsed} elapsed");
 
                 startingLineCount = _rawLineCount;
+
+                OnEoFReached();
 
                 if (WatchFile)
                     await Task.Delay(delayTimeMs, token);
@@ -257,7 +265,10 @@ namespace EQJobService
             _lastLineAddedToBattle = line;
 
             if (line.LogLine.LineNumber == _lastLineNumber)
+            {
                 Log.Verbose($"Lines added to Battle: {_battleLinesCount:N0}, {_sw.Elapsed} elapsed");
+                OnEoFBattle();
+            }
         }
 
         public static void WriteLog(LogEventLevel logLevel, string format, params object[] args)

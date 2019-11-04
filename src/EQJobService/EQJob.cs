@@ -8,16 +8,21 @@ using System.Threading.Tasks;
 using Serilog;
 using LineParser;
 using LineParser.Parsers;
+using System.Diagnostics;
+using Core;
 
 namespace EQJobService
 {
-    public class EQJob
+    public class EQJob : PropertyChangeBase
     {
         public string FileName { get; private set; }
         public Battle Battle { get; private set; }
         public YouResolver YouAre { get; private set; }
 
         private CancellationTokenSource _cts;
+        private Stopwatch _sw = new Stopwatch();
+
+        public TimeSpan ProcessingElapsed => _sw.Elapsed;
 
         public EQJob(string filePath)
         {
@@ -64,6 +69,12 @@ namespace EQJobService
             var parser = CreateLineParser(YouAre);
             var parserJob = new EQJobEvenMoreChannels(parser);
             parserJob.CancelSource = _cts;
+            parserJob.StartReading += () => _sw.Start();
+            parserJob.EoFBattle += () =>
+            {
+                _sw.Stop();
+                OnPropertyChanged(nameof(ProcessingElapsed));
+            };
 
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
             // When it's done, show the summary
@@ -72,6 +83,7 @@ namespace EQJobService
 
             try
             {
+                _sw.Restart();
                 await jobTask;
             }
             catch (OperationCanceledException)
