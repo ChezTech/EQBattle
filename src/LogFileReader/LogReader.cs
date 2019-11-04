@@ -12,6 +12,8 @@ namespace LogFileReader
 
         private readonly FileInfo _logFile;
 
+        private bool _isReading = false;
+
         public LogReader(string logFilePathName, CancellationToken token)
         {
             _logFile = new FileInfo(logFilePathName);
@@ -21,6 +23,7 @@ namespace LogFileReader
             _token = token;
         }
 
+        public event Action StartReading;
         public event Action<string> LineRead;
         public event Func<Task> EoFReached;
 
@@ -54,7 +57,19 @@ namespace LogFileReader
         {
             string logLine;
             while (!_token.IsCancellationRequested && (logLine = sr.ReadLine()) != null)
+            {
+                RaiseOnStarted();
                 RaiseReadLine(logLine);
+            }
+        }
+
+        private void RaiseOnStarted()
+        {
+            if (_isReading)
+                return;
+
+            _isReading = true;
+            StartReading?.Invoke();
         }
 
         private void RaiseReadLine(string logLine)
@@ -64,6 +79,8 @@ namespace LogFileReader
 
         private async Task RaiseEof()
         {
+            _isReading = false;
+
             // Because this is an async event handler, we need to explicitly grab all the currently registered handlers,
             // then invoke them all and await them all.
             var taskList = EoFReached?.GetInvocationList().Select(h => ((Func<Task>)h)?.Invoke());
