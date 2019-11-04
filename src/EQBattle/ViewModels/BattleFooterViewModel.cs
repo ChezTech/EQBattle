@@ -5,7 +5,12 @@ using System.IO;
 
 namespace EQBattle.ViewModels
 {
-    class BattleFooterViewModel : ViewModelBase
+    public interface IRefresh
+    {
+        void Refresh();
+    }
+
+    class BattleFooterViewModel : ViewModelBase, IRefresh
     {
         private EQJob eqJob;
         private Battle battle;
@@ -21,8 +26,14 @@ namespace EQBattle.ViewModels
         }
 
         public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
-        public string FileName { get => Path.GetFileName(eqJob.FileName); }
-        public TimeSpan Elapsed { get => eqJob.ProcessingElapsed; }
-        public int SkirmishCount { get => battle.Skirmishes.Count; }
+        public string FileName => Path.GetFileName(eqJob?.FileName);
+        public TimeSpan Elapsed => eqJob?.ProcessingElapsed ?? TimeSpan.Zero;
+        public int SkirmishCount => battle?.Skirmishes.Count ?? 0;
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(Elapsed));
+            OnPropertyChanged(nameof(SkirmishCount));
+        }
     }
 }
