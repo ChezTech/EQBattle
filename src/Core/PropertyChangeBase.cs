@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace BizObjects.Battle
+namespace Core
 {
     public abstract class PropertyChangeBase : INotifyPropertyChanged
     {
