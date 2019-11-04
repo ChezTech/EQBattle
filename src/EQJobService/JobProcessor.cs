@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BizObjects.Battle;
@@ -11,6 +12,14 @@ namespace EQJobService
 
         protected readonly LineParserFactory _parser;
         protected readonly int _parserCount;
+
+        public event Action StartReading;
+        public event Action EoFReached;
+        public event Action EoFBattle;
+
+        protected virtual void OnStartReading() { StartReading?.Invoke(); }
+        protected virtual void OnEoFReached() { EoFReached?.Invoke(); }
+        protected virtual void OnEoFBattle() { EoFBattle?.Invoke(); }
 
         public CancellationTokenSource CancelSource { get; set; }
 
