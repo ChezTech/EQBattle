@@ -37,7 +37,9 @@ namespace EQBattle.ViewModels
 
             Messenger.Instance.Publish("NewEQJob", _eqJob);
             Messenger.Instance.Publish("NewBattle", _eqJob.Battle);
-            _ = _eqJob.ReadFileIntoBattleAsync();
+
+            // NOTE: probably more robustness needed here to really make this async and handle errors etc...
+            Task.Run(() => _eqJob.ReadFileIntoBattleAsync());
         }
 
         public ViewModelBase HeaderVM
