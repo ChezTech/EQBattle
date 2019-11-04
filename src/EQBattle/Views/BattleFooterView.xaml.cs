@@ -1,5 +1,4 @@
-﻿using EQBattle.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -22,12 +21,6 @@ namespace EQBattle.Views
         public BattleFooterView()
         {
             InitializeComponent();
-            CompositionTarget.Rendering += OnRendering;
-        }
-
-        private void OnRendering(object sender, EventArgs e)
-        {
-            (DataContext as IRefresh)?.Refresh();
         }
     }
 }

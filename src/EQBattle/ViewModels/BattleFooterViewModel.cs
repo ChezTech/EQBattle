@@ -2,21 +2,26 @@
 using EQJobService;
 using System;
 using System.IO;
+using System.Windows.Threading;
 
 namespace EQBattle.ViewModels
 {
-    public interface IRefresh
+    class BattleFooterViewModel : ViewModelBase
     {
-        void Refresh();
-    }
-
-    class BattleFooterViewModel : ViewModelBase, IRefresh
-    {
+        private readonly DispatcherTimer refreshTimer;
         private EQJob eqJob;
         private Battle battle;
 
         public BattleFooterViewModel()
         {
+            // Update the Footer view even small interval to refresh properties from the EQJob (elapsed time, number of skirmishes)
+            // Elapsed property doesn't have a event or INotifyPropertyChanged going on for it (doesn't really make sense)
+            // So, just poll (instead of push) the property update
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
+            refreshTimer.Tick += (s, e) => Refresh();
+            refreshTimer.Start();
+
             Messenger.Instance.Subscribe("NewEQJob", x =>
             {
                 eqJob = x as EQJob;
