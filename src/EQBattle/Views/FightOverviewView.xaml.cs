@@ -16,9 +16,9 @@ namespace EQBattle.Views
     /// <summary>
     /// Interaction logic for FightView.xaml
     /// </summary>
-    public partial class FightView : UserControl
+    public partial class FightOverviewView : UserControl
     {
-        public FightView()
+        public FightOverviewView()
         {
             InitializeComponent();
         }

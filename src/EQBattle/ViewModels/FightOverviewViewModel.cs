@@ -3,12 +3,12 @@ using Core;
 
 namespace EQBattle.ViewModels
 {
-    class FightViewModel : PropertyChangeBase
+    class FightOverviewViewModel : PropertyChangeBase
     {
         private Battle battle;
         private Skirmish skirmish;
 
-        public FightViewModel()
+        public FightOverviewViewModel()
         {
             Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x));
             Messenger.Instance.Subscribe("OnSelectedSkirmishChanged", x => Skirmish = x as Skirmish);
