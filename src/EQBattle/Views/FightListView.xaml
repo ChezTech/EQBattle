@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:EQBattle.Views"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="400">
+             d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
         <ListView x:Name="lvFights" SelectionMode="Single" ItemsSource="{Binding Battle.Skirmishes}" SelectedItem="{Binding SelectedSkirmish}">
             <ListView.ItemContainerStyle>
@@ -16,14 +16,22 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Skirmish" Width="Auto" DisplayMemberBinding="{Binding Title}"/>
-                    <!--<GridViewColumn Header="Dmg" Width="60">
+                    <GridViewColumn Header="Skirmish" Width="200" DisplayMemberBinding="{Binding Title}"/>
+                    <GridViewColumn Header="Dmg" Width="60">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding TotalDamage, StringFormat=N0}" Foreground="SlateBlue" TextAlignment="Right"/>
+                                <!--This has the problem of the collection being modified. Will need to lock or move to pre-calc'd value instead of Linq expressions-->
+                                <!--<TextBlock Text="{Binding Statistics.Hit.Total, StringFormat=N0}" Foreground="SlateBlue" TextAlignment="Right"/>-->
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
-                    </GridViewColumn>-->
+                    </GridViewColumn>
+                    <GridViewColumn Header="Duration" Width="60">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Statistics.Duration.FightDuration, StringFormat=mm\\:ss}" Foreground="SlateBlue" TextAlignment="Right"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
