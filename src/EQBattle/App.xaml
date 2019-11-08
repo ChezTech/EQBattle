@@ -17,6 +17,12 @@
         <DataTemplate DataType="{x:Type vm:FightViewModel}">
             <vw:FightView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FightOverviewViewModel}">
+            <vw:FightOverviewView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FightLogLinesViewModel}">
+            <vw:FightLogLinesView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:MainWindowViewModel}">
             <local:MainWindow/>
         </DataTemplate>
