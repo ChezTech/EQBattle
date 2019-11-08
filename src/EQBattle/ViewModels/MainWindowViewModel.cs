@@ -1,18 +1,16 @@
-﻿using BizObjects.Battle;
-using BizObjects.Converters;
+﻿using Core;
 using EQJobService;
-using System;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
-    class MainWindowViewModel : ViewModelBase
+    class MainWindowViewModel : PropertyChangeBase
     {
-        private ViewModelBase _headerVM;
-        private ViewModelBase _listVM;
-        private ViewModelBase _detailVM;
-        private ViewModelBase _footerVM;
+        private PropertyChangeBase _headerVM;
+        private PropertyChangeBase _listVM;
+        private PropertyChangeBase _detailVM;
+        private PropertyChangeBase _footerVM;
 
         private EQJob _eqJob;
         private readonly object _lock = new object();
@@ -42,25 +40,25 @@ namespace EQBattle.ViewModels
             Task.Run(() => _eqJob.ReadFileIntoBattleAsync());
         }
 
-        public ViewModelBase HeaderVM
+        public PropertyChangeBase HeaderVM
         {
             get => _headerVM;
             set => SetProperty(ref _headerVM, value);
         }
 
-        public ViewModelBase ListVM
+        public PropertyChangeBase ListVM
         {
             get => _listVM;
             set => SetProperty(ref _listVM, value);
         }
 
-        public ViewModelBase DetailVM
+        public PropertyChangeBase DetailVM
         {
             get => _detailVM;
             set => SetProperty(ref _detailVM, value);
         }
 
-        public ViewModelBase FooterVM
+        public PropertyChangeBase FooterVM
         {
             get => _footerVM;
             set => SetProperty(ref _footerVM, value);

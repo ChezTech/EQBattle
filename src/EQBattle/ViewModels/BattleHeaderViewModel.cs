@@ -1,9 +1,10 @@
-﻿using System.Windows.Input;
+﻿using Core;
+using System.Windows.Input;
 using WpfUIServices;
 
 namespace EQBattle.ViewModels
 {
-    class BattleHeaderViewModel : ViewModelBase
+    class BattleHeaderViewModel : PropertyChangeBase
     {
         private ICommand open;
         private ICommand run;

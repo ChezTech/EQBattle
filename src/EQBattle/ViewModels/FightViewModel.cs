@@ -1,11 +1,9 @@
 ﻿using BizObjects.Battle;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Core;
 
 namespace EQBattle.ViewModels
 {
-    class FightViewModel : ViewModelBase
+    class FightViewModel : PropertyChangeBase
     {
         private Battle battle;
         private Skirmish skirmish;

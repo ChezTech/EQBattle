@@ -1,4 +1,5 @@
 ﻿using BizObjects.Battle;
+using Core;
 using EQJobService;
 using System;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Windows.Threading;
 
 namespace EQBattle.ViewModels
 {
-    class BattleFooterViewModel : ViewModelBase
+    class BattleFooterViewModel : PropertyChangeBase
     {
         private readonly DispatcherTimer refreshTimer;
         private EQJob eqJob;
