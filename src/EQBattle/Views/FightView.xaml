@@ -7,18 +7,17 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="24"/>
-            <RowDefinition Height="208*"/>
-        </Grid.RowDefinitions>
-        <TabControl x:Name="tabControl" Grid.Row="0">
-            <TabItem Header="Overview">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
-            <TabItem Header="Lines">
-                <Grid Background="#FFE5E5E5"/>
-            </TabItem>
+        <TabControl x:Name="tabControl" ItemsSource="{Binding FightTabs}" SelectedItem="{Binding SelectedTab}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Header}"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl  Content="{Binding Content}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
         </TabControl>
-        <ContentControl Grid.Row="1" Content="{Binding CurrentFightVM}"/>
     </Grid>
 </UserControl>
