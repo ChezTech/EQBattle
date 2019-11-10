@@ -4,6 +4,7 @@ using Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BizObjects.Battle
 {
@@ -18,6 +19,8 @@ namespace BizObjects.Battle
         public abstract string Title { get; }
         public abstract DateTime LastAttackTime { get; }
         public abstract int LineCount { get; }
+
+        public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
 
         public void AddLine(ILine line) { }
         public abstract void AddLine(Attack line);

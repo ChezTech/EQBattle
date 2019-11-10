@@ -9,7 +9,6 @@ using System.Linq;
 
 namespace BizObjects.Battle
 {
-
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Fight : FightBase
     {
@@ -18,7 +17,6 @@ namespace BizObjects.Battle
 
         public override string Title => PrimaryMob.Name;
 
-        public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
         public string Zone { get; }
         public override int LineCount => Statistics.Lines.Count();
 

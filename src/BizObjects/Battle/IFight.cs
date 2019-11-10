@@ -14,6 +14,7 @@ namespace BizObjects.Battle
         string Title { get; }
         DateTime LastAttackTime { get; }
         int LineCount { get; }
+        Fighter PrimaryMobFighter { get; }
 
         void AddLine(ILine line);
         void AddLine(Attack line);
