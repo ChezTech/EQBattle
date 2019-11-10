@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
-        <ListView x:Name="lvFights" SelectionMode="Single" ItemsSource="{Binding Battle.Skirmishes}" SelectedItem="{Binding SelectedSkirmish}">
+        <ListView x:Name="lvFights" SelectionMode="Single" ItemsSource="{Binding FightList}" SelectedItem="{Binding SelectedFight}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -16,19 +16,18 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Skirmish" Width="200" DisplayMemberBinding="{Binding Title}"/>
-                    <GridViewColumn Header="Dmg" Width="60">
+                    <GridViewColumn Header="Fight" Width="200" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Mob D-Dmg" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <!--This has the problem of the collection being modified. Will need to lock or move to pre-calc'd value instead of Linq expressions-->
-                                <!--<TextBlock Text="{Binding Statistics.Hit.Total, StringFormat=N0}" Foreground="SlateBlue" TextAlignment="Right"/>-->
+                                <TextBlock Text="{Binding MobDefensiveDamage, StringFormat=N0}" Foreground="SlateBlue" TextAlignment="Right"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Duration" Width="60">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Statistics.Duration.FightDuration, StringFormat=mm\\:ss}" Foreground="SlateBlue" TextAlignment="Right"/>
+                                <TextBlock Text="{Binding Duration, StringFormat=mm\\:ss}" Foreground="SlateBlue" TextAlignment="Right"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
