@@ -28,9 +28,9 @@ namespace BizObjects.Battle
         private readonly CharacterTracker _charTracker;
         private readonly TimeSpan _skirmishGap = new TimeSpan(0, 0, 5); // Make this configurable
 
-        private IFight _currentSkirmish;
+        private ISkirmish _currentSkirmish;
 
-        public ObservableCollection<IFight> Skirmishes { get; } = new ObservableCollection<IFight>();
+        public ObservableCollection<ISkirmish> Skirmishes { get; } = new ObservableCollection<ISkirmish>();
         public int LineCount => Skirmishes.Sum(x => x.LineCount);
         public int RawLineCount = 0;
         public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }

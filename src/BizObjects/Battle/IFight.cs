@@ -2,6 +2,7 @@ using BizObjects.Lines;
 using BizObjects.Statistics;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace BizObjects.Battle
 {
@@ -20,5 +21,10 @@ namespace BizObjects.Battle
         void AddLine(Attack line);
         void AddLine(Heal line);
         bool SimilarDamage(Hit line, bool looseMatch = false);
+    }
+
+    public interface ISkirmish : IFight
+    {
+        ObservableCollection<IFight> Fights { get; }
     }
 }

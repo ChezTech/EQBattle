@@ -4,11 +4,12 @@ using BizObjects.Statistics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BizObjects.Battle
 {
-    public class Skirmish : FightBase
+    public class Skirmish : FightBase, ISkirmish
     {
         private readonly YouResolver YouAre;
         private readonly CharacterResolver CharResolver;
@@ -20,7 +21,7 @@ namespace BizObjects.Battle
             CreateNewFight();
         }
 
-        public IList<IFight> Fights { get; } = new List<IFight>();
+        public ObservableCollection<IFight> Fights { get; } = new ObservableCollection<IFight>();
         public override bool IsFightOver => Fights.All(x => x.IsFightOver);
         public override DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
         public override int LineCount => Fights.Sum(x => x.LineCount);
@@ -172,7 +173,6 @@ namespace BizObjects.Battle
             // The complication is that I get this anonymous DoT both when the mob was alive and when it was dead...
             // [Mon May 27 06:57:03 2019] You have taken 2080 damage from Paralyzing Bite.
             // [Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.
-
 
             // Basically, if this is an Anoymous Dot ... assign the Attacker to one of the primary mob fights ... which one?
             // Let's see if a fight has had similar damage already ... same spell
