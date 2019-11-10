@@ -14,6 +14,7 @@
             <ToolBar Loaded="ToolBar_Loaded">
                 <Button Content="Run" Command="{Binding Run}" ToolBar.OverflowMode="Never"/>
                 <Button Content="Pause" Command="{Binding Pause}" ToolBar.OverflowMode="Never"/>
+                <Button Content="Refresh" Command="{Binding Refresh}" ToolBar.OverflowMode="Never"/>
             </ToolBar>
         </ToolBarTray>
     </Grid>

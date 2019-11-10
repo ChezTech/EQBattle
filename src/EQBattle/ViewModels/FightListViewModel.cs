@@ -17,10 +17,12 @@ namespace EQBattle.ViewModels
         public FightListViewModel()
         {
             Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x as Battle));
+            Messenger.Instance.Subscribe("RefreshBattle", x => NewBattle(battle));
         }
 
         private void NewBattle(Battle battle)
         {
+            this.battle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
         }
 
