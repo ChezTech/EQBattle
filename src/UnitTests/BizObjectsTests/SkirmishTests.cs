@@ -197,6 +197,33 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
+        public void SkirmishIsntOverAfterOneHit()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:43 2019] You crush a generic mob for 10 points of damage.");
+
+            Assert.IsFalse(skirmish.IsFightOver);
+        }
+
+        [TestMethod]
+        public void SkirmishIsntOverAfterOneHeal()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+            AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:16 2019] You feel the touch of recuperation. Movanna healed you for 20053 (23605) hit points by Word of Recuperation.");
+
+            Assert.IsFalse(skirmish.IsFightOver);
+        }
+
+        [TestMethod]
+        public void SkirmishIsOverAfterOneKillShot()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+            AddSkirmishTrackLine(skirmish, charTracker, "[Mon May 27 09:28:43 2019] You have slain a generic mob!");
+
+            Assert.IsTrue(skirmish.IsFightOver);
+        }
+
+        [TestMethod]
         public void FightWithDotAfterDeath()
         {
             // Things to test...
@@ -303,7 +330,6 @@ namespace BizObjectsTests
             VerifyFighterStatistics("Khadaji", skirmish, 1149, 0, 0, 1, 1950, 0, 0, 0);
             VerifyFighterStatistics("Gomphus", skirmish, 1950, 0, 0, 0, 1149, 0, 0, 1);
         }
-
 
         [TestMethod]
         public void EnsureFightsInASkirmishUseTheirOwnDurationForDps()

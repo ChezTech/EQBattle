@@ -18,11 +18,10 @@ namespace BizObjects.Battle
         {
             YouAre = youAre;
             CharResolver = charResolver;
-            CreateNewFight();
         }
 
         public ObservableCollection<IFight> Fights { get; } = new ObservableCollection<IFight>();
-        public override bool IsFightOver => Fights.All(x => x.IsFightOver);
+        public override bool IsFightOver => Fights.Any() && Fights.All(x => x.IsFightOver);
         public override DateTime LastAttackTime => Fights.Max(x => x.LastAttackTime);
         public override int LineCount => Fights.Sum(x => x.LineCount);
         public override string Title => string.Join(", ", Fights.Select(x => x.PrimaryMob.Name));
@@ -65,7 +64,7 @@ namespace BizObjects.Battle
             // Except when it's a mob healing itself ... or healing a companion fighter...
             // Would a PC ever heal a Mob or vice versa? Maybe for a charmed pet ... but that's going to be a pain in the ass anyway
 
-            if (IsCharacterPlayerOrMerc(line.Healer) || IsCharacterPlayerOrMerc(line.Patient))
+            if (Fights.Any() && (IsCharacterPlayerOrMerc(line.Healer) || IsCharacterPlayerOrMerc(line.Patient)))
             {
                 // Apply the heal to the first active fight, or the last fight (that's inactive)
                 return Fights.FirstOrDefault(x => !x.IsFightOver)
@@ -95,6 +94,9 @@ namespace BizObjects.Battle
 
         private IFight GetAppropriateFight(Character char1, Character char2)
         {
+            if (!Fights.Any())
+                CreateNewFight();
+
             // If the primary mob isn't established yet, use the first fight
             var fight = Fights.First();
             if (IsValidFight(fight, Character.Unknown))
