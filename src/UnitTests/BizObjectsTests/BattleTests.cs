@@ -23,6 +23,17 @@ namespace BizObjectsTests
         private readonly Action<Battle, string> AddBattleLine = (battle, logLine) => battle.AddLine((dynamic)_parser.ParseLine(new LogDatum(logLine)));
 
         [TestMethod]
+        public void AddNonAttackLineToNewBattleSoSkirmishIsAdded()
+        {
+            var battle = SetupNewBattle();
+            Assert.AreEqual(0, battle.Skirmishes.Count);
+
+            AddBattleLine(battle, "[Sat Sep 07 18:52:44 2019] You are not currently assigned to an adventure.");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+        }
+
+        [TestMethod]
         public void FightThreeOfTheSameMobsPrettyMuchSameTimeWrapInOneSkirmish()
         {
             var battle = SetupNewBattle();

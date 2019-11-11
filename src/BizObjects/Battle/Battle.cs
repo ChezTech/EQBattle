@@ -40,8 +40,6 @@ namespace BizObjects.Battle
             YouAre = youAre;
             CharResolver.SetPlayer(YouAre.Name);
             _charTracker = new CharacterTracker(YouAre, CharResolver);
-
-            SetupNewFight();
         }
 
         public void AddLine(ILine line)
@@ -86,11 +84,17 @@ namespace BizObjects.Battle
 
         private bool IsNewSkirmishNeeded(ILine line)
         {
+            if (_currentSkirmish == null)
+                return true;
+
             return false;
         }
 
         private bool IsNewSkirmishNeeded(Attack line)
         {
+            if (_currentSkirmish == null)
+                return true;
+
             // If the current Skirmish has nothing in it, we don't need a new one
             // TODO: a better way to see if a skirmish 'isEmpty'
             if (!_currentSkirmish.Statistics.Lines.Any())
