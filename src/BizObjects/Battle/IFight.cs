@@ -3,10 +3,11 @@ using BizObjects.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace BizObjects.Battle
 {
-    public interface IFight
+    public interface IFight : INotifyPropertyChanged
     {
         bool IsFightOver { get; }
         IEnumerable<Fighter> Fighters { get; }
