@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:EQBattle.Views"
              mc:Ignorable="d"
              d:DesignHeight="120" d:DesignWidth="500">
-  <Grid DataContext="{Binding Fight}">
-    <ListView x:Name="lvFighters" SelectionMode="Single" ItemsSource="{Binding Fighters}">
+  <Grid>
+    <ListView x:Name="lvFighters" SelectionMode="Single" ItemsSource="{Binding FighterList}">
       <ListView.ItemContainerStyle>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -57,7 +57,7 @@
           <GridViewColumn Header="Max" Width="50">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding Offense.HitMax, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+                <TextBlock Text="{Binding Offense.Max, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>

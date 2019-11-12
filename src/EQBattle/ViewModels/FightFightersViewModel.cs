@@ -1,20 +1,79 @@
+using BizObjects.Battle;
 using Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
     public class FightFightersViewModel : PropertyChangeBase
     {
+        private ObservableCollection<FighterListItem> fighterList;
+        public ObservableCollection<FighterListItem> FighterList { get => fighterList; set => SetProperty(ref fighterList, value); }
+
         private Fight fight;
 
         public FightFightersViewModel()
         {
-            Messenger.Instance.Subscribe("OnSelectedFightChanged", x => Fight = x as Fight);
+            Messenger.Instance.Subscribe("OnSelectedFightChanged", x => NewFight(x as Fight));
         }
 
-        public Fight Fight { get => fight; set => SetProperty(ref fight, value); }
+        private void NewFight(Fight newFight)
+        {
+            if (fight != null)
+                fight.fighters.CollectionChanged -= Fighters_CollectionChanged;
+
+            fight = newFight;
+            FighterList = new ObservableCollection<FighterListItem>(ConvertFightersIntoListItems(fight.Fighters));
+
+            fight.fighters.CollectionChanged += Fighters_CollectionChanged;
+        }
+
+        private IEnumerable<FighterListItem> ConvertFightersIntoListItems(IEnumerable<Fighter> fighters)
+        {
+            var fighterItemList = fighters.Select(x => NewFLIFromFighter(x));
+            return fighterItemList;
+        }
+
+        private FighterListItem NewFLIFromFighter(Fighter fighter)
+        {
+            var fighterItem = new FighterListItem()
+            {
+                Name = fighter.Character.Name,
+                Class = "aClass", // fighter.Character.Class.Name,
+                Offense = new FighterStats()
+                {
+                    Duration = fighter.OffensiveStatistics.Duration.FighterDuration,
+                    DPS = fighter.OffensiveStatistics.PerTime.FighterDPS,
+                    DPS6 = fighter.OffensiveStatistics.PerTime.FighterDPSLastSixSeconds,
+                    HitTotal = fighter.OffensiveStatistics.Hit.Total,
+                    HitCount = fighter.OffensiveStatistics.Hit.Count,
+                    Max = fighter.OffensiveStatistics.Hit.Max,
+                    MissCount = fighter.OffensiveStatistics.Miss.Count,
+                    HealTotal = fighter.OffensiveStatistics.Heal.Total,
+                    HealCount = fighter.OffensiveStatistics.Heal.Count,
+                },
+                Defense = new FighterStats()
+                {
+                    Duration = fighter.DefensiveStatistics.Duration.FighterDuration,
+                    DPS = fighter.DefensiveStatistics.PerTime.FighterDPS,
+                    DPS6 = fighter.DefensiveStatistics.PerTime.FighterDPSLastSixSeconds,
+                    HitTotal = fighter.DefensiveStatistics.Hit.Total,
+                    HitCount = fighter.DefensiveStatistics.Hit.Count,
+                    Max = fighter.DefensiveStatistics.Hit.Max,
+                    MissCount = fighter.DefensiveStatistics.Miss.Count,
+                    HealTotal = fighter.DefensiveStatistics.Heal.Total,
+                    HealCount = fighter.DefensiveStatistics.Heal.Count,
+                },
+            };
+
+            //fighter.PropertyChanged +=
+
+            return fighterItem;
+        }
+
     }
 
     class FighterListItem : PropertyChangeBase
@@ -37,11 +96,11 @@ namespace EQBattle.ViewModels
         private string duration;
         public string Duration { get => duration; set => SetProperty(ref duration, value); }
 
-        private string dps;
-        public string DPS { get => dps; set => SetProperty(ref dps, value); }
+        private double dps;
+        public double DPS { get => dps; set => SetProperty(ref dps, value); }
 
-        private string dps6;
-        public string DPS6 { get => dps6; set => SetProperty(ref dps6, value); }
+        private double dps6;
+        public double DPS6 { get => dps6; set => SetProperty(ref dps6, value); }
 
         private int hitTotal;
         public int HitTotal { get => hitTotal; set => SetProperty(ref hitTotal, value); }
