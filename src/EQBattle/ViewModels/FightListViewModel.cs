@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
     class FightListViewModel : PropertyChangeBase
     {
         private ObservableCollection<FightListItem> fightList;
+        private readonly object _lock = new object();
 
         private Battle battle;
         private Skirmish selectedSkirmish;
@@ -24,6 +26,8 @@ namespace EQBattle.ViewModels
         {
             this.battle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
+            BindingOperations.EnableCollectionSynchronization(FightList, _lock);
+
         }
 
         private IEnumerable<FightListItem> ConvertFightsIntoListItems(IEnumerable<ISkirmish> skirmishes)
