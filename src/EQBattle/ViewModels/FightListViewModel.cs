@@ -14,8 +14,10 @@ namespace EQBattle.ViewModels
         private readonly object _lock = new object();
 
         private Battle battle;
-        private Skirmish selectedSkirmish;
+        private FightListItem selectedFight;
         private ISkirmish latestSkirmish;
+        private IFight latestFight;
+        private FightListItem latestFightListItem;
 
         public FightListViewModel()
         {
@@ -60,20 +62,24 @@ namespace EQBattle.ViewModels
 
         private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
         {
-            fightList.Add(NewFLIFromFight(fight));
+            ClearFightEvents(latestFight);
+
+            latestFight = fight;
+            latestFightListItem = NewFLIFromFight(fight);
+            fightList.Add(latestFightListItem);
+            latestFight.PropertyChanged += Fight_PropertyChanged;
         }
 
         private IEnumerable<FightListItem> ConvertFightsIntoListItems(IEnumerable<ISkirmish> skirmishes)
         {
-            IEnumerable<FightListItem> newFightList = skirmishes.SelectMany(x => x.Fights).Select(x => NewFLIFromFight(x));
+            //IEnumerable<FightListItem> newFightList = skirmishes.SelectMany(x => x.Fights).Select(x => NewFLIFromFight(x));
 
-            //ObservableCollection<FightListItem> newFightList = new ObservableCollection<FightListItem>();
-            //foreach (var skirmish in skirmishes)
-            //{
-            //    AddNewSkirmish(newFightList, skirmish);
-            //    foreach (var fight in skirmish.Fights)
-            //        AddNewFight(newFightList, fight);
-            //}
+            ObservableCollection<FightListItem> newFightList = new ObservableCollection<FightListItem>();
+            foreach (var skirmish in skirmishes)
+            {
+                foreach (var fight in skirmish.Fights)
+                    AddNewFight(newFightList, fight);
+            }
             return newFightList;
         }
 
@@ -90,6 +96,20 @@ namespace EQBattle.ViewModels
             };
         }
 
+        private void Fight_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Fight.PrimaryMob))
+                latestFightListItem.Name = latestFight.PrimaryMob.Name;
+            if (e.PropertyName == nameof(Fight.Statistics.Duration.FightDuration))
+                latestFightListItem.Duration = latestFight.Statistics.Duration.FightDuration;
+            if (e.PropertyName == nameof(Fight.PrimaryMobFighter.DefensiveStatistics.Hit.Total))
+                latestFightListItem.MobDefensiveDamage = latestFight.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
+            if (e.PropertyName == nameof(Fight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS))
+                latestFightListItem.MobOffensiveDps = latestFight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
+            //if (e.PropertyName == nameof(Fight.Zone))
+            //    latestFightListItem.Zone = latestFight.PrimaryMob.Name;
+        }
+
         private void ClearBattleEvents(Battle battle)
         {
             if (battle != null)
@@ -103,16 +123,21 @@ namespace EQBattle.ViewModels
                 skirmish.Fights.CollectionChanged -= Fights_CollectionChanged;
         }
 
-        public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
+        private void ClearFightEvents(IFight latestFight)
+        {
+            if (latestFight != null)
+                latestFight.PropertyChanged -= Fight_PropertyChanged;
+        }
+
         public ObservableCollection<FightListItem> FightList { get => fightList; set => SetProperty(ref fightList, value); }
 
-        public Skirmish SelectedSkirmish
+        public FightListItem SelectedFight
         {
-            get => selectedSkirmish;
+            get => selectedFight;
             set
             {
-                if (SetProperty(ref selectedSkirmish, value))
-                    Messenger.Instance.Publish("OnSelectedSkirmishChanged", SelectedSkirmish);
+                if (SetProperty(ref selectedFight, value))
+                    Messenger.Instance.Publish("OnSelectedFightChanged", SelectedFight?.Fight);
             }
         }
     }
