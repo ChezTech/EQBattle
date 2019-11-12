@@ -28,6 +28,8 @@ namespace BizObjects.Battle
 
         public override void AddLine(Attack line)
         {
+            base.AddLine((ILine)line);
+
             GetAppropriateFight(ref line).AddLine(line);
             Statistics.AddLine(line);
 
@@ -37,6 +39,8 @@ namespace BizObjects.Battle
 
         public override void AddLine(Heal line)
         {
+            base.AddLine((ILine)line);
+
             GetAppropriateFight(line).AddLine(line);
             Statistics.AddLine(line);
 

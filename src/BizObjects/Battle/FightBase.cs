@@ -10,6 +10,8 @@ namespace BizObjects.Battle
 {
     public abstract class FightBase : PropertyChangeBase, IFight
     {
+        public ObservableCollection<ILine> Lines { get; } = new ObservableCollection<ILine>();
+
         protected ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         private Character primaryMob = Character.Unknown;
 
@@ -24,7 +26,11 @@ namespace BizObjects.Battle
 
         public Fighter PrimaryMobFighter { get => Fighters.Where(x => x.Character == PrimaryMob).DefaultIfEmpty(new Fighter(PrimaryMob, this)).First(); }
 
-        public void AddLine(ILine line) { }
+        public virtual void AddLine(ILine line)
+        {
+            Lines.Add(line);
+        }
+
         public abstract void AddLine(Attack line);
         public abstract void AddLine(Heal line);
 
