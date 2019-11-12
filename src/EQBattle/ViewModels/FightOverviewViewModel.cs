@@ -6,12 +6,12 @@ namespace EQBattle.ViewModels
     class FightOverviewViewModel : PropertyChangeBase
     {
         private Battle battle;
-        private Skirmish skirmish;
+        private Fight fight;
 
         public FightOverviewViewModel()
         {
             Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x));
-            Messenger.Instance.Subscribe("OnSelectedSkirmishChanged", x => Skirmish = x as Skirmish);
+            Messenger.Instance.Subscribe("OnSelectedFightChanged", x => Fight = x as Fight);
         }
 
         private void NewBattle(object x)
@@ -20,6 +20,6 @@ namespace EQBattle.ViewModels
         }
 
         public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
-        public Skirmish Skirmish { get => skirmish; set => SetProperty(ref skirmish, value); }
+        public Fight Fight { get => fight; set => SetProperty(ref fight, value); }
     }
 }

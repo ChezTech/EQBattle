@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:EQBattle.Views"
              mc:Ignorable="d"
              d:DesignHeight="120" d:DesignWidth="500">
-    <Grid x:Name="gridFightText" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Skirmish}">
+    <Grid x:Name="gridFightText" HorizontalAlignment="Left" VerticalAlignment="Center" DataContext="{Binding Fight}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -21,7 +21,7 @@
         <Label x:Name="label2" Content="Hit Total:" Grid.Row="1" Grid.Column="0"/>
         <Label x:Name="label3" Content="Miss Count:" Grid.Row="2" Grid.Column="0"/>
         <Label x:Name="label4" Content="Total:" Grid.Row="3" Grid.Column="0"/>
-        <TextBox x:Name="tbMobName" Grid.Row="0" Grid.Column="1"  Text="{Binding Title, Mode=OneWay}" Margin="0,4,0,3"/>
+        <TextBox x:Name="tbMobName" Grid.Row="0" Grid.Column="1"  Text="{Binding PrimaryMob, Mode=OneWay}" Margin="0,4,0,3"/>
         <TextBox x:Name="tbOffensive" Grid.Row="1" Grid.Column="1" Text="{Binding Statistics.Hit.Total, StringFormat=N0, Mode=OneWay}" Margin="0,4,0,3"/>
         <TextBox x:Name="tbDefensive" Grid.Row="2" Grid.Column="1" Text="{Binding Statistics.Miss.Count, StringFormat=N0, Mode=OneWay}" Margin="0,4,0,3"/>
         <TextBox x:Name="tbTotal" Grid.Row="3" Grid.Column="1" Text="-1" Margin="0,4,0,3"/>
