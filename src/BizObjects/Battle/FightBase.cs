@@ -11,11 +11,13 @@ namespace BizObjects.Battle
     public abstract class FightBase : PropertyChangeBase, IFight
     {
         protected ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
+        private Character primaryMob = Character.Unknown;
+
         public IEnumerable<Fighter> Fighters => _fighters.Values;
         public FightStatistics Statistics { get; } = new FightStatistics();
 
         public abstract bool IsFightOver { get; }
-        public Character PrimaryMob { get; protected set; } = Character.Unknown;
+        public Character PrimaryMob { get => primaryMob; protected set => SetProperty(ref primaryMob, value); }
         public abstract string Title { get; }
         public abstract DateTime LastAttackTime { get; }
         public abstract int LineCount { get; }
