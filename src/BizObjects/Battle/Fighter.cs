@@ -11,8 +11,9 @@ namespace BizObjects.Battle
     public class Fighter : PropertyChangeBase
     {
         private readonly IFight _fight;
+        private Character character;
 
-        public Character Character { get; }
+        public Character Character { get => character; private set => SetProperty(ref character, value); }
         public FightStatistics OffensiveStatistics { get; }
         public FightStatistics DefensiveStatistics { get; }
 
@@ -31,11 +32,13 @@ namespace BizObjects.Battle
         public void AddOffense(ILine line)
         {
             OffensiveStatistics.AddLine(line);
+            OnPropertyChanged(nameof(OffensiveStatistics));
         }
 
         public void AddDefense(ILine line)
         {
             DefensiveStatistics.AddLine(line);
+            OnPropertyChanged(nameof(DefensiveStatistics));
         }
 
         private string DebuggerDisplay

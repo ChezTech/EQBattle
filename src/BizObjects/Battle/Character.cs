@@ -1,4 +1,5 @@
 using BizObjects.Converters;
+using Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,11 +7,13 @@ using System.Diagnostics;
 namespace BizObjects.Battle
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class Character : IEquatable<Character>
+    public class Character : PropertyChangeBase, IEquatable<Character>
     {
+        private string name;
+
         public static Character Unknown = new Character(UnknownName);
         private const string UnknownName = "Unknown";
-        public string Name { get; }
+        public string Name { get => name; private set => SetProperty(ref name, value); }
         public bool IsPet { get; }
         public bool IsMob { get; }
 
