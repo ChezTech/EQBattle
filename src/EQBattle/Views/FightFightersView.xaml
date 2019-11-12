@@ -16,9 +16,137 @@
       </ListView.ItemContainerStyle>
       <ListView.View>
         <GridView>
-          <GridViewColumn Header="Name" Width="60" DisplayMemberBinding="{Binding Character.Name}"/>
-          <GridViewColumn Header="Time" Width="60" DisplayMemberBinding="{Binding LogLine.LogTime, StringFormat=HH\\:mm\\:ss}"/>
-          <GridViewColumn Header="Message" Width="60" DisplayMemberBinding="{Binding LogLine.LogMessage}"/>
+          <GridViewColumn Header="Name" Width="150" DisplayMemberBinding="{Binding Name}"/>
+
+          <!--Offense statistics-->
+          <GridViewColumn Header="Duration" Width="60">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.Duration, StringFormat=mm\\:ss}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="DPS" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.DPS, StringFormat=N0.2}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="6s DPS" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.DPS6, StringFormat=N0.2}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Total" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.HitTotal, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Hits" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.HitCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Max" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.HitMax, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Misses" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.MissCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Healed" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.HealTotal, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Heals" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Offense.HealCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+
+          <!--Defense statistics-->
+          <GridViewColumn Header="Duration" Width="60">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.Duration, StringFormat=mm\\:ss}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="DPS" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.DPS, StringFormat=N0.2}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="6s DPS" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.DPS6, StringFormat=N0.2}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Total" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.HitTotal, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Hits" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.HitCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Max" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.HitMax, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Misses" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.MissCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Healed" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.HealTotal, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
+          <GridViewColumn Header="Heals" Width="50">
+            <GridViewColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Defense.HealCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right"/>
+              </DataTemplate>
+            </GridViewColumn.CellTemplate>
+          </GridViewColumn>
         </GridView>
       </ListView.View>
     </ListView>
