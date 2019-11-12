@@ -15,6 +15,7 @@ namespace EQBattle.ViewModels
 
         private Battle battle;
         private Skirmish selectedSkirmish;
+        private ISkirmish latestSkirmish;
 
         public FightListViewModel()
         {
@@ -24,10 +25,42 @@ namespace EQBattle.ViewModels
 
         private void NewBattle(Battle battle)
         {
+            ClearBattleEvents(this.battle);
+
             this.battle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
             BindingOperations.EnableCollectionSynchronization(FightList, _lock);
 
+            battle.Skirmishes.CollectionChanged += Skirmishes_CollectionChanged;
+            AddNewSkirmish(null, battle.Skirmishes.LastOrDefault());
+        }
+
+        private void Skirmishes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in e.NewItems)
+                AddNewSkirmish(FightList, item as ISkirmish);
+        }
+
+        private void AddNewSkirmish(ObservableCollection<FightListItem> fightList, ISkirmish skirmish)
+        {
+            ClearSkirmishEvents(latestSkirmish);
+
+            if (skirmish == null)
+                return;
+
+            latestSkirmish = skirmish;
+            latestSkirmish.Fights.CollectionChanged += Fights_CollectionChanged;
+        }
+
+        private void Fights_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in e.NewItems)
+                AddNewFight(FightList, item as IFight);
+        }
+
+        private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
+        {
+            fightList.Add(NewFLIFromFight(fight));
         }
 
         private IEnumerable<FightListItem> ConvertFightsIntoListItems(IEnumerable<ISkirmish> skirmishes)
@@ -55,6 +88,19 @@ namespace EQBattle.ViewModels
                 Zone = "TBD",
                 Fight = fight
             };
+        }
+
+        private void ClearBattleEvents(Battle battle)
+        {
+            if (battle != null)
+                battle.Skirmishes.CollectionChanged -= Skirmishes_CollectionChanged;
+            ClearSkirmishEvents(latestSkirmish);
+        }
+
+        private void ClearSkirmishEvents(ISkirmish skirmish)
+        {
+            if (skirmish != null)
+                skirmish.Fights.CollectionChanged -= Fights_CollectionChanged;
         }
 
         public Battle Battle { get => battle; set => SetProperty(ref battle, value); }
