@@ -13,7 +13,7 @@ namespace EQBattle.ViewModels
         private ObservableCollection<FightListItem> fightList;
         private readonly object _lock = new object();
 
-        private Battle battle;
+        private Battle latestBattle;
         private FightListItem selectedFight;
         private ISkirmish latestSkirmish;
         private IFight latestFight;
@@ -22,14 +22,14 @@ namespace EQBattle.ViewModels
         public FightListViewModel()
         {
             Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x as Battle));
-            Messenger.Instance.Subscribe("RefreshBattle", x => NewBattle(battle));
+            Messenger.Instance.Subscribe("RefreshBattle", x => NewBattle(latestBattle));
         }
 
         private void NewBattle(Battle battle)
         {
-            ClearBattleEvents(this.battle);
+            ClearBattleEvents(this.latestBattle);
 
-            this.battle = battle;
+            this.latestBattle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
             BindingOperations.EnableCollectionSynchronization(FightList, _lock);
 
