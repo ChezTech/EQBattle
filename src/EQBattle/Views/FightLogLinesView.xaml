@@ -16,9 +16,15 @@
         </ListView.ItemContainerStyle>
         <ListView.View>
           <GridView>
-            <GridViewColumn Header="#" Width="60" DisplayMemberBinding="{Binding LogLine.LineNumber, StringFormat=N0}" TextAlignment="Right"/>
+            <GridViewColumn Header="#" Width="60">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding LogLine.LineNumber, StringFormat=N0}" TextAlignment="Right"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
             <GridViewColumn Header="Time" Width="60" DisplayMemberBinding="{Binding LogLine.LogTime, StringFormat=HH\\:mm\\:ss}"/>
-            <GridViewColumn Header="Message" Width="60" DisplayMemberBinding="{Binding LogLine.LogMessage}"/>
+            <GridViewColumn Header="Message" DisplayMemberBinding="{Binding LogLine.LogMessage}"/>
           </GridView>
         </ListView.View>
       </ListView>
