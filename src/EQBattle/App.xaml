@@ -17,6 +17,9 @@
         <DataTemplate DataType="{x:Type vm:FightViewModel}">
             <vw:FightView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FightFightersViewModel}">
+            <vw:FightFightersView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:FightOverviewViewModel}">
             <vw:FightOverviewView/>
         </DataTemplate>

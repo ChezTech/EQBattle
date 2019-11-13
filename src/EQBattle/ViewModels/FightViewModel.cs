@@ -18,6 +18,7 @@ namespace EQBattle.ViewModels
         {
             fightTabs.Add(new FightTabItem() { Header = "Overview", Content = new FightOverviewViewModel() });
             fightTabs.Add(new FightTabItem() { Header = "Log Lines", Content = new FightLogLinesViewModel() });
+            fightTabs.Add(new FightTabItem() { Header = "Fighters", Content = new FightFightersViewModel() });
 
             SelectedTab = fightTabs[0];
         }
