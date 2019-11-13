@@ -4,6 +4,7 @@ using Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace BizObjects.Battle
@@ -15,7 +16,7 @@ namespace BizObjects.Battle
         protected ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         private Character primaryMob = Character.Unknown;
 
-        public IEnumerable<Fighter> Fighters => _fighters.Values;
+        public ObservableCollection<Fighter> Fighters => new ObservableCollection<Fighter>(_fighters.Values);
         public FightStatistics Statistics { get; } = new FightStatistics();
 
         public abstract bool IsFightOver { get; }

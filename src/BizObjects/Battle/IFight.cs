@@ -10,7 +10,7 @@ namespace BizObjects.Battle
     public interface IFight : INotifyPropertyChanged
     {
         bool IsFightOver { get; }
-        IEnumerable<Fighter> Fighters { get; }
+        ObservableCollection<Fighter> Fighters { get; }
         FightStatistics Statistics { get; }
         Character PrimaryMob { get; }
         string Title { get; }
