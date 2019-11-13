@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Windows.Data;
+using System.Collections.ObjectModel;
 
 namespace EQBattle.ViewModels
 {
@@ -23,12 +24,23 @@ namespace EQBattle.ViewModels
         private void NewFight(Fight newFight)
         {
             if (fight != null)
-                fight.fighters.CollectionChanged -= Fighters_CollectionChanged;
+                fight.Fighters.CollectionChanged -= Fighters_CollectionChanged;
 
             fight = newFight;
             FighterList = new ObservableCollection<FighterListItem>(ConvertFightersIntoListItems(fight.Fighters));
 
-            fight.fighters.CollectionChanged += Fighters_CollectionChanged;
+            fight.Fighters.CollectionChanged += Fighters_CollectionChanged;
+        }
+
+        private void Fighters_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            foreach (var item in e.NewItems)
+                AddNewFighter(FighterList, item as Fighter);
+        }
+
+        private void AddNewFighter(ObservableCollection<FighterListItem> fighterList, Fighter fighter)
+        {
+            fighterList.Add(NewFLIFromFighter(fighter));
         }
 
         private IEnumerable<FighterListItem> ConvertFightersIntoListItems(IEnumerable<Fighter> fighters)
@@ -76,7 +88,7 @@ namespace EQBattle.ViewModels
 
     }
 
-    class FighterListItem : PropertyChangeBase
+    public class FighterListItem : PropertyChangeBase
     {
         private string name;
         public string Name { get => name; set => SetProperty(ref name, value); }
@@ -91,10 +103,10 @@ namespace EQBattle.ViewModels
         public FighterStats Defense { get => defense; set => SetProperty(ref defense, value); }
     }
 
-    class FighterStats
+    public class FighterStats : PropertyChangeBase
     {
-        private string duration;
-        public string Duration { get => duration; set => SetProperty(ref duration, value); }
+        private TimeSpan duration;
+        public TimeSpan Duration { get => duration; set => SetProperty(ref duration, value); }
 
         private double dps;
         public double DPS { get => dps; set => SetProperty(ref dps, value); }
