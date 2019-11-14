@@ -51,7 +51,7 @@ namespace BizObjectsTests
         {
             var fightStats = new FightStatistics();
 
-            // First part of the fith
+            // First part of the fight
             AddFightStats(fightStats, "[Fri Apr 05 16:16:42 2019] Khadaji hit a dwarf disciple for 2 points of magic damage by Distant Strike I.");
             AddFightStats(fightStats, "[Fri Apr 05 16:16:45 2019] A dwarf disciple is pierced by YOUR thorns for 60 points of non-melee damage.");
             AddFightStats(fightStats, "[Fri Apr 05 16:16:49 2019] You kick a dwarf disciple for 3041 points of damage. (Strikethrough)");
@@ -224,8 +224,20 @@ namespace BizObjectsTests
             var fightStats = new FightStatistics();
 
             Assert.AreEqual(0, fightStats.HitPercentage);
+
             Assert.AreEqual(TimeSpan.Zero, fightStats.Duration.FightDuration);
+            Assert.AreEqual(TimeSpan.Zero, fightStats.Duration.FighterDuration);
+
             Assert.AreEqual(0.0, fightStats.PerTime.FightDPS);
+            Assert.AreEqual(0.0, fightStats.PerTime.FighterDPS);
+            Assert.AreEqual(0.0, fightStats.PerTime.FighterDPSLastSixSeconds);
+
+            Assert.AreEqual(0, fightStats.Hit.Average);
+            Assert.AreEqual(0, fightStats.Hit.Count);
+            Assert.AreEqual(0, fightStats.Hit.LastSixTotal);
+            Assert.AreEqual(0, fightStats.Hit.Max);
+            Assert.AreEqual(0, fightStats.Hit.Min);
+            Assert.AreEqual(0, fightStats.Hit.Total);
         }
     }
 }

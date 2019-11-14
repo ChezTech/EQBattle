@@ -22,9 +22,9 @@ namespace BizObjects.Statistics
                 .Sum(x => ValueFunc(x));
         }
 
-        public int Min { get => Lines.Min(x => ValueFunc(x)); }
-        public int Max { get => Lines.Max(x => ValueFunc(x)); }
-        public double Average { get => Lines.Average(x => ValueFunc(x)); }
+        public int Min { get => Lines.Any() ? Lines.Min(x => ValueFunc(x)) : 0; }
+        public int Max { get => Lines.Any() ? Lines.Max(x => ValueFunc(x)) : 0; }
+        public double Average { get => Lines.Any() ? Lines.Average(x => ValueFunc(x)) : 0; }
         public Func<T, int> ValueFunc { get; }
     }
 }
