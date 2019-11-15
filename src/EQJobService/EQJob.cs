@@ -19,6 +19,12 @@ namespace EQJobService
         public Battle Battle { get; private set; }
         public YouResolver YouAre { get; private set; }
 
+        public event Action StartReading;
+        public event Action EoFBattle;
+
+        protected virtual void OnStartReading() { StartReading?.Invoke(); }
+        protected virtual void OnEoFBattle() { EoFBattle?.Invoke(); }
+
         private CancellationTokenSource _cts;
         private Stopwatch _sw = new Stopwatch();
 
@@ -69,11 +75,16 @@ namespace EQJobService
             var parser = CreateLineParser(YouAre);
             var parserJob = new EQJobEvenMoreChannels(parser);
             parserJob.CancelSource = _cts;
-            parserJob.StartReading += () => _sw.Start();
+            parserJob.StartReading += () =>
+            {
+                OnStartReading();
+                _sw.Start();
+            };
             parserJob.EoFBattle += () =>
             {
                 _sw.Stop();
                 OnPropertyChanged(nameof(ProcessingElapsed));
+                OnEoFBattle();
             };
 
             // Start the JobProcessor, which will read from the log file continuously, parse the lines and add them to the EQBattle
