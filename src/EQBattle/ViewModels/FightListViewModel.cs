@@ -70,12 +70,17 @@ namespace EQBattle.ViewModels
             latestFightListItem = NewFLIFromFight(fight);
             fightList.Add(latestFightListItem);
 
-            // If we're on the most recent fight, move our "cursor" to this new fight to track the latest
-            if (latestFight == SelectedFight?.Fight)
-                SelectedFight = latestFightListItem;
+            TrackFight();
 
             latestFight = fight;
             latestFight.PropertyChanged += Fight_PropertyChanged;
+        }
+
+        private void TrackFight()
+        {
+            // If we're on the most recent fight, move our "cursor" to this new fight to track the latest
+            if (latestFight == SelectedFight?.Fight)
+                SelectedFight = latestFightListItem;
         }
 
         private IEnumerable<FightListItem> ConvertFightsIntoListItems(IEnumerable<ISkirmish> skirmishes)
