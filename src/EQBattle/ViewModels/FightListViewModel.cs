@@ -1,5 +1,6 @@
 ﻿using BizObjects.Battle;
 using Core;
+using EQJobService;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,16 +14,50 @@ namespace EQBattle.ViewModels
         private ObservableCollection<FightListItem> fightList;
         private readonly object _lock = new object();
 
+        private EQJob latestEQJob;
         private Battle latestBattle;
         private FightListItem selectedFight;
         private ISkirmish latestSkirmish;
         private IFight latestFight;
         private FightListItem latestFightListItem;
 
+        private bool isFileLoading = false;
+
         public FightListViewModel()
         {
+            Messenger.Instance.Subscribe("NewEQJob", x => NewEQJob(x as EQJob));
             Messenger.Instance.Subscribe("NewBattle", x => NewBattle(x as Battle));
             Messenger.Instance.Subscribe("RefreshBattle", x => NewBattle(latestBattle));
+        }
+
+        private void NewEQJob(EQJob eqJob)
+        {
+            ClearEQJobEvents(latestEQJob);
+
+            latestEQJob = eqJob;
+
+            latestEQJob.StartReading += LatestEQJob_StartReading;
+            latestEQJob.EoFBattle += LatestEQJob_EoFBattle;
+        }
+
+        private void LatestEQJob_StartReading()
+        {
+            isFileLoading = true;
+        }
+
+        private void LatestEQJob_EoFBattle()
+        {
+            isFileLoading = false;
+            TrackFight();
+        }
+
+        private void ClearEQJobEvents(EQJob eqJob)
+        {
+            if (eqJob == null)
+                return;
+
+            latestEQJob.StartReading -= LatestEQJob_StartReading;
+            latestEQJob.EoFBattle -= LatestEQJob_EoFBattle;
         }
 
         private void NewBattle(Battle battle)
@@ -78,8 +113,15 @@ namespace EQBattle.ViewModels
 
         private void TrackFight()
         {
+            // If we're still loading the file, don't track it (it slows down the load by updating all the UI with each selection)
+            if (isFileLoading)
+                return;
+
+            if (SelectedFight == null)
+                SelectedFight = latestFightListItem;
+
             // If we're on the most recent fight, move our "cursor" to this new fight to track the latest
-            if (latestFight == SelectedFight?.Fight)
+            else if (latestFight == SelectedFight.Fight)
                 SelectedFight = latestFightListItem;
         }
 
