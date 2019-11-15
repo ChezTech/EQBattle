@@ -27,9 +27,12 @@ namespace EQBattle.ViewModels
 
         private void NewBattle(Battle battle)
         {
-            ClearBattleEvents(this.latestBattle);
+            ClearBattleEvents(latestBattle);
+            latestSkirmish = null;
+            latestFight = null;
+            latestFightListItem = null;
 
-            this.latestBattle = battle;
+            latestBattle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
             BindingOperations.EnableCollectionSynchronization(FightList, _lock);
 
@@ -120,6 +123,7 @@ namespace EQBattle.ViewModels
             if (battle != null)
                 battle.Skirmishes.CollectionChanged -= Skirmishes_CollectionChanged;
             ClearSkirmishEvents(latestSkirmish);
+            ClearFightEvents(latestFight);
         }
 
         private void ClearSkirmishEvents(ISkirmish skirmish)
@@ -128,10 +132,10 @@ namespace EQBattle.ViewModels
                 skirmish.Fights.CollectionChanged -= Fights_CollectionChanged;
         }
 
-        private void ClearFightEvents(IFight latestFight)
+        private void ClearFightEvents(IFight fight)
         {
-            if (latestFight != null)
-                latestFight.PropertyChanged -= Fight_PropertyChanged;
+            if (fight != null)
+                fight.PropertyChanged -= Fight_PropertyChanged;
         }
 
         public ObservableCollection<FightListItem> FightList { get => fightList; set => SetProperty(ref fightList, value); }
