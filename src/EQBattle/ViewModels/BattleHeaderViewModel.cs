@@ -23,8 +23,8 @@ namespace EQBattle.ViewModels
             var title = "Open Everquest log file";
             var fileName = UIService.Instance.GetFileNameFromOpenFileDialog(initDir, title: title);
 
-            // Raise Message ....
-            Messenger.Instance.Publish("OpenFile", fileName);
+            if (fileName != null)
+                Messenger.Instance.Publish("OpenFile", fileName);
         }
 
         private void RunFileRead()
