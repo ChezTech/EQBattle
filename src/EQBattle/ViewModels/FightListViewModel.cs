@@ -100,6 +100,7 @@ namespace EQBattle.ViewModels
 
         private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
         {
+            UpdateFightItemFromFight(latestFightListItem);
             ClearFightEvents(latestFight);
 
             latestFightListItem = NewFLIFromFight(fight);
@@ -163,6 +164,18 @@ namespace EQBattle.ViewModels
                 latestFightListItem.MobOffensiveDps = latestFight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
             //if (e.PropertyName == nameof(Fight.Zone))
             //    latestFightListItem.Zone = latestFight.PrimaryMob.Name;
+        }
+
+        private void UpdateFightItemFromFight(FightListItem fightItem)
+        {
+            if (fightItem == null)
+                return;
+
+            fightItem.Name = fightItem.Fight.PrimaryMob.Name;
+            fightItem.Duration = fightItem.Fight.Statistics.Duration.FightDuration;
+            fightItem.MobDefensiveDamage = fightItem.Fight.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
+            fightItem.MobOffensiveDps = fightItem.Fight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
+            fightItem.Zone = "TBD";
         }
 
         private void ClearBattleEvents(Battle battle)
