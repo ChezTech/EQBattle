@@ -27,6 +27,13 @@ namespace EQBattle.ViewModels
                 fight.Fighters.CollectionChanged -= Fighters_CollectionChanged;
 
             fight = newFight;
+
+            if (fight == null)
+            {
+                FighterList = new ObservableCollection<FighterListItem>();
+                return;
+            }
+
             FighterList = new ObservableCollection<FighterListItem>(ConvertFightersIntoListItems(fight.Fighters));
 
             fight.Fighters.CollectionChanged += Fighters_CollectionChanged;
