@@ -22,6 +22,7 @@ namespace EQBattle.ViewModels
         private FightListItem latestFightListItem;
 
         private bool isFileLoading = false;
+        private bool newBattleSelectItemYet = false;
 
         public FightListViewModel()
         {
@@ -70,6 +71,7 @@ namespace EQBattle.ViewModels
             latestSkirmish = null;
             latestFight = null;
             latestFightListItem = null;
+            newBattleSelectItemYet = false;
 
             latestBattle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
@@ -117,16 +119,19 @@ namespace EQBattle.ViewModels
 
         private void TrackFight()
         {
+            // We want to select the first item if we're starting to load a file
+            if (SelectedFight == null)
+                SelectedFight = latestFightListItem;
+
             // If we're still loading the file, don't track it (it slows down the load by updating all the UI with each selection)
             if (isFileLoading)
                 return;
 
-            if (SelectedFight == null)
+            // If we're on the most recent fight (or we haven't selected an item yet), move our "cursor" to this new fight to track the latest
+            else if (latestFight == SelectedFight.Fight || !newBattleSelectItemYet)
                 SelectedFight = latestFightListItem;
 
-            // If we're on the most recent fight, move our "cursor" to this new fight to track the latest
-            else if (latestFight == SelectedFight.Fight)
-                SelectedFight = latestFightListItem;
+            newBattleSelectItemYet = true;
         }
 
         private IEnumerable<FightListItem> ConvertFightsIntoListItems(IEnumerable<ISkirmish> skirmishes)
