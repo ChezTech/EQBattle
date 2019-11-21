@@ -48,6 +48,10 @@ namespace EQBattle.ViewModels
         private void LatestEQJob_EoFBattle()
         {
             isFileLoading = false;
+
+            // We've finished reading the EQ Log file (for now), give an update to teh GUI
+            UpdateFightItemFromFight(latestFightListItem);
+
             TrackFight();
         }
 
@@ -100,8 +104,8 @@ namespace EQBattle.ViewModels
 
         private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
         {
+            // Before we move on to the next fight, give one last update to the current fight so the GUI can update itself
             UpdateFightItemFromFight(latestFightListItem);
-            ClearFightEvents(latestFight);
 
             latestFightListItem = NewFLIFromFight(fight);
             fightList.Add(latestFightListItem);
@@ -109,7 +113,6 @@ namespace EQBattle.ViewModels
             TrackFight();
 
             latestFight = fight;
-            latestFight.PropertyChanged += Fight_PropertyChanged;
         }
 
         private void TrackFight()
@@ -149,12 +152,6 @@ namespace EQBattle.ViewModels
             return fli;
         }
 
-        private void Fight_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            // Doesn't matter which property was changed, update them all. The SetProperty() in FLI will take care of not updating if the value is the same
-            UpdateFightItemFromFight(latestFightListItem);
-        }
-
         private static void UpdateFightItemFromFight(FightListItem fightItem)
         {
             if (fightItem == null)
@@ -172,19 +169,12 @@ namespace EQBattle.ViewModels
             if (battle != null)
                 battle.Skirmishes.CollectionChanged -= Skirmishes_CollectionChanged;
             ClearSkirmishEvents(latestSkirmish);
-            ClearFightEvents(latestFight);
         }
 
         private void ClearSkirmishEvents(ISkirmish skirmish)
         {
             if (skirmish != null)
                 skirmish.Fights.CollectionChanged -= Fights_CollectionChanged;
-        }
-
-        private void ClearFightEvents(IFight fight)
-        {
-            if (fight != null)
-                fight.PropertyChanged -= Fight_PropertyChanged;
         }
 
         public ObservableCollection<FightListItem> FightList { get => fightList; set => SetProperty(ref fightList, value); }
