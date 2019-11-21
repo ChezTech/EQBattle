@@ -20,7 +20,17 @@ namespace BizObjects.Battle
         public FightStatistics Statistics { get; } = new FightStatistics();
 
         public abstract bool IsFightOver { get; }
-        public Character PrimaryMob { get => primaryMob; protected set => SetProperty(ref primaryMob, value); }
+        
+        public Character PrimaryMob
+        {
+            get => primaryMob;
+            protected set
+            {
+                if (SetProperty(ref primaryMob, value))
+                    OnPropertyChanged(nameof(PrimaryMobFighter));
+            }
+        }
+
         public abstract string Title { get; }
         public abstract DateTime LastAttackTime { get; }
         public abstract int LineCount { get; }
