@@ -141,32 +141,21 @@ namespace EQBattle.ViewModels
 
         private static FightListItem NewFLIFromFight(IFight fight)
         {
-            return new FightListItem()
+            var fli = new FightListItem()
             {
-                Name = fight.PrimaryMob.Name,
-                Duration = fight.Statistics.Duration.FightDuration,
-                MobDefensiveDamage = fight.PrimaryMobFighter.DefensiveStatistics.Hit.Total,
-                MobOffensiveDps = fight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS,
-                Zone = "TBD",
                 Fight = fight
             };
+            UpdateFightItemFromFight(fli);
+            return fli;
         }
 
         private void Fight_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Fight.PrimaryMob))
-                latestFightListItem.Name = latestFight.PrimaryMob.Name;
-            if (e.PropertyName == nameof(Fight.Statistics.Duration.FightDuration))
-                latestFightListItem.Duration = latestFight.Statistics.Duration.FightDuration;
-            if (e.PropertyName == nameof(Fight.PrimaryMobFighter.DefensiveStatistics.Hit.Total))
-                latestFightListItem.MobDefensiveDamage = latestFight.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
-            if (e.PropertyName == nameof(Fight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS))
-                latestFightListItem.MobOffensiveDps = latestFight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
-            //if (e.PropertyName == nameof(Fight.Zone))
-            //    latestFightListItem.Zone = latestFight.PrimaryMob.Name;
+            // Doesn't matter which property was changed, update them all. The SetProperty() in FLI will take care of not updating if the value is the same
+            UpdateFightItemFromFight(latestFightListItem);
         }
 
-        private void UpdateFightItemFromFight(FightListItem fightItem)
+        private static void UpdateFightItemFromFight(FightListItem fightItem)
         {
             if (fightItem == null)
                 return;
