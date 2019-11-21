@@ -35,6 +35,9 @@ namespace BizObjects.Battle
 
             AddFighterLine(line.Attacker, f => f.AddOffense(line));
             AddFighterLine(line.Defender, f => f.AddDefense(line));
+
+            // A bit of a cop out. We're just saying that the entire Skirmish has changed with each new line
+            OnPropertyChanged(nameof(Skirmish));
         }
 
         public override void AddLine(Heal line)
@@ -46,6 +49,9 @@ namespace BizObjects.Battle
 
             AddFighterLine(line.Healer, f => f.AddOffense(line));
             AddFighterLine(line.Patient, f => f.AddDefense(line));
+
+            // A bit of a cop out. We're just saying that the entire Skirmish has changed with each new line
+            OnPropertyChanged(nameof(Skirmish));
         }
 
         // This is the function we'll use to see if a fight is a valid match (mob match and fight not over)

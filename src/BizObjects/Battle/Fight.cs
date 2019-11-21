@@ -53,6 +53,9 @@ namespace BizObjects.Battle
             AddFighterLine(line.Defender, f => f.AddDefense(line));
 
             DeterminePrimaryMob(line);
+
+            // A bit of a cop out. We're just saying that the entire Fight has changed with each new line
+            OnPropertyChanged(nameof(Fight));
         }
 
         public override void AddLine(Heal line)
@@ -62,6 +65,9 @@ namespace BizObjects.Battle
 
             AddFighterLine(line.Healer, f => f.AddOffense(line));
             AddFighterLine(line.Patient, f => f.AddDefense(line));
+
+            // A bit of a cop out. We're just saying that the entire Fight has changed with each new line
+            OnPropertyChanged(nameof(Fight));
         }
 
         // public void AddLine(Zone line) { }
