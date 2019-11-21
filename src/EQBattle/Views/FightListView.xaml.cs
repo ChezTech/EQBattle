@@ -22,5 +22,15 @@ namespace EQBattle.Views
         {
             InitializeComponent();
         }
+
+        private void lvFights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count < 1)
+                return;
+
+            // We only select one item at a time. When we set it from the code, we need to ensure the item is scrolled into view
+            // This seems like a View responsibility, not necessarily a ViewModel's. I'm not entirely sure, but it is a lot easier here.
+            lvFights.ScrollIntoView(e.AddedItems[0]);
+        }
     }
 }
