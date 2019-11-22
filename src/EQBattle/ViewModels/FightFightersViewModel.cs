@@ -1,11 +1,9 @@
 using BizObjects.Battle;
-using Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
+using BizObjects.Statistics;
 
 namespace EQBattle.ViewModels
 {
@@ -35,7 +33,7 @@ namespace EQBattle.ViewModels
                 return;
             }
 
-            FighterList = new ObservableCollection<FighterListItem>(ConvertFightersIntoListItems(fight.Fighters));
+            FighterList = new ObservableCollection<FighterListItem>(fight.Fighters.Select(x => new FighterListItem(x)));
             BindingOperations.EnableCollectionSynchronization(FighterList, _lock);
 
             fight.Fighters.CollectionChanged += Fighters_CollectionChanged;
@@ -53,60 +51,16 @@ namespace EQBattle.ViewModels
             // I thought that perhaps the collection wasn't created on the UI thread and wrapped it in the RunOnUIThread() call, but that didn't help either.
             // So, not ideal, but this does the trick.
 
-            var fli = NewFLIFromFighter(fighter);
+            var fli = new FighterListItem(fighter);
 
             RunOnUIThread(() =>
             {
                 fighterList.Add(fli);
             });
         }
-
-        private IEnumerable<FighterListItem> ConvertFightersIntoListItems(IEnumerable<Fighter> fighters)
-        {
-            var fighterItemList = fighters.Select(x => NewFLIFromFighter(x));
-            return fighterItemList;
-        }
-
-        private FighterListItem NewFLIFromFighter(Fighter fighter)
-        {
-            var fighterItem = new FighterListItem()
-            {
-                Name = fighter.Character.Name,
-                Class = "aClass", // fighter.Character.Class.Name,
-                Offense = new FighterStats()
-                {
-                    Duration = fighter.OffensiveStatistics.Duration.FighterDuration,
-                    DPS = fighter.OffensiveStatistics.PerTime.FighterDPS,
-                    DPS6 = fighter.OffensiveStatistics.PerTime.FighterDPSLastSixSeconds,
-                    HitTotal = fighter.OffensiveStatistics.Hit.Total,
-                    HitCount = fighter.OffensiveStatistics.Hit.Count,
-                    Max = fighter.OffensiveStatistics.Hit.Max,
-                    MissCount = fighter.OffensiveStatistics.Miss.Count,
-                    HealTotal = fighter.OffensiveStatistics.Heal.Total,
-                    HealCount = fighter.OffensiveStatistics.Heal.Count,
-                },
-                Defense = new FighterStats()
-                {
-                    Duration = fighter.DefensiveStatistics.Duration.FighterDuration,
-                    DPS = fighter.DefensiveStatistics.PerTime.FighterDPS,
-                    DPS6 = fighter.DefensiveStatistics.PerTime.FighterDPSLastSixSeconds,
-                    HitTotal = fighter.DefensiveStatistics.Hit.Total,
-                    HitCount = fighter.DefensiveStatistics.Hit.Count,
-                    Max = fighter.DefensiveStatistics.Hit.Max,
-                    MissCount = fighter.DefensiveStatistics.Miss.Count,
-                    HealTotal = fighter.DefensiveStatistics.Heal.Total,
-                    HealCount = fighter.DefensiveStatistics.Heal.Count,
-                },
-            };
-
-            //fighter.PropertyChanged +=
-
-            return fighterItem;
-        }
-
     }
 
-    public class FighterListItem : PropertyChangeBase
+    public class FighterListItem : ModelListItem<Fighter>
     {
         private string name;
         public string Name { get => name; set => SetProperty(ref name, value); }
@@ -119,9 +73,24 @@ namespace EQBattle.ViewModels
 
         private FighterStats defense;
         public FighterStats Defense { get => defense; set => SetProperty(ref defense, value); }
+
+        public FighterListItem(Fighter fighter) : base(fighter)
+        {
+            Offense = new FighterStats(Model.OffensiveStatistics);
+            Defense = new FighterStats(Model.DefensiveStatistics);
+            Refresh();
+        }
+
+        public override void Refresh()
+        {
+            Name = Model.Character.Name;
+            Class = "aClass"; // Model.Character.Class.Name;
+            Offense.Refresh();
+            Defense.Refresh();
+        }
     }
 
-    public class FighterStats : PropertyChangeBase
+    public class FighterStats : ModelListItem<FightStatistics>
     {
         private TimeSpan duration;
         public TimeSpan Duration { get => duration; set => SetProperty(ref duration, value); }
@@ -149,5 +118,24 @@ namespace EQBattle.ViewModels
 
         private int healCount;
         public int HealCount { get => healCount; set => SetProperty(ref healCount, value); }
+
+        public FighterStats(FightStatistics stats) : base(stats)
+        {
+            Refresh();
+        }
+
+        public override void Refresh()
+        {
+            Duration = Model.Duration.FighterDuration;
+            DPS = Model.PerTime.FighterDPS;
+            DPS6 = Model.PerTime.FighterDPSLastSixSeconds;
+            HitTotal = Model.Hit.Total;
+            HitCount = Model.Hit.Count;
+            Max = Model.Hit.Max;
+            MissCount = Model.Miss.Count;
+            HealTotal = Model.Heal.Total;
+            HealCount = Model.Heal.Count;
+        }
+
     }
 }

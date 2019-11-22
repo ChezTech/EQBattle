@@ -50,8 +50,8 @@ namespace EQBattle.ViewModels
         {
             isFileLoading = false;
 
-            // We've finished reading the EQ Log file (for now), give an update to teh GUI
-            UpdateFightItemFromFight(latestFightListItem);
+            // We've finished reading the EQ Log file (for now), give an update to the GUI
+            latestFightListItem?.Refresh();
 
             TrackFight();
         }
@@ -71,7 +71,7 @@ namespace EQBattle.ViewModels
             latestSkirmish = null;
             latestFight = null;
             latestFightListItem = null;
-            newBattleSelectItemYet = false;
+            newBattleSelectItemYet = true;
 
             latestBattle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
@@ -107,9 +107,9 @@ namespace EQBattle.ViewModels
         private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
         {
             // Before we move on to the next fight, give one last update to the current fight so the GUI can update itself
-            UpdateFightItemFromFight(latestFightListItem);
+            latestFightListItem?.Refresh();
 
-            latestFightListItem = NewFLIFromFight(fight);
+            latestFightListItem = new FightListItem(fight);
             fightList.Add(latestFightListItem);
 
             TrackFight();
@@ -128,7 +128,7 @@ namespace EQBattle.ViewModels
                 return;
 
             // If we're on the most recent fight (or we haven't selected an item yet), move our "cursor" to this new fight to track the latest
-            else if (latestFight == SelectedFight.Fight || !newBattleSelectItemYet)
+            else if (latestFight == SelectedFight.Model || !newBattleSelectItemYet)
                 SelectedFight = latestFightListItem;
 
             newBattleSelectItemYet = true;
@@ -145,28 +145,6 @@ namespace EQBattle.ViewModels
                     AddNewFight(newFightList, fight);
             }
             return newFightList;
-        }
-
-        private static FightListItem NewFLIFromFight(IFight fight)
-        {
-            var fli = new FightListItem()
-            {
-                Fight = fight
-            };
-            UpdateFightItemFromFight(fli);
-            return fli;
-        }
-
-        private static void UpdateFightItemFromFight(FightListItem fightItem)
-        {
-            if (fightItem == null)
-                return;
-
-            fightItem.Name = fightItem.Fight.PrimaryMob.Name;
-            fightItem.Duration = fightItem.Fight.Statistics.Duration.FightDuration;
-            fightItem.MobDefensiveDamage = fightItem.Fight.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
-            fightItem.MobOffensiveDps = fightItem.Fight.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
-            fightItem.Zone = "TBD";
         }
 
         private void ClearBattleEvents(Battle battle)
@@ -190,25 +168,38 @@ namespace EQBattle.ViewModels
             set
             {
                 if (SetProperty(ref selectedFight, value))
-                    Messenger.Instance.Publish("OnSelectedFightChanged", SelectedFight?.Fight);
+                    Messenger.Instance.Publish("OnSelectedFightChanged", SelectedFight?.Model);
             }
         }
     }
 
-    class FightListItem : PropertyChangeBase
+    class FightListItem : ModelListItem<IFight>
     {
         private string name;
         private int mobDefensiveDamage;
         private double mobOffensiveDps;
         private TimeSpan duration;
         private string zone;
-        private IFight fight;
 
         public string Name { get => name; set => SetProperty(ref name, value); }
         public int MobDefensiveDamage { get => mobDefensiveDamage; set => SetProperty(ref mobDefensiveDamage, value); }
         public double MobOffensiveDps { get => mobOffensiveDps; set => SetProperty(ref mobOffensiveDps, value); }
         public TimeSpan Duration { get => duration; set => SetProperty(ref duration, value); }
         public string Zone { get => zone; set => SetProperty(ref zone, value); }
-        public IFight Fight { get => fight; set => SetProperty(ref fight, value); }
+
+        public FightListItem(IFight model) : base(model)
+        {
+            Refresh();
+        }
+
+        public override void Refresh()
+        {
+            Name = Model.PrimaryMob.Name;
+            Duration = Model.Statistics.Duration.FightDuration;
+            MobDefensiveDamage = Model.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
+            MobOffensiveDps = Model.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
+            Zone = "TBD";
+
+        }
     }
 }
