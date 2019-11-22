@@ -16,7 +16,7 @@ namespace BizObjects.Battle
         protected ConcurrentDictionary<Character, Fighter> _fighters = new ConcurrentDictionary<Character, Fighter>();
         private Character primaryMob = Character.Unknown;
 
-        public ObservableCollection<Fighter> Fighters => new ObservableCollection<Fighter>(_fighters.Values);
+        public ObservableCollection<Fighter> Fighters { get; } = new ObservableCollection<Fighter>();
         public FightStatistics Statistics { get; } = new FightStatistics();
 
         public abstract bool IsFightOver { get; }
@@ -51,7 +51,12 @@ namespace BizObjects.Battle
         }
         protected void AddFighterLine(Character fighterChar, Action<Fighter> addLine)
         {
-            var fighter = _fighters.GetOrAdd(fighterChar, k => new Fighter(fighterChar, this));
+            var fighter = _fighters.GetOrAdd(fighterChar, k =>
+            {
+                var newFighter = new Fighter(fighterChar, this);
+                Fighters.Add(newFighter);
+                return newFighter;
+            });
             addLine(fighter);
         }
     }
