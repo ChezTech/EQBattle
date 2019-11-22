@@ -9,10 +9,11 @@ using System.Collections.ObjectModel;
 
 namespace EQBattle.ViewModels
 {
-    public class FightFightersViewModel : PropertyChangeBase
+    public class FightFightersViewModel : ViewModelBase
     {
         private ObservableCollection<FighterListItem> fighterList;
         public ObservableCollection<FighterListItem> FighterList { get => fighterList; set => SetProperty(ref fighterList, value); }
+        private readonly object _lock = new object();
 
         private Fight fight;
 
@@ -35,6 +36,7 @@ namespace EQBattle.ViewModels
             }
 
             FighterList = new ObservableCollection<FighterListItem>(ConvertFightersIntoListItems(fight.Fighters));
+            BindingOperations.EnableCollectionSynchronization(FighterList, _lock);
 
             fight.Fighters.CollectionChanged += Fighters_CollectionChanged;
         }
@@ -47,7 +49,16 @@ namespace EQBattle.ViewModels
 
         private void AddNewFighter(ObservableCollection<FighterListItem> fighterList, Fighter fighter)
         {
-            fighterList.Add(NewFLIFromFighter(fighter));
+            // Not sure why the EnableCollectionSynchronization() doesn't help when this collection is created.
+            // I thought that perhaps the collection wasn't created on the UI thread and wrapped it in the RunOnUIThread() call, but that didn't help either.
+            // So, not ideal, but this does the trick.
+
+            var fli = NewFLIFromFighter(fighter);
+
+            RunOnUIThread(() =>
+            {
+                fighterList.Add(fli);
+            });
         }
 
         private IEnumerable<FighterListItem> ConvertFightersIntoListItems(IEnumerable<Fighter> fighters)
