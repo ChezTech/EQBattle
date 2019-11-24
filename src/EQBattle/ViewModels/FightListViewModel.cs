@@ -71,7 +71,7 @@ namespace EQBattle.ViewModels
             latestSkirmish = null;
             latestFight = null;
             latestFightListItem = null;
-            newBattleSelectItemYet = true;
+            newBattleSelectItemYet = false;
 
             latestBattle = battle;
             FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
