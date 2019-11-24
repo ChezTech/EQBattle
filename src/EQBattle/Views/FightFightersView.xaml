@@ -6,8 +6,21 @@
              xmlns:local="clr-namespace:EQBattle.Views"
              mc:Ignorable="d"
              d:DesignHeight="120" d:DesignWidth="800">
+
+  <UserControl.Resources>
+    <Style x:Key="Offense" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="ForestGreen" />
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+    <Style x:Key="Defense" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="IndianRed" />
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+  </UserControl.Resources>
+
   <Grid>
     <ListView x:Name="lvFighters" SelectionMode="Single" ItemsSource="{Binding FighterList}">
+
       <ListView.ItemContainerStyle>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -16,7 +29,7 @@
       </ListView.ItemContainerStyle>
       <ListView.View>
         <GridView>
-          
+
           <GridViewColumn Header="Name" Width="150">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
@@ -33,96 +46,96 @@
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.Duration, StringFormat=mm\\:ss}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.Duration, StringFormat=mm\\:ss}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.Duration, StringFormat=mm\\:ss}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.Duration, StringFormat=mm\\:ss}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="DPS" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.DPS, StringFormat=N2}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.DPS, StringFormat=N2}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.DPS, StringFormat=N2}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.DPS, StringFormat=N2}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="6s DPS" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.DPS6, StringFormat=N2}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.DPS6, StringFormat=N2}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.DPS6, StringFormat=N2}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.DPS6, StringFormat=N2}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Total" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.HitTotal, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.HitTotal, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.HitTotal, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.HitTotal, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Hits" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.HitCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.HitCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.HitCount, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.HitCount, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Max" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.Max, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.Max, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.Max, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.Max, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Misses" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.MissCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.MissCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.MissCount, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.MissCount, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Healed" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.HealTotal, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.HealTotal, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.HealTotal, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.HealTotal, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
           </GridViewColumn>
-          
+
           <GridViewColumn Header="Heals" Width="70">
             <GridViewColumn.CellTemplate>
               <DataTemplate>
                 <StackPanel>
-                  <TextBlock Text="{Binding Offense.HealCount, StringFormat=N0}" Foreground="Green" TextAlignment="Right" />
-                  <TextBlock Text="{Binding Defense.HealCount, StringFormat=N0}" Foreground="Red" TextAlignment="Right" />
+                  <TextBlock Text="{Binding Offense.HealCount, StringFormat=N0}" Style="{StaticResource Offense}" />
+                  <TextBlock Text="{Binding Defense.HealCount, StringFormat=N0}" Style="{StaticResource Defense}" />
                 </StackPanel>
               </DataTemplate>
             </GridViewColumn.CellTemplate>
