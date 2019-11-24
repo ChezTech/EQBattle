@@ -17,6 +17,13 @@ namespace EQBattle.ViewModels
 
         public FightFightersViewModel()
         {
+            FighterList = new ObservableCollection<FighterListItem>();
+            StartDispatchTimer(250, () =>
+            {
+                foreach (var fli in FighterList)
+                    fli.Refresh();
+            });
+
             Messenger.Instance.Subscribe("OnSelectedFightChanged", x => NewFight(x as Fight));
         }
 

@@ -7,9 +7,8 @@ using System.Windows.Threading;
 
 namespace EQBattle.ViewModels
 {
-    class BattleFooterViewModel : PropertyChangeBase
+    class BattleFooterViewModel : ViewModelBase
     {
-        private readonly DispatcherTimer refreshTimer;
         private EQJob eqJob;
         private Battle battle;
 
@@ -18,10 +17,11 @@ namespace EQBattle.ViewModels
             // Update the Footer view even small interval to refresh properties from the EQJob (elapsed time, number of skirmishes)
             // Elapsed property doesn't have a event or INotifyPropertyChanged going on for it (doesn't really make sense)
             // So, just poll (instead of push) the property update
-            refreshTimer = new DispatcherTimer();
-            refreshTimer.Interval = new TimeSpan(0, 0, 0, 0, 250);
-            refreshTimer.Tick += (s, e) => Refresh();
-            refreshTimer.Start();
+            StartDispatchTimer(250, () =>
+            {
+                OnPropertyChanged(nameof(Elapsed));
+                OnPropertyChanged(nameof(SkirmishCount));
+            });
 
             Messenger.Instance.Subscribe("NewEQJob", x =>
             {
@@ -35,11 +35,5 @@ namespace EQBattle.ViewModels
         public string FileName => Path.GetFileName(eqJob?.FileName);
         public TimeSpan Elapsed => eqJob?.ProcessingElapsed ?? TimeSpan.Zero;
         public int SkirmishCount => battle?.Skirmishes.Count ?? 0;
-
-        public void Refresh()
-        {
-            OnPropertyChanged(nameof(Elapsed));
-            OnPropertyChanged(nameof(SkirmishCount));
-        }
     }
 }
