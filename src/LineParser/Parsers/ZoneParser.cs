@@ -9,7 +9,7 @@ namespace LineParser.Parsers
 {
     public class ZoneParser : IParser
     {
-        private readonly Regex RxZone = new Regex("You have entered(?! the) (.+).", RegexOptions.Compiled); // https://regex101.com/r/ra7H0n/1/
+        private readonly Regex RxZone = new Regex("You have entered(?! the| an) (.+).", RegexOptions.Compiled); // https://regex101.com/r/ra7H0n/2
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
         {
