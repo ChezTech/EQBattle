@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using BizObjects.Battle;
-using LineParser;
-using LineParser.Parsers;
+using BizObjects.Lines;
 using LogObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -289,6 +286,41 @@ namespace BizObjectsTests
             Assert.AreEqual(1, skirmish1.Fights.Count);
             VerifySkirmishStats(skirmish1, 4366, 0, 0, 0);
             VerifyFightStatistics("a cliknar adept", skirmish1, 4366, 0, 0, 0);
+        }
+
+        [TestMethod]
+        public void EnsureLinesToUnknownZone()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Fri Apr 26 09:26:27 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)");
+            AddBattleLine(battle, "[Fri Apr 26 09:26:28 2019] You are covered in crystals of rime.  You have taken 10 points of damage.");
+
+            Assert.AreEqual(Zone.Unknown, battle.CurrentZone);
+            Assert.AreEqual(1, battle.ZoneLineMap.Keys.Count);
+            Assert.IsTrue(battle.ZoneLineMap.ContainsKey(Zone.Unknown));
+            Assert.AreEqual(2, battle.ZoneLineMap[Zone.Unknown].Count);
+        }
+
+        [TestMethod]
+        public void EnsureLinesToAppropriateZone()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Fri Apr 26 09:26:27 2019] You hit a cliknar adept for 1180 points of chromatic damage by Lynx Maw. (Critical)");
+            AddBattleLine(battle, "[Fri Apr 26 09:26:28 2019] You are covered in crystals of rime.  You have taken 10 points of damage.");
+            AddBattleLine(battle, "[Sun Sep 15 08:43:52 2019] You have entered Argath, Bastion of Illdaera.");
+            AddBattleLine(battle, "[Sun Sep 15 09:02:28 2019] You hit living blades for 2 points of magic damage by Distant Strike I.");
+            AddBattleLine(battle, "[Sun Sep 15 09:02:31 2019] Living blades is pierced by YOUR thorns for 855 points of non-melee damage.");
+
+            Assert.AreEqual("Argath, Bastion of Illdaera", battle.CurrentZone.Name);
+            Assert.AreEqual(2, battle.ZoneLineMap.Keys.Count);
+            Assert.IsTrue(battle.ZoneLineMap.ContainsKey(Zone.Unknown));
+            Assert.AreEqual(2, battle.ZoneLineMap[Zone.Unknown].Count);
+
+            Assert.IsTrue(battle.ZoneLineMap.Keys.Any(z => z.Name == "Argath, Bastion of Illdaera"));
+            var key = battle.ZoneLineMap.Keys.First(z => z.Name == "Argath, Bastion of Illdaera");
+            Assert.AreEqual(3, battle.ZoneLineMap[key].Count);
         }
 
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)

@@ -13,6 +13,7 @@ namespace BizObjectsTests
         private readonly IParser _healParser = new HealParser(YouAre);
         private readonly IParser _killParser = new KillParser(YouAre);
         private readonly IParser _whoParser = new WhoParser(YouAre);
+        private readonly IParser _zoneParser = new ZoneParser();
 
         public ParserTestBase()
         {
@@ -21,6 +22,7 @@ namespace BizObjectsTests
             _parser.AddParser(_healParser, null);
             _parser.AddParser(_killParser, null);
             _parser.AddParser(_whoParser, null);
+            _parser.AddParser(_zoneParser, null);
         }
     }
 }

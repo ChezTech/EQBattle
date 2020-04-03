@@ -35,6 +35,9 @@ namespace BizObjects.Battle
         public int RawLineCount = 0;
         public IEnumerable<Character> Fighters { get => Skirmishes.SelectMany(x => x.Fighters).Select(x => x.Character); }
 
+        public Zone CurrentZone { get; private set; } = Zone.Unknown;
+        public Dictionary<Zone, List<ILine>> ZoneLineMap { get; private set; } = new Dictionary<Zone, List<ILine>>() { { Zone.Unknown, new List<ILine>() } };
+
         public Battle(YouResolver youAre)
         {
             YouAre = youAre;
@@ -44,7 +47,7 @@ namespace BizObjects.Battle
 
         public void AddLine(ILine line)
         {
-            RawLineCount++;
+            AddLineToBattle(line);
 
             VerifyLineOrder(line);
 
@@ -54,6 +57,23 @@ namespace BizObjects.Battle
                 SetupNewFight();
 
             _currentSkirmish.AddLine((dynamic)line);
+        }
+
+        public void AddLine(Zone line)
+        {
+            CurrentZone = line;
+
+            if (!ZoneLineMap.ContainsKey(CurrentZone))
+                ZoneLineMap[CurrentZone] = new List<ILine>();
+
+            AddLineToBattle(line as ILine);
+        }
+
+        private void AddLineToBattle(ILine line)
+        {
+            RawLineCount++;
+
+            ZoneLineMap[CurrentZone].Add(line);
         }
 
         private ILine _previousLine = null;

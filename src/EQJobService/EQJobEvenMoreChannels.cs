@@ -261,7 +261,7 @@ namespace EQJobService
         private void AddLineToBattle(ILine line, Battle eqBattle)
         {
             _battleLinesCount++;
-            eqBattle.AddLine(line);
+            eqBattle.AddLine((dynamic)line);
             _lastLineAddedToBattle = line;
 
             if (line.LogLine.LineNumber == _lastLineNumber)

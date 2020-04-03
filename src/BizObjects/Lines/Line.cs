@@ -5,7 +5,7 @@ namespace BizObjects.Lines
 {
     public abstract class Line : ILine
     {
-        public DateTime Time { get { return LogLine.LogTime; } }
+        public DateTime Time { get { return LogLine?.LogTime ?? DateTime.MinValue; } }
         public LogDatum LogLine { get; }
         public Zone Zone { get; }
 

@@ -289,6 +289,7 @@ namespace EqbConsole
             parser.AddParser(new HealParser(youAre));
             parser.AddParser(new KillParser(youAre));
             parser.AddParser(new WhoParser(youAre));
+            parser.AddParser(new ZoneParser());
             return parser;
         }
 
