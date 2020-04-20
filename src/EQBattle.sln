@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EQJobService", "EQJobServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{1DC7EB82-A15B-495D-AF7E-94AEA86F81BD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{CD21FC4E-177C-4973-ACC8-E09620D73574}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EQReadWrite", "Tools\EQReadWrite\EQReadWrite.csproj", "{20F60207-4588-40F0-96FE-EB9CF52D107C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,10 @@ Global
 		{1DC7EB82-A15B-495D-AF7E-94AEA86F81BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DC7EB82-A15B-495D-AF7E-94AEA86F81BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DC7EB82-A15B-495D-AF7E-94AEA86F81BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20F60207-4588-40F0-96FE-EB9CF52D107C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20F60207-4588-40F0-96FE-EB9CF52D107C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20F60207-4588-40F0-96FE-EB9CF52D107C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20F60207-4588-40F0-96FE-EB9CF52D107C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +92,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4E633AD0-9996-49FF-95D1-8EA923A0DA99} = {D127BE1C-B4A0-4ADE-8D88-0389FDB0FE12}
 		{64BB3FA3-C835-4244-A8BF-30987792AC49} = {D127BE1C-B4A0-4ADE-8D88-0389FDB0FE12}
+		{20F60207-4588-40F0-96FE-EB9CF52D107C} = {CD21FC4E-177C-4973-ACC8-E09620D73574}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3FCC3215-8A61-46CB-87E4-6E4627DBD56E}
