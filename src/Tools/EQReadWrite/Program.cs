@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace EQReadWrite
 {
@@ -43,15 +44,15 @@ namespace EQReadWrite
 
                 while (true)
                 {
-                    Console.WriteLine($"Currently on line number {inputLineNumber:N0} of {totalLines:N0}. How many lines to read and write? ('q' to quit)");
+                    Console.WriteLine($"Currently on line number {inputLineNumber:N0} of {totalLines:N0}. How many lines to read and write (command[1] = delay (ms), command[2] = repeat count? ('q' to quit)");
 
-                    if (!TryReadLineAmount(sr, out int lineAmount))
+                    if (!TryReadLineInfo(out LineArgs lineInfo))
                     {
                         Console.WriteLine($"Done reading. {inputLineNumber:N0} lines read. {outputLineNumber:N0} written.");
                         return;
                     }
 
-                    bool notEof = TryReadWriteLines(sr, sw, lineAmount, out int linesRead, out int linesWritten);
+                    bool notEof = TryReadWriteLines(sr, sw, lineInfo, out int linesRead, out int linesWritten);
                     inputLineNumber += linesRead;
                     outputLineNumber += linesWritten;
 
@@ -78,35 +79,96 @@ namespace EQReadWrite
             return true;
         }
 
-        private bool TryReadLineAmount(StreamReader sr, out int lineAmount)
+        private struct LineArgs
+        {
+            public int LineAmount;
+            public int DelayMs;
+            public int ReadCount;
+        }
+
+        private bool TryReadLineInfo(out LineArgs lineInfo)
         {
             var attempt = 0;
-            lineAmount = 0;
+            lineInfo.LineAmount = 0;
+            lineInfo.DelayMs = 0;
+            lineInfo.ReadCount = 0;
 
-            while (attempt < 5)
+            do
             {
-                var command = Console.ReadLine();
+                var command = Console.ReadLine().Trim();
 
                 if (command == "q")
                     return false;
 
-                if (int.TryParse(command, out lineAmount))
+                var commandArgs = command.Split(' ');
+
+                if (TryParseCommandArgs(commandArgs, out lineInfo))
                     return true;
 
                 attempt++;
-                Console.WriteLine($"Invalid command: {command}. Please enter 'q' to quit, or a valid number.");
-            }
+                Console.WriteLine($"Invalid command: '{command}'. Please enter 'q' to quit, or a valid number or two or three.");
+
+            } while (attempt < 5);
+
             Console.Error.WriteLine("Too many invalid attempts. Exiting program");
             return false;
         }
 
-        private bool TryReadWriteLines(StreamReader sr, StreamWriter sw, int lineAmount, out int linesRead, out int linesWritten)
+        /// <summary>
+        /// Parse command args. If supplied, must be valid. If not supplied will default.
+        /// </summary>
+        private bool TryParseCommandArgs(string[] commandArgs, out LineArgs lineInfo)
+        {
+            lineInfo.LineAmount = 0;
+            lineInfo.DelayMs = 0;
+            lineInfo.ReadCount = 1;
+
+            if (commandArgs.Length >= 3)
+            {
+                if (!int.TryParse(commandArgs[2], out lineInfo.ReadCount))
+                    return false;
+                else if (lineInfo.ReadCount <= 0 || lineInfo.ReadCount > 100)
+                    lineInfo.ReadCount = 1;
+            }
+            else
+                lineInfo.ReadCount = 1;
+
+            if (commandArgs.Length >= 2)
+            {
+                if (!int.TryParse(commandArgs[1], out lineInfo.DelayMs))
+                    return false;
+                else if (lineInfo.DelayMs < 0 || lineInfo.DelayMs > 5000)
+                    lineInfo.DelayMs = 0;
+            }
+            else
+                lineInfo.DelayMs = 0;
+
+            if (commandArgs.Length >= 1)
+            {
+                if (!int.TryParse(commandArgs[0], out lineInfo.LineAmount))
+                    return false;
+                else if (lineInfo.LineAmount <= 0)
+                    lineInfo.LineAmount = 1;
+
+            }
+            else
+                lineInfo.LineAmount = 1;
+
+            return true;
+        }
+
+        private bool TryReadWriteLines(StreamReader sr, StreamWriter sw, LineArgs lineInfo, out int linesRead, out int linesWritten)
         {
             string line = null;
             linesRead = 0;
             linesWritten = 0;
-            while (linesRead < lineAmount && (line = sr.ReadLine()) != null)
+            var totalLinesToRead = lineInfo.LineAmount * lineInfo.ReadCount;
+
+            while (linesRead < totalLinesToRead && (line = sr.ReadLine()) != null)
             {
+                if (linesRead > 0 && linesRead % lineInfo.LineAmount == 0)
+                    Thread.Sleep(lineInfo.DelayMs);
+
                 linesRead++;
 
                 sw.WriteLine(line);
