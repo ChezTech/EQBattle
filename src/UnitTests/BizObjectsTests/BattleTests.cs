@@ -323,6 +323,139 @@ namespace BizObjectsTests
             Assert.AreEqual(3, battle.ZoneLineMap[key].Count);
         }
 
+        [TestMethod]
+        public void SlainDuringFightRezdRightAfter()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Sun Mar 22 13:48:34 2020] You crush a dirty oashim for 2642 points of damage. (Strikethrough Critical)");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:34 2020] A dirty oashim bites YOU for 1935 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:34 2020] A dirty oashim quickly moves in to feast upon your body.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:34 2020] You have been knocked unconscious!");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:34 2020] You have been slain by a dirty oashim!");
+
+            AddBattleLine(battle, "[Sun Mar 22 13:48:35 2020] A dirty oashim tries to bite Khronick, but Khronick blocks!");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:35 2020] A dirty oashim bites Khronick for 9129 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:36 2020] Kelanna pierces a dirty oashim for 1068 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:36 2020] A dirty oashim's corpse squeals in panic as the life leaves its body.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:36 2020] A dirty oashim has been slain by Kelanna!");
+
+            AddBattleLine(battle, "[Sun Mar 22 13:48:39 2020] Kiuchelle begins casting Reviviscence.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:43 2020] You have been offered a resurrection.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:46 2020] You regain some experience from resurrection.");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:46 2020] Returning to Resurrect.Please wait...");
+            AddBattleLine(battle, "[Sun Mar 22 13:48:48 2020] Kiuchelle healed you for 4798 (13975) hit points by Rejuvenating Splash Rk.II.");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+
+            var skirmish1 = battle.Skirmishes.First() as Skirmish;
+            VerifySkirmishStats(skirmish1, 14774, 4798, 1, 2);
+
+            Assert.AreEqual(1, skirmish1.Fights.Count);
+            VerifyFightStatistics("a dirty oashim", skirmish1, 14774, 4798, 1, 2);
+        }
+
+        [TestMethod]
+        public void PartyWipeReturnToPoKChatShouldGoToNewFight()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] An adult oashim bites YOU for 9713 points of damage. (Strikethrough)");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] An adult oashim tries to bite YOU, but misses!");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] You have been knocked unconscious!");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] Kelanna pierces a dirty oashim for 1068 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] A dirty oashim bites YOU for 7552 points of damage. (Strikethrough)");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] A dirty oashim quickly moves in to feast upon your body.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:10 2020] You have been slain by a dirty oashim!");
+
+            AddBattleLine(battle, "[Sun Mar 22 14:00:11 2020] An adult oashim bites Kelanna for 1759 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:12 2020] A dirty oashim tries to bite Kelanna, but Kelanna dodges!");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:12 2020] A dirty oashim bites Khronick for 3298 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:12 2020] A dirty oashim tries to bite Khronick, but Khronick dodges!");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:12 2020] Kelanna backstabs a dirty oashim for 3345 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:13 2020] An adult oashim bites Khronick for 5985 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:13 2020] An adult oashim quickly moves in to feast upon your body.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:13 2020] Khronick has been slain by an adult oashim!");
+
+            AddBattleLine(battle, "[Sun Mar 22 14:00:14 2020] An adult oashim bites Kelanna for 1759 points of damage.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:14 2020] An adult oashim quickly moves in to feast upon your body.");
+            AddBattleLine(battle, "[Sun Mar 22 14:00:14 2020] Kelanna has been slain by an adult oashim!");
+
+            AddBattleLine(battle, "[Sun Mar 22 14:01:00 2020] Returning to Bind Location. Please wait...");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:01 2020] LOADING, PLEASE WAIT...");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:03 2020] MESSAGE OF THE DAY: ");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:20 2020] You have entered Guild Lobby.");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:24 2020] Kiuchelle begins casting Hand of Credence Rk. II.");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:24 2020] Channels: 1=General(395), 2=Monk(19)");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:24 2020] Channels: 1=General(395), 2=Monk(19), 3=Planes(170)");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:30 2020] You are filled with a powerful credence.");
+            AddBattleLine(battle, "[Sun Mar 22 14:01:30 2020] Kiuchelle healed you for 6198 hit points by Hand of Credence Rk. II.");
+
+            AddBattleLine(battle, "[Sun Mar 22 14:03:00 2020] You begin casting Expedient Recovery.");
+            AddBattleLine(battle, "[Sun Mar 22 14:03:03 2020] You call for your bodies to return to you.");
+            AddBattleLine(battle, "[Sun Mar 22 14:03:04 2020] You regain some experience from resurrection.");
+
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Celerese's eyes gleam with gallantry.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Ruhurte healed Celerese for 100 (3700) hit points by Hand of Gallantry.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Ruhurte's eyes gleam with gallantry.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Ruhurte healed himself for 3194 (3700) hit points by Hand of Gallantry.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Utishelle begins casting Word of Greater Replenishment Rk. II.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Utishelle feels a powerful healing touch.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Utishelle healed herself for 54999 (95812) hit points by Word of Greater Replenishment Rk. II.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Bulbeye feels a powerful healing touch.");
+            AddBattleLine(battle, "[Sun Mar 22 14:04:00 2020] Utishelle healed Bulbeye for 13038 (95812) hit points by Word of Greater Replenishment Rk. II.");
+
+
+            Assert.AreEqual(2, battle.Skirmishes.Count);
+
+            var skirmish1 = battle.Skirmishes.First() as Skirmish;
+            VerifySkirmishStats(skirmish1, 14774, 4798, 1, 2);
+
+            Assert.AreEqual(2, skirmish1.Fights.Count);
+            VerifyFightStatistics("a dirty oashim", skirmish1, 5, 0, 1, 2);
+            VerifyFightStatistics("an adult oashim", skirmish1, 5, 0, 1, 2);
+
+            // Going to a new zone (bind point) .... should end the skirmish
+            // Open Q: how will rez'ing back to the zone pick back up the skirmish? Should it make a new, new skirmish
+            // How will dying in the same zone as your bind point affect this?
+
+            var skirmish2 = battle.Skirmishes.Last() as Skirmish;
+            VerifySkirmishStats(skirmish2, 5649, 0, 0, 0);
+
+            Assert.AreEqual(1, skirmish2.Fights.Count);
+
+        }
+
+        [TestMethod]
+        public void DoTAfterMobDeathShouldGoToOldMob()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Sun Apr 12 15:33:08 2020] A moss viper bites YOU for 23 points of damage.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:10 2020] You crush a moss viper for 44 points of damage.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:10 2020] a moss viper hit you for 30 points of poison damage by Strong Poison.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:10 2020] You have been poisoned.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:12 2020] A moss viper has taken 11 damage from your Engulfing Darkness.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:15 2020] You have taken 14 damage from Strong Poison by a moss viper.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:18 2020] A moss viper has taken 11 damage from your Engulfing Darkness.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:19 2020] You try to crush a moss viper, but a moss viper dodges!");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:23 2020] You crush a moss viper for 45 points of damage.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:23 2020] You gain experience (with a bonus)!");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:23 2020] A moss viper's corpse falls.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:23 2020] You have slain a moss viper!");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:27 2020] You have taken 14 damage from Strong Poison by a moss viper's corpse.");
+            AddBattleLine(battle, "[Sun Apr 12 15:33:33 2020] You have taken 14 damage from Strong Poison by a moss viper's corpse.");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+
+            var skirmish1 = battle.Skirmishes.First() as Skirmish;
+            VerifySkirmishStats(skirmish1, -1, -1, 1, 1);
+
+            Assert.AreEqual(1, skirmish1.Fights.Count);
+            VerifyFightStatistics("a moss viper", skirmish1, 5, 0, 1, 2);
+
+        }
+
         private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
         {
             var stats = skirmish.Statistics;
