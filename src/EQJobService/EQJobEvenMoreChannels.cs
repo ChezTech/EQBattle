@@ -107,7 +107,7 @@ namespace EQJobService
             // Start our main guy up, this starts the whole pipeline flow going
             _sw.Start();
             // var readTask = cp.Process(_rawLinesChannel.Writer, ct => ReadLogLines(logFilePath, ct));
-            var readTask = ReadLogLinesWrapper(_rawLinesChannel.Writer, logFilePath, ctSource.Token, 10 * 1000);
+            var readTask = ReadLogLinesWrapper(_rawLinesChannel.Writer, logFilePath, ctSource.Token, 250);
             var rtCancel = readTask.ContinueWith(_ => Log.Verbose("ReadTask cancelled"), TaskContinuationOptions.OnlyOnCanceled);
             var rtComplete = readTask.ContinueWith(_ => Log.Verbose("ReadTask complete"), TaskContinuationOptions.OnlyOnRanToCompletion);
             var rtContinue = readTask.ContinueWith(_ =>
