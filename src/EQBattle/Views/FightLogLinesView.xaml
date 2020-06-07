@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:EQBattle.Views"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding Fight}">
-      <ListView x:Name="lvLogLines" SelectionMode="Single" ItemsSource="{Binding Lines}">
+    <Grid>
+      <ListView x:Name="lvLogLines" SelectionMode="Single" ItemsSource="{Binding ModelListItems}">
         <ListView.ItemContainerStyle>
           <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

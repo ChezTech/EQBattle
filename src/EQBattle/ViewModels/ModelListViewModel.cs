@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
-    public abstract class ModelListViewModel<T, K> : PropertyChangeBase
+    public abstract class ModelListViewModel<T, K> : ViewModelBase
         where T : class
         where K : ModelListItem<T>
     {
