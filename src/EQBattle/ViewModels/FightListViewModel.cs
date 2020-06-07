@@ -9,11 +9,8 @@ using System.Windows.Data;
 
 namespace EQBattle.ViewModels
 {
-    class FightListViewModel : PropertyChangeBase
+    class FightListViewModel : ModelListViewModel<IFight, FightListItem>
     {
-        private ObservableCollection<FightListItem> fightList;
-        private readonly object _lock = new object();
-
         private EQJob latestEQJob;
         private Battle latestBattle;
         private FightListItem selectedFight;
@@ -74,8 +71,7 @@ namespace EQBattle.ViewModels
             newBattleSelectItemYet = false;
 
             latestBattle = battle;
-            FightList = new ObservableCollection<FightListItem>(ConvertFightsIntoListItems(battle.Skirmishes));
-            BindingOperations.EnableCollectionSynchronization(FightList, _lock);
+            NewModelListItems(ConvertFightsIntoListItems(battle.Skirmishes));
 
             battle.Skirmishes.CollectionChanged += Skirmishes_CollectionChanged;
             AddNewSkirmish(null, battle.Skirmishes.LastOrDefault());
@@ -84,7 +80,7 @@ namespace EQBattle.ViewModels
         private void Skirmishes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             foreach (var item in e.NewItems)
-                AddNewSkirmish(FightList, item as ISkirmish);
+                AddNewSkirmish(ModelListItems, item as ISkirmish);
         }
 
         private void AddNewSkirmish(ObservableCollection<FightListItem> fightList, ISkirmish skirmish)
@@ -101,7 +97,7 @@ namespace EQBattle.ViewModels
         private void Fights_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             foreach (var item in e.NewItems)
-                AddNewFight(FightList, item as IFight);
+                AddNewFight(ModelListItems, item as IFight);
         }
 
         private void AddNewFight(ObservableCollection<FightListItem> fightList, IFight fight)
@@ -159,8 +155,6 @@ namespace EQBattle.ViewModels
             if (skirmish != null)
                 skirmish.Fights.CollectionChanged -= Fights_CollectionChanged;
         }
-
-        public ObservableCollection<FightListItem> FightList { get => fightList; set => SetProperty(ref fightList, value); }
 
         public FightListItem SelectedFight
         {

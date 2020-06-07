@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
-        <ListView x:Name="lvFights" SelectionMode="Single" ItemsSource="{Binding FightList}" SelectedItem="{Binding SelectedFight}" SelectionChanged="lvFights_SelectionChanged">
+        <ListView x:Name="lvFights" SelectionMode="Single" ItemsSource="{Binding ModelListItems}" SelectedItem="{Binding SelectedFight}" SelectionChanged="lvFights_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
