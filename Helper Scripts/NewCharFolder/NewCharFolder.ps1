@@ -1,3 +1,6 @@
+# This works, but ugly message (need the '#' at the very first position)
+# #Requires -RunAsAdministrator
+
 
 # Is there a registry entry for EQ?
 
@@ -10,6 +13,27 @@ $ServerName = "test"
 
 # ============================================================================== Code
 
+function Test-Administrator  
+{  
+    [OutputType([bool])]
+    param()
+    process {
+        [Security.Principal.WindowsPrincipal]$user = [Security.Principal.WindowsIdentity]::GetCurrent();
+        return $user.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator);
+    }
+}
+
+if(-not (Test-Administrator))
+{
+	$Message = "You must run this script as an Administrator"
+	
+	# While this is the correct way, it has an ugly output format w/ a stack trace.
+	#Write-Error -Message $Message -Category PermissionDenied
+	
+	# This is more friendly
+	Write-Host $Message -ForegroundColor Red -BackgroundColor Black
+    exit
+}
 
 # -------------------------------------------------
 # Define variables
