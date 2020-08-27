@@ -1,6 +1,10 @@
 # This works, but ugly message (need the '#' at the very first position)
 # #Requires -RunAsAdministrator
 
+# First time on a new PC, you'll need to allow scripts to run
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+# Get-ExecutionPolicy -List
 
 # Is there a registry entry for EQ?
 
