@@ -3,6 +3,12 @@ Rather than copy all the files to a new folder (which sucks up a lot of space), 
 
 Run like so:
 
-* Edit `NewCharFolder.ps1` to provide the path to EQ and the character name.
+```
+Usage: .\NewCharFolder.ps1 -CharName YourCharName -ServerName test -EQFolder "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
+-CharName [required]
+-ServerName [optional] Defaults to "test"
+-EQFolder [optional] "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
+```
+
 * Open PowerShell window as Admin
-* Run `NewCharFolder.ps1`
+* Run `.\NewCharFolder.ps1 Gandalf`

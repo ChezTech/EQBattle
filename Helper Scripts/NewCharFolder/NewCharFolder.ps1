@@ -8,12 +8,25 @@
 
 # Is there a registry entry for EQ?
 
+# ==============================================================================================
+# Usage: .\NewCharFolder.ps1 -CharName YourCharName -ServerName test -EQFolder "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
+# -CharName [required]
+# -ServerName [optional] Defaults to "test"
+# -EQFolder [optional] "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
+# ==============================================================================================
+
+Param (
+    [string] $CharName,
+    [string] $ServerName = "test",
+    [string] $EQFolder = "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
+)
+
 # ============================================================================== User Input
-$BaseEQFolder = "C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest"
-$BoxCharName = "Aiyya"
+$BaseEQFolder = $EQFolder
+$BoxCharName = $CharName
 
 # Name of the server, for writing the UI .ini files
-$ServerName = "test"
+# $ServerName = "test"
 
 # ============================================================================== Code
 
