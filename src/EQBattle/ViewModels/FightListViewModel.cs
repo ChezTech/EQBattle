@@ -188,11 +188,14 @@ namespace EQBattle.ViewModels
 
         public override void Refresh()
         {
-            Name = Model.PrimaryMob.Name;
-            Duration = Model.Statistics.Duration.FightDuration;
-            MobDefensiveDamage = Model.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
-            MobOffensiveDps = Model.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
-            Zone = "TBD";
+            using (new Battle.Freeze())
+            {
+                Name = Model.PrimaryMob.Name;
+                Duration = Model.Statistics.Duration.FightDuration;
+                MobDefensiveDamage = Model.PrimaryMobFighter.DefensiveStatistics.Hit.Total;
+                MobOffensiveDps = Model.PrimaryMobFighter.OffensiveStatistics.PerTime.FightDPS;
+                Zone = "TBD";
+            }
 
         }
     }

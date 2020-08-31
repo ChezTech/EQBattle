@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 
 namespace BizObjects.Battle
 {
@@ -38,6 +39,8 @@ namespace BizObjects.Battle
         public Zone CurrentZone { get; private set; } = Zone.Unknown;
         public Dictionary<Zone, List<ILine>> ZoneLineMap { get; private set; } = new Dictionary<Zone, List<ILine>>() { { Zone.Unknown, new List<ILine>() } };
 
+        private static object _lock = new object();
+
         public Battle(YouResolver youAre)
         {
             YouAre = youAre;
@@ -47,26 +50,32 @@ namespace BizObjects.Battle
 
         public void AddLine(ILine line)
         {
-            AddLineToBattle(line);
+            lock (_lock)
+            {
+                AddLineToBattle(line);
 
-            VerifyLineOrder(line);
+                VerifyLineOrder(line);
 
-            _charTracker.TrackLine((dynamic)line);
+                _charTracker.TrackLine((dynamic)line);
 
-            if (IsNewSkirmishNeeded((dynamic)line))
-                SetupNewFight();
+                if (IsNewSkirmishNeeded((dynamic)line))
+                    SetupNewFight();
 
-            _currentSkirmish.AddLine((dynamic)line);
+                _currentSkirmish.AddLine((dynamic)line);
+            }
         }
 
         public void AddLine(Zone line)
         {
-            CurrentZone = line;
+            lock (_lock)
+            {
+                CurrentZone = line;
 
-            if (!ZoneLineMap.ContainsKey(CurrentZone))
-                ZoneLineMap[CurrentZone] = new List<ILine>();
+                if (!ZoneLineMap.ContainsKey(CurrentZone))
+                    ZoneLineMap[CurrentZone] = new List<ILine>();
 
-            AddLineToBattle(line as ILine);
+                AddLineToBattle(line as ILine);
+            }
         }
 
         private void AddLineToBattle(ILine line)
@@ -147,6 +156,22 @@ namespace BizObjects.Battle
             // If this is a new mob, but the old mob isn't dead yet, then the fight turns in to a skirmish
 
             return false;
+        }
+
+        /// <summary>
+        /// Freeze Updates to the current fight so that the UI can refresh itself without underlying collections changing
+        /// </summary>
+        public class Freeze : IDisposable
+        {
+            public Freeze()
+            {
+                Monitor.Enter(_lock);
+            }
+
+            public void Dispose()
+            {
+                Monitor.Exit(_lock);
+            }
         }
     }
 }

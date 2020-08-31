@@ -52,7 +52,10 @@ namespace EQBattle.ViewModels
 
         public override void Refresh()
         {
-            LogLine = Model.LogLine;
+            using (new Battle.Freeze())
+            {
+                LogLine = Model.LogLine;
+            }
         }
     }
 }

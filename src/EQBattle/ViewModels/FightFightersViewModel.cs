@@ -133,15 +133,18 @@ namespace EQBattle.ViewModels
 
         public override void Refresh()
         {
-            Duration = Model.Duration.FighterDuration;
-            DPS = Model.PerTime.FighterDPS;
-            DPS6 = Model.PerTime.FighterDPSLastSixSeconds;
-            HitTotal = Model.Hit.Total;
-            HitCount = Model.Hit.Count;
-            Max = Model.Hit.Max;
-            MissCount = Model.Miss.Count;
-            HealTotal = Model.Heal.Total;
-            HealCount = Model.Heal.Count;
+            using (new Battle.Freeze())
+            {
+                Duration = Model.Duration.FighterDuration;
+                DPS = Model.PerTime.FighterDPS;
+                DPS6 = Model.PerTime.FighterDPSLastSixSeconds;
+                HitTotal = Model.Hit.Total;
+                HitCount = Model.Hit.Count;
+                Max = Model.Hit.Max;
+                MissCount = Model.Miss.Count;
+                HealTotal = Model.Heal.Total;
+                HealCount = Model.Heal.Count;
+            }
         }
 
     }
