@@ -22,6 +22,7 @@ namespace BizObjects.Converters
             {"crushes", AttackType.Crush },
             {"died", AttackType.Kill },
             {"frenzies on", AttackType.Frenzy },
+            {"frenzy", AttackType.Frenzy },
             {"gore", AttackType.Gore },
             {"gores", AttackType.Gore },
             {"hit", AttackType.Hit },

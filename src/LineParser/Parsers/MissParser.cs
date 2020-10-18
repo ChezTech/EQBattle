@@ -12,8 +12,8 @@ namespace LineParser.Parsers
     {
         private readonly Regex RxYouMiss;
         private readonly Regex RxOtherMiss;
-        private readonly string regexYouMiss = @"You try to (.*?) (.+), but (.+)[!](?: \((.+)\))?"; // https://regex101.com/r/qwjLjz/2
-        private readonly string regexOtherMiss = @"(.+) tries to (.*?) (.+), but (?:YOU |YOUR )?(.+)[!](?: \((.+)\))?"; // https://regex101.com/r/qwjLjz/2
+        private readonly string regexYouMiss = @"You try to (.*?) (.+), but (.+)[!](?: \((.+)\))?"; // https://regex101.com/r/0CWNBA/2
+        private readonly string regexOtherMiss = @"(.+) tries to (.*?) (?:on )?(.+), but (?:YOU |YOUR )?(.+)[!](?: \((.+)\))?"; // https://regex101.com/r/qwjLjz/3
 
         private readonly YouResolver YouAre;
 

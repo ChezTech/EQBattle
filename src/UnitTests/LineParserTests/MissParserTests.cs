@@ -25,6 +25,7 @@ namespace LineParserTests
         [DataRow("[Fri Apr 12 18:26:39 2019] Khadaji`s pet tries to hit a crystalkin disciple, but misses!", "Khadaji", true, "a crystalkin disciple", false, "hit", AttackType.Hit, "misses", null)]
         [DataRow("[Sat Mar 30 08:14:42 2019] A master hunter tries to pierce Movanna, but misses! (Rampage)", "a master hunter", false, "Movanna", false, "pierce", AttackType.Pierce, "misses", "Rampage")]
         [DataRow("[Sat Mar 30 08:15:44 2019] A master hunter tries to pierce Movanna, but Movanna parries! (Rampage)", "a master hunter", false, "Movanna", false, "pierce", AttackType.Pierce, "parries", "Rampage")]
+        [DataRow("[Sat Oct 17 16:09:22 2020] Destructivex tries to frenzy on a mortiferous golem, but misses!", "Destructivex", false, "a mortiferous golem", false, "frenzy", AttackType.Frenzy, "misses", null)]
         //[DataRow("LLLLLLLL", "Khadaji", false, "defender", false, "verb", AttackType.Unknown, "defense", null)]
         public void Tests(string logLine, string attacker, bool isAttackerPet, string defender, bool isDefenderPet, string verb, AttackType attackType, string defense, string qualifier)
         {
