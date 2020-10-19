@@ -56,7 +56,7 @@ namespace BizObjects.Converters
         // What we'll do is look for a lowercase to the rest of their name (excluding "of", "the") and if we find it, we'll lowercase their first word too.
         private static string RemoveCapitalizedNameDueToSentence(string name)
         {
-            var words = name.Split(' ');
+            var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             bool shouldLower = false;
 
