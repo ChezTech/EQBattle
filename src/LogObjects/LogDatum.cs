@@ -54,7 +54,7 @@ namespace LogObjects
             if (RawLogLine.Length <= MessageStart)
                 return string.Empty;
 
-            return RawLogLine.Substring(MessageStart);
+            return RawLogLine.Substring(MessageStart).Trim();
         }
 
 
