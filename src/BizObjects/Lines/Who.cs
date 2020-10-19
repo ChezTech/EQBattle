@@ -12,8 +12,10 @@ namespace BizObjects.Lines
         public string Race { get; }
         public string Guild { get; }
         public bool IsAnonymous { get; }
+        public bool IsAfk { get; }
+        public bool IsLfg { get; }
 
-        public Who(LogDatum logLine, string name, int level, string title, string @class, string race, string guild, bool isAnon, Zone zone = null) : base(logLine, zone)
+        public Who(LogDatum logLine, string name, int level, string title, string @class, string race, string guild, bool isAnon, bool isAfk, bool isLfg, Zone zone = null) : base(logLine, zone)
         {
             Character = new Character(name);
             Level = level;
@@ -22,6 +24,8 @@ namespace BizObjects.Lines
             Race = race;
             Guild = guild;
             IsAnonymous = isAnon;
+            IsAfk = isAfk;
+            IsLfg = isLfg;
         }
     }
 }

@@ -37,13 +37,16 @@ namespace LineParser.Parsers
                 return false;
             }
 
+            var isAfk = false;
+            var isLfg = false;
+
             // These first 3 groups are for the ANONYMOUS character
             var isAnon = match.Groups[1].Success ? true : false;
             if (isAnon)
             {
                 var name = match.Groups[2].Success ? match.Groups[2].Value : null;
                 var guild = match.Groups[3].Success ? match.Groups[3].Value : null;
-                lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), 0, null, null, null, guild, isAnon);
+                lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), 0, null, null, null, guild, isAnon, isAfk, isLfg);
             }
 
             // These groups are for non-anonymous characters
@@ -56,7 +59,7 @@ namespace LineParser.Parsers
                 var race = match.Groups[8].Success ? match.Groups[8].Value : null;
                 var guild = match.Groups[9].Success ? match.Groups[9].Value : null;
                 var zone = match.Groups[10].Success ? match.Groups[10].Value : null;
-                lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), level, title, @class, race, guild, isAnon, new Zone(logDatum, zone));
+                lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), level, title, @class, race, guild, isAnon, isAfk, isLfg, new Zone(logDatum, zone));
             }
 
             // What about chars who are /role playing? Is that the same as anonymous?
