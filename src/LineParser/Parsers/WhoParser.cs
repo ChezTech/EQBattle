@@ -10,7 +10,10 @@ namespace LineParser.Parsers
 {
     public class WhoParser : IParser
     {
-        private readonly Regex RxWho = new Regex(@"(?:^\[(ANONYMOUS)\] (.+)\b(?: <(.+)>)?$|^\[(\d+) (.+) \((.+)\)\] (.+) \((.+)\) <(.+)> ZONE: (.+))$", RegexOptions.Compiled); // https://regex101.com/r/Cp71GF/5
+        private readonly Regex RxWho = new Regex(@"(AFK)?\s*(?:\[(ANONYMOUS)\] (.+?)\b(?: <([^>]+)>)?|\[(\d+) (.+) \((.+)\)\] (.+) \((.+)\) (?:<([^>]+)>)?\s*ZONE: (.+?))(?:\s*(LFG))?$", RegexOptions.Compiled); // https://regex101.com/r/Cp71GF/11
+
+        // Anon/Roleplaying match - https://regex101.com/r/505CMz/6
+        // Normal match - https://regex101.com/r/Mlq099/2
 
         private readonly YouResolver YouAre;
 
@@ -37,28 +40,28 @@ namespace LineParser.Parsers
                 return false;
             }
 
-            var isAfk = false;
-            var isLfg = false;
+            var isAfk = match.Groups[1].Success ? true : false;
+            var isLfg = match.Groups[12].Success ? true : false;
 
             // These first 3 groups are for the ANONYMOUS character
-            var isAnon = match.Groups[1].Success ? true : false;
+            var isAnon = match.Groups[2].Success ? true : false;
             if (isAnon)
             {
-                var name = match.Groups[2].Success ? match.Groups[2].Value : null;
-                var guild = match.Groups[3].Success ? match.Groups[3].Value : null;
+                var name = match.Groups[3].Success ? match.Groups[3].Value : null;
+                var guild = match.Groups[4].Success ? match.Groups[4].Value : null;
                 lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), 0, null, null, null, guild, isAnon, isAfk, isLfg);
             }
 
             // These groups are for non-anonymous characters
             else
             {
-                var level = match.Groups[4].Success ? int.Parse(match.Groups[4].Value) : 0;
-                var title = match.Groups[5].Success ? match.Groups[5].Value : null;
-                var @class = match.Groups[6].Success ? match.Groups[6].Value : null;
-                var name = match.Groups[7].Success ? match.Groups[7].Value : null;
-                var race = match.Groups[8].Success ? match.Groups[8].Value : null;
-                var guild = match.Groups[9].Success ? match.Groups[9].Value : null;
-                var zone = match.Groups[10].Success ? match.Groups[10].Value : null;
+                var level = match.Groups[5].Success ? int.Parse(match.Groups[5].Value) : 0;
+                var title = match.Groups[6].Success ? match.Groups[6].Value : null;
+                var @class = match.Groups[7].Success ? match.Groups[7].Value : null;
+                var name = match.Groups[8].Success ? match.Groups[8].Value : null;
+                var race = match.Groups[9].Success ? match.Groups[9].Value : null;
+                var guild = match.Groups[10].Success ? match.Groups[10].Value : null;
+                var zone = match.Groups[11].Success ? match.Groups[11].Value : null;
                 lineEntry = new Who(logDatum, YouAre.WhoAreYou(name), level, title, @class, race, guild, isAnon, isAfk, isLfg, new Zone(logDatum, zone));
             }
 
