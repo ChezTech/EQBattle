@@ -34,6 +34,11 @@ namespace EQJobService
                 Log.Verbose($"ChannelProcessor: {title} Operation Cancelled");
                 throw;
             }
+            catch(Exception e)
+            {
+                Log.Error($"{e.Message}");
+                throw;
+            }
             finally
             {
                 Log.Verbose($"Done reading channel: {title}");
