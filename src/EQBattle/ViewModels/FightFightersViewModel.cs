@@ -72,6 +72,9 @@ namespace EQBattle.ViewModels
         private string name;
         public string Name { get => name; set => SetProperty(ref name, value); }
 
+        private bool isMob;
+        public bool IsMob { get => isMob; set => SetProperty(ref isMob, value); }
+
         private string charClass;
         public string Class { get => charClass; set => SetProperty(ref charClass, value); }
 
@@ -91,6 +94,7 @@ namespace EQBattle.ViewModels
         public override void Refresh()
         {
             Name = Model.Character.Name;
+            IsMob = Model.Character.IsMob;
             Class = "aClass"; // Model.Character.Class.Name;
             Offense.Refresh();
             Defense.Refresh();
