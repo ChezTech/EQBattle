@@ -95,7 +95,7 @@ namespace EQBattle.ViewModels
         {
             Name = Model.Character.Name;
             IsMob = Model.Character.IsMob;
-            Class = "aClass"; // Model.Character.Class.Name;
+            //Class = "aClass"; // Model.Character.Class.Name;
             Offense.Refresh();
             Defense.Refresh();
         }
