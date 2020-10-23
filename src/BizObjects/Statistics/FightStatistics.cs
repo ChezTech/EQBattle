@@ -47,18 +47,9 @@ namespace BizObjects.Statistics
             }
         }
 
-        public IEnumerable<IGrouping<AttackType, Hit>> HitsPerType { get => Hit.Lines.GroupBy(x => x.Type); }
-        public IEnumerable<AttackType> HitTypes { get => HitsPerType.Select(x => x.Key); }
-        public HitPointStatistics<Hit> GetHitStatisticsForAttackType(AttackType attackType)
-        {
-            return new HitPointStatistics<Hit>(
-                HitsPerType
-                    .Where(x => x.Key == attackType)
-                    .SelectMany(x => x)
-                , z => z.Damage);
-        }
-        public IEnumerable<IGrouping<AttackType, Miss>> MissesPerType { get => Miss.Lines.GroupBy(x => x.Type); }
-        public IEnumerable<IGrouping<string, Heal>> HealsPerSpell { get => Heal.Lines.GroupBy(x => x.SpellName); }
+        public IDictionary<AttackType, HitPointStatistics<Hit>> HitStatsByType => Hit.Lines.Select(x => x.Type).Distinct().ToDictionary(x => x, x => new HitPointStatistics<Hit>(Hit.Lines.Where(y => y.Type == x), x => x.Damage));
+        public IDictionary<AttackType, CountStatistics<Miss>> MissStatsByType => Miss.Lines.Select(x => x.Type).Distinct().ToDictionary(x => x, x => new CountStatistics<Miss>(Miss.Lines.Where(y => y.Type == x)));
+        public IDictionary<string, HitPointStatistics<Heal>> HealsBySpell => Heal.Lines.Select(x => x.SpellName).Distinct().ToDictionary(x => x, x => new HitPointStatistics<Heal>(Heal.Lines.Where(y => y.SpellName == x), x => x.Amount));
 
         public void AddLine(ILine line)
         {
