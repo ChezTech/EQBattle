@@ -20,7 +20,7 @@ namespace BizObjectsTests
     // https://eq.gimasoft.com/gina/Default.aspx
 
     [TestClass]
-    public class SkirmishTests : ParserTestBase
+    public class SkirmishTests : FightTestBase
     {
         private readonly Action<Skirmish, CharacterTracker, string> AddSkirmishTrackLine = (skirmish, tracker, logLine) =>
         {
@@ -106,7 +106,7 @@ namespace BizObjectsTests
 
             // The helper method just grabs the first match of the mobName which would be the fight above, so get the second/last fight our own way
             var lastFight = skirmish.Fights.LastOrDefault(x => x.PrimaryMob.Name == "a cliknar sporali farmer");
-            VerifyFightStatistics(lastFight, "a cliknar sporali farmer", skirmish, 82769, 0, 0, 1);
+            VerifyFightStatistics("a cliknar sporali farmer", lastFight, 82769, 0, 0, 1);
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@ namespace BizObjectsTests
 
             // The helper method just grabs the first match of the mobName which would be the fight above, so get the second/last fight our own way
             var lastFight = skirmish.Fights.LastOrDefault(x => x.PrimaryMob.Name == "Bob");
-            VerifyFightStatistics(lastFight, "Bob", skirmish, 10, 0, 0, 1);
+            VerifyFightStatistics("Bob", lastFight, 10, 0, 0, 1);
         }
 
         [TestMethod]
@@ -365,58 +365,6 @@ namespace BizObjectsTests
             Assert.AreEqual(new TimeSpan(0, 0, 5), fight.Statistics.Duration.FightDuration);
             VerifyFighterDuration(fight, "Khadaji", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 0));
             VerifyFighterDuration(fight, "Bealica", new TimeSpan(0, 0, 5), new TimeSpan(0, 0, 2));
-        }
-
-        private static void VerifyFighterDuration(IFight fight, string name, TimeSpan fightDuration, TimeSpan fighterDuration)
-        {
-            Fighter fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
-            Assert.AreEqual(fightDuration, fighter.OffensiveStatistics.Duration.FightDuration);
-            Assert.AreEqual(fighterDuration, fighter.OffensiveStatistics.Duration.FighterDuration);
-        }
-
-        private void VerifySkirmishStats(Skirmish skirmish, int hit, int heal, int misses, int kills)
-        {
-            var stats = skirmish.Statistics;
-            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit");
-            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal");
-            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses");
-            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills");
-        }
-
-        private void VerifyFighterStatistics(string name, Skirmish skirmish, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
-        {
-            var fighter = skirmish.Fighters.FirstOrDefault(x => x.Character.Name == name);
-            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
-
-            var stats = fighter.OffensiveStatistics;
-            Assert.AreEqual(offHit, stats.Hit.Total, $"Offensive hit - {fighter.Character.Name}");
-            Assert.AreEqual(offHeal, stats.Heal.Total, $"Offensive heal - {fighter.Character.Name}");
-            Assert.AreEqual(offMisses, stats.Miss.Count, $"Offensive misses - {fighter.Character.Name}");
-            Assert.AreEqual(offKills, stats.Kill.Count, $"Offensive kills - {fighter.Character.Name}");
-
-            stats = fighter.DefensiveStatistics;
-            Assert.AreEqual(defHit, stats.Hit.Total, $"Defensive hit - {fighter.Character.Name}");
-            Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
-            Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
-            Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
-        }
-
-        private IFight VerifyFightStatistics(string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
-        {
-            var fight = skirmish.Fights.FirstOrDefault(x => x.PrimaryMob.Name == fightMob);
-            VerifyFightStatistics(fight, fightMob, skirmish, hit, heal, misses, kills);
-            return fight;
-        }
-
-        private void VerifyFightStatistics(IFight fight, string fightMob, Skirmish skirmish, int hit, int heal, int misses, int kills)
-        {
-            Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
-
-            var stats = fight.Statistics;
-            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills - {fight.PrimaryMob.Name}");
         }
 
         private Skirmish SetupNewSkirmish(out CharacterTracker charTracker)

@@ -21,7 +21,7 @@ namespace BizObjectsTests
     // https://eq.gimasoft.com/gina/Default.aspx
 
     [TestClass]
-    public class FightTests : ParserTestBase
+    public class FightTests : FightTestBase
     {
         private readonly Action<Fight, CharacterTracker, string> AddFightTrackLine = (fight, tracker, logLine) =>
         {
@@ -464,53 +464,6 @@ namespace BizObjectsTests
             var charResolver = new CharacterResolver();
             charTracker = new CharacterTracker(YouAre, charResolver);
             return new Fight(YouAre, charResolver);
-        }
-
-        private void VerifyDpsStats(Fight fight, string name, int total, TimeSpan duration, double fighterDps, double fightDps, Func<Fighter, FightStatistics> statChooser)
-        {
-            var fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
-            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
-
-            VerifyDpsStats(statChooser(fighter), total, duration, fighterDps, fightDps);
-        }
-
-        private void VerifyDpsStats(FightStatistics stats, int total, TimeSpan duration, double fighterDps, double fightDps)
-        {
-            Assert.AreEqual(total, stats.Hit.Total);
-            Assert.AreEqual(duration, stats.Duration.FighterDuration);
-            Assert.AreEqual(fighterDps, stats.PerTime.FighterDPS, 0.01);
-            Assert.AreEqual(fightDps, stats.PerTime.FightDPS, 0.01);
-        }
-
-        private Fighter VerifyFighterStatistics(string name, Fight fight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
-        {
-            var fighter = fight.Fighters.FirstOrDefault(x => x.Character.Name == name);
-            Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
-
-            var stats = fighter.OffensiveStatistics;
-            Assert.AreEqual(offHit, stats.Hit.Total, $"Offensive hit - {fighter.Character.Name}");
-            Assert.AreEqual(offHeal, stats.Heal.Total, $"Offensive heal - {fighter.Character.Name}");
-            Assert.AreEqual(offMisses, stats.Miss.Count, $"Offensive misses - {fighter.Character.Name}");
-            Assert.AreEqual(offKills, stats.Kill.Count, $"Offensive kills - {fighter.Character.Name}");
-
-            stats = fighter.DefensiveStatistics;
-            Assert.AreEqual(defHit, stats.Hit.Total, $"Defensive hit - {fighter.Character.Name}");
-            Assert.AreEqual(defHeal, stats.Heal.Total, $"Defensive heal - {fighter.Character.Name}");
-            Assert.AreEqual(defMisses, stats.Miss.Count, $"Defensive misses - {fighter.Character.Name}");
-            Assert.AreEqual(defKills, stats.Kill.Count, $"Defensive kills - {fighter.Character.Name}");
-
-            return fighter;
-        }
-
-        private void VerifyFightStatistics(string fightMob, Fight fight, int hit, int heal, int misses, int kills)
-        {
-            Assert.IsNotNull(fight, $"Fight doesn't exist - {fightMob}");
-
-            var stats = fight.Statistics;
-            Assert.AreEqual(hit, stats.Hit.Total, $"Offensive hit - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(heal, stats.Heal.Total, $"Offensive heal - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(misses, stats.Miss.Count, $"Offensive misses - {fight.PrimaryMob.Name}");
-            Assert.AreEqual(kills, stats.Kill.Count, $"Offensive kills - {fight.PrimaryMob.Name}");
         }
     }
 }
