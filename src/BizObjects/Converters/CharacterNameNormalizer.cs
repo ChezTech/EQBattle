@@ -37,17 +37,21 @@ namespace BizObjects.Converters
 
         private static string CleanName(string name)
         {
-            return name
+            name = name
                 .Replace("A ", "a ") // Will this get only the "A monster type" at the beginning? Could use RegEx.Replace ....
                 .Replace("An ", "an ")
 
                 // Note: this is for an apostrophe corpse ... there are actual mobs that are corpses. Those names use a backtick, e.g. "a mercenary`s corpse".
                 // We don't want to remove that term from their name as it is part of their proper name, not a state of being.
                 .Replace("'s corpse", "") // dead mobs can still have a DoT in effect, "You have taken 1960 damage from Nature's Searing Wrath by a cliknar sporali farmer's corpse."
-
-                .Replace("'s", "") // apostrophe: Can we replace this by a better Regex? (E.g. "... pierced by a monster's thorns...")
-
                 ;
+
+            // Now remove trailing "'s" for damage shields
+            // "YOU are pierced by a cliknar adept's thorns for 70 points of non-melee damage!"
+            if (name.EndsWith("'s"))
+                name = name.Replace("'s", ""); // apostrophe (E.g. "... pierced by a monster's thorns...")
+
+            return name;
         }
 
         // Some names are capitalized due to being at the start of a sentence. For mobs named with the indefinite article ("a", "an") that's pretty easy to deal with.

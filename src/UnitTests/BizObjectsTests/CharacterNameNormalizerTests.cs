@@ -38,6 +38,9 @@ namespace BizObjectsTests
         [DataRow("Seed of Battle", "Seed of Battle")]
         [DataRow("Bursin the Legend", "Bursin the Legend")]
         [DataRow("Armor of the Dead", "Armor of the Dead")]
+        [DataRow("Siralae's", "Siralae")]
+        [DataRow("A cliknar adept's", "a cliknar adept")]
+        [DataRow("Garzicor's Corpse", "Garzicor's Corpse")]
         public void Tests(string name, string normalizedName)
         {
             Assert.AreEqual(normalizedName, _cnn.NormalizeName(name), $"Name is: {name}");
