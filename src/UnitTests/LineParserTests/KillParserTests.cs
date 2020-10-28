@@ -18,6 +18,7 @@ namespace LineParserTests
         [DataRow("[Fri Apr 26 09:25:56 2019] Movanna has been slain by a cliknar adept!", "a cliknar adept", "Movanna", "slain", AttackType.Kill, false)]
         [DataRow("[Sat May 17 17:46:01 2003] A Razorfiend Subduer died.", "Unknown", "a Razorfiend Subduer", "died", AttackType.Kill, false)]
         [DataRow("[Fri May 24 18:25:03 2019] A cliknar centurion has been slain by Vatalae!", "Vatalae", "a cliknar centurion", "slain", AttackType.Kill, false)]
+        [DataRow("[Sun Sep 20 11:05:55 2020] You died.", "Unknown", "Khadaji", "died", AttackType.Kill, false)]
         public void Tests(string logLine, string attacker, string defender, string verb, AttackType attackType, bool isDefenderPet = false)
         {
             var logDatum = new LogDatum(logLine);
