@@ -267,5 +267,19 @@ namespace BizObjectsTests
             Assert.IsFalse(c.IsMob);  // Can't tell with just a single name
             Assert.IsFalse(c.IsPet);
         }
+
+        [TestMethod]
+        public void ExceptionToDeadMobNamingPattern()
+        {
+            // This is the one mob I could find that uses a normal apostrophe s as part of it's proper name
+            // This is the mob that breaks the rule: apostrophe s for dead mobs, backtick s for undead mobs with "corpse" as part of their names.
+            // However, it is a capital C "Corpse", so that will save us.
+            // https://everquest.allakhazam.com/db/npc.html?id=7789
+            var c = new Character("Garzicor's Corpse");
+            Assert.AreEqual("Garzicor's Corpse", c.Name);
+            Assert.IsFalse(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
     }
 }
