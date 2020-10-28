@@ -22,6 +22,7 @@
         Smash,
         Sting,
         Strike,
+        Torment,
         DamageOverTime,
     }
 }

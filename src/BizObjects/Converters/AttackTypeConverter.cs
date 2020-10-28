@@ -48,6 +48,9 @@ namespace BizObjects.Converters
             {"stings", AttackType.Sting },
             {"strike", AttackType.Strike },
             {"strikes", AttackType.Strike },
+            {"torment", AttackType.Torment },
+            {"tormented", AttackType.Torment },
+            {"torments", AttackType.Torment },
             //{"xxxx", AttackType.Unknown },
         };
 
