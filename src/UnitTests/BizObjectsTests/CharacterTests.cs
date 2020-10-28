@@ -197,5 +197,75 @@ namespace BizObjectsTests
             Assert.IsFalse(c1.IsPet);
             Assert.IsTrue(c1.IsMob);
         }
+
+        [TestMethod]
+        public void UndeadMob()
+        {
+            var c = new Character("a mercenary`s corpse");
+            Assert.AreEqual("a mercenary`s corpse", c.Name);
+            Assert.IsFalse(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void NamedUndeadMob()
+        {
+            var c = new Character("Danvi`s Corpse");
+            Assert.AreEqual("Danvi`s Corpse", c.Name);
+            Assert.IsFalse(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void UndeadMobNonPossesive()
+        {
+            var c = new Character("a charred corpse");
+            Assert.AreEqual("a charred corpse", c.Name);
+            Assert.IsFalse(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void DeadMob()
+        {
+            var c = new Character("a helot skeleton's corpse");
+            Assert.AreEqual("a helot skeleton", c.Name);
+            Assert.IsTrue(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void DeadMobWithBackTick()
+        {
+            var c = new Character("a Kar`Zok scourge's corpse");
+            Assert.AreEqual("a Kar`Zok scourge", c.Name);
+            Assert.IsTrue(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void DeadNamedMobWithSpace()
+        {
+            var c = new Character("Dread Drikat's corpse");
+            Assert.AreEqual("Dread Drikat", c.Name);
+            Assert.IsTrue(c.IsDead);
+            Assert.IsTrue(c.IsMob);
+            Assert.IsFalse(c.IsPet);
+        }
+
+        [TestMethod]
+        public void DeadNamedMobNoSpace()
+        {
+            var c = new Character("Gnaw's corpse");
+            Assert.AreEqual("Gnaw", c.Name);
+            Assert.IsTrue(c.IsDead);
+            Assert.IsFalse(c.IsMob);  // Can't tell with just a single name
+            Assert.IsFalse(c.IsPet);
+        }
     }
 }

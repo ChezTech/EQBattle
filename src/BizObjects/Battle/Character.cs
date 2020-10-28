@@ -16,6 +16,7 @@ namespace BizObjects.Battle
         public string Name { get => name; private set => SetProperty(ref name, value); }
         public bool IsPet { get; }
         public bool IsMob { get; }
+        public bool IsDead { get; }
 
         public Character(string name)
         {
@@ -24,10 +25,12 @@ namespace BizObjects.Battle
             {
                 Name = UnknownName;
                 IsPet = false;
+                IsDead = false;
                 return;
             }
 
             IsPet = DetectPet(name);
+            IsDead = DetectDeadMob(name);
 
             var normalizedName = CharacterNameNormalizer.Instance.NormalizeName(name);
             Name = CleanName(normalizedName);
@@ -43,6 +46,21 @@ namespace BizObjects.Battle
             if (name.Contains("`s pet"))
                 return true;
             if (name.Contains("`s warder"))
+                return true;
+
+            return false;
+        }
+
+        private bool DetectDeadMob(string name)
+        {
+            // Check if a name contains "mob's corpse", just the normal apostrophe "'s corpse"
+            // A mob can have corpse as part of its name (not as indication of state of living), but the game uses a backtick for that (thank goodness)
+            // "a mercenary`s corpse"
+
+            // There is one exception, "Garzicor's Corpse" that uses a normal apostrophe "'s", but it also uses a capital "Corpse" so doesn't match our pattern and we're all good.
+            // https://everquest.allakhazam.com/db/npc.html?id=7789
+
+            if (name.Contains("'s corpse"))
                 return true;
 
             return false;
@@ -107,7 +125,7 @@ namespace BizObjects.Battle
         {
             get
             {
-                return string.Format($"{Name} {(IsPet ? "P" : "")}{(IsMob ? "M" : "")}");
+                return string.Format($"{Name} {(IsPet ? "P" : "")}{(IsMob ? "M" : "")}{(IsDead ? "D" : "")}");
             }
         }
 
