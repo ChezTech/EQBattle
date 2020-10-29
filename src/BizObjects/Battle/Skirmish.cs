@@ -59,11 +59,14 @@ namespace BizObjects.Battle
 
         private IFight GetAppropriateFight(ref Attack line)
         {
-            if (TryFindPostHumousFightDamage((dynamic)line, out IFight deadFight, out Attack newLineWithAttacker))
+            if (TryGetAppropriateFightDueToPosthumousDamageOverTimeFromAttacker((dynamic)line, out IFight fight))
+                return fight;
+            if (TryGetAppropriateFightFromAnonymousDamageOverTime((dynamic)line, out fight, out Attack newLineWithAttacker))
             {
                 line = newLineWithAttacker;
-                return deadFight;
+                return fight;
             }
+
             return GetAppropriateFight(line.Attacker, line.Defender);
         }
 
@@ -151,62 +154,115 @@ namespace BizObjects.Battle
             return fight;
         }
 
-        private bool TryFindPostHumousFightDamage(Attack line, out IFight deadFight, out Attack newLineWithAttacker)
+        private bool TryGetAppropriateFightDueToPosthumousDamageOverTimeFromAttacker(Attack line, out IFight deadFight)
         {
             deadFight = null;
+            return false;
+        }
+
+        /// <summary>
+        /// This method finds posthumous damage due to a DoT
+        /// </summary>
+        private bool TryGetAppropriateFightDueToPosthumousDamageOverTimeFromAttacker(Hit line, out IFight fight)
+        {
+            fight = null;
+
+            if (line.Type != AttackType.DamageOverTime)
+                return false;
+
+            if (line.Attacker == Character.Unknown)
+                return false;
+
+            // If there is an attacker and it's not a corpse, then this isn't posthumous damage
+            if (!line.Attacker.IsDead)
+                return false;
+
+            // If a mob casted a Dot on you before they died, it can still be causing damage after the mob itself dies.
+
+            // This is indicated by taking damage from "a mob's corpse"
+            //    "You have taken 57121 damage from Dread Admiral's Curse by Arisen Gloriant Kra`du's corpse."
+            //    "Khadajitwo has taken 56242 damage from Dread Admiral's Curse by Arisen Gloriant Kra`du."
+
+
+            // A complication to this however, is a merc's DoT damage line does not have the "attacker" either before nor after a mob dies.
+            //    "Vryklak has taken 28350 damage by Aura of the Kar`Zok."
+
+            // Yet a further complication arises when a DoT is cured and you take one last tick of damage but without the attacker named
+            //    "You have taken 768 damage from Rabid Anklebite by Deathfang's corpse."
+            //    "Jathenai begins casting Counteract Disease."
+            //    "Jathenai begins casting Counteract Disease."
+            //    "You feel better."
+            //    "You have taken 768 damage from Rabid Anklebite."
+
+            // So, this is now damage due to a dead attacker, let's try to find that last fight/attacker
+
+            var mobFight = Fights.LastOrDefault(x => x.PrimaryMob == line.Attacker);
+
+            // Check the line.DamageBy to find a DoT that matches
+
+            // if we find a dead mob who has used that Dot in the fight, then we know we've got the right one
+            // If a group member has the same type of DoT as we do, that's the same mob
+            // If can happen that we don't take the DoT damage until after they die, in which case we're just matching the mob
+
+            // Is it enough to just say it's the same mob?
+            // - Yes
+
+
+            if (mobFight != null)
+            {
+                fight = mobFight;
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryGetAppropriateFightFromAnonymousDamageOverTime(Attack line, out IFight fight, out Attack newLineWithAttacker)
+        {
+            fight = null;
             newLineWithAttacker = null;
             return false;
         }
-        private bool TryFindPostHumousFightDamage(Hit line, out IFight deadFight, out Attack newLineWithAttacker)
+
+        /// <summary>
+        /// This method finds fight with similar damage due to an anonymous DoT
+        /// </summary>
+        private bool TryGetAppropriateFightFromAnonymousDamageOverTime(Hit line, out IFight fight, out Attack newLineWithAttacker)
         {
-            deadFight = null;
+            fight = null;
             newLineWithAttacker = null;
 
             if (line.Type != AttackType.DamageOverTime)
                 return false;
 
-            // This is to handle the case of a DOT still going after the attacker died and the log line no longer indicates the attacker name
-            // It used to say " ... by mob's corpse", now it just doesn't say
-            // "Movanna has taken 3000 damage by Noxious Visions."
+            if (line.Attacker != Character.Unknown)
+                return false;
 
-            // Further complicating things is the fact that not all DOTs specify their attacker even if they are alive
-            // It seems if a PC takes the damage, there is an Attacker in the message, while if a Merc takes the damage no Attacker is indicated
+            // This is usually DoT damage on a merc, there is no attacker either while the mob is still alive or after they're dead
+            //    "Vryklak has taken 28350 damage by Aura of the Kar`Zok."
 
-            // [Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.
-            // [Mon May 27 09:56:45 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus.
-            // [Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Noxious Visions.
+            // It can also be DoT damage on you after a cure
+            //    "You have taken 768 damage from Rabid Anklebite by Deathfang's corpse."
+            //    "Jathenai begins casting Counteract Disease."
+            //    "Jathenai begins casting Counteract Disease."
+            //    "You feel better."
+            //    "You have taken 768 damage from Rabid Anklebite."
 
-            // Once it dies, it's still identified
+            // Search through our fights to find one that has the same DamageBy
+            var mobFight = Fights.LastOrDefault(x => x.Statistics.Hit.Lines.Any(y => y.DamageBy == line.DamageBy));
 
-            // [Mon May 27 09:58:40 2019] You have taken 1950 damage from Noxious Visions by Gomphus's corpse.
-            // [Mon May 27 09:58:40 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus's corpse.
-            // [Mon May 27 09:58:42 2019] Movanna has taken 3000 damage by Noxious Visions.
+            // if we find a dead mob who has used that Dot in the fight, then we know we've got the right one
+            // If a group member has the same type of DoT as we do, that's the same mob
+            // If can happen that we don't take the DoT damage until after they die, in which case we're just matching the mob
 
-            // The complication is that I get this anonymous DoT both when the mob was alive and when it was dead...
-            // [Mon May 27 06:57:03 2019] You have taken 2080 damage from Paralyzing Bite.
-            // [Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.
-
-            // Basically, if this is an Anoymous Dot ... assign the Attacker to one of the primary mob fights ... which one?
-            // Let's see if a fight has had similar damage already ... same spell
-
-            // If we have, remake the Attack line instance (since it's immutable)
-
-            // So, find the most recent fight that has similar damage
-            // Try a tight match first (Defender, DamageType, DamageAmount), then a loose match (DamageType)
-            var fightsWithSimilarDamage =
-                Fights.LastOrDefault(x => x.SimilarDamage(line)) // Tight match for similar damage (Defender, DamageType, DamageAmount)
-                ?? Fights.LastOrDefault(x => x.SimilarDamage(line, true)) // Loose match for similar damage (DamageType)
-                ?? Fights.LastOrDefault(x => line.Attacker != Character.Unknown && x.PrimaryMob == line.Attacker); // Plain match on attacker name (if you're still taking damage from a corpse)
-
-            // If we do have such a fight, remake this Attack Line w/ the Primary Mob as the attacker
-            if (fightsWithSimilarDamage != null)
+            // If we found a fight where the mob did a similar DoT DamageBy type, then assign that mob as the attacker of this line
+            if (mobFight != null)
             {
-                deadFight = fightsWithSimilarDamage;
-                newLineWithAttacker = new Hit(line.LogLine, fightsWithSimilarDamage.PrimaryMob.Name, line.Defender.Name, line.Verb, line.Damage, line.DamageType, line.DamageBy, line.DamageQualifier, line.Zone);
+                fight = mobFight;
+                newLineWithAttacker = new Hit(line.LogLine, mobFight.PrimaryMob.Name, line.Defender.Name, line.Verb, line.Damage, line.DamageType, line.DamageBy, line.DamageQualifier, line.Zone);
                 return true;
             }
 
-            // Otherwise, business as normal
             return false;
         }
     }
