@@ -16,16 +16,16 @@ namespace BizObjectsTests
             Assert.AreEqual(fighterDuration, fighter.OffensiveStatistics.Duration.FighterDuration);
         }
 
-        protected void VerifyDpsStats(IFight iFight, string name, int total, TimeSpan duration, double fighterDps, double fightDps, Func<Fighter, FightStatistics> statChooser)
+        protected void VerifyDpsStats(IFight iFight, string name, int total, TimeSpan duration, double fighterDps, double fightDps, Func<Fighter, FightStatistics> statChooser, bool isPet = false)
         {
-            var fighter = GetFighter(name, iFight);
+            var fighter = GetFighter(name, iFight, isPet);
 
             VerifyDpsStats(statChooser(fighter), total, duration, fighterDps, fightDps);
         }
 
-        protected Fighter VerifyFighterStatistics(string name, IFight iFight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills)
+        protected Fighter VerifyFighterStatistics(string name, IFight iFight, int offHit, int offHeal, int offMisses, int offKills, int defHit, int defHeal, int defMisses, int defKills, bool isPet = false)
         {
-            var fighter = GetFighter(name, iFight);
+            var fighter = GetFighter(name, iFight, isPet);
 
             VerifyFightStats(fighter.OffensiveStatistics, fighter.Character.Name, offHit, offHeal, offMisses, offKills);
             VerifyFightStats(fighter.DefensiveStatistics, fighter.Character.Name, defHit, defHeal, defMisses, defKills);
@@ -33,9 +33,9 @@ namespace BizObjectsTests
             return fighter;
         }
 
-        private static Fighter GetFighter(string name, IFight iFight)
+        private static Fighter GetFighter(string name, IFight iFight, bool isPet)
         {
-            var fighter = iFight.Fighters.FirstOrDefault(x => x.Character.Name == name);
+            var fighter = iFight.Fighters.FirstOrDefault(x => x.Character.Name == name && x.Character.IsPet == isPet);
             Assert.IsNotNull(fighter, $"Fighter doesn't exist - {name}");
             return fighter;
         }

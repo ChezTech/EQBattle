@@ -323,6 +323,90 @@ namespace BizObjectsTests
             Assert.AreEqual(3, battle.ZoneLineMap[key].Count);
         }
 
+        [TestMethod]
+        public void KhronickDotDamageAsYou()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Mon Oct 26 20:21:49 2020] A Syldon drill sergeant has taken 49611 damage from your Phase Spider Blood. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:21:56 2020] A Syldon drill sergeant has taken 44906 damage from your Phase Spider Blood. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:01 2020] A Syldon drill sergeant has taken 12022 damage from your Phase Spider Blood.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:01 2020] A Syldon drill sergeant has taken 49133 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:07 2020] A Syldon drill sergeant has taken 49611 damage from your Phase Spider Blood. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:07 2020] A Syldon drill sergeant has taken 9732 damage from your Enalam's Curse.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:13 2020] A Syldon drill sergeant has taken 53030 damage from your Phase Spider Blood. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:13 2020] A Syldon drill sergeant has taken 12037 damage from your Enalam's Curse.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:20 2020] A Syldon drill sergeant has taken 10839 damage from your Phase Spider Blood.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:20 2020] A Syldon drill sergeant has taken 46108 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:26 2020] A Syldon drill sergeant has taken 11923 damage from your Phase Spider Blood.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:26 2020] A Syldon drill sergeant has taken 10542 damage from your Enalam's Curse.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:32 2020] A Syldon drill sergeant has taken 54740 damage from your Phase Spider Blood. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:32 2020] A Syldon drill sergeant has taken 41621 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:38 2020] A Syldon drill sergeant has taken 11135 damage from your Phase Spider Blood.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:38 2020] A Syldon drill sergeant has taken 44728 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:44 2020] A Syldon drill sergeant has taken 44672 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:50 2020] A Syldon drill sergeant has taken 49020 damage from your Enalam's Curse. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:56 2020] A Syldon drill sergeant has taken 11510 damage from your Enalam's Curse.");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+            var skirmish = battle.Skirmishes.First() as Skirmish;
+            VerifySkirmishStats(skirmish, 616920, 0, 0, 0);
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            var fight = VerifyFightStatistics("a Syldon drill sergeant", skirmish, 616920, 0, 0, 0);
+
+            Assert.AreEqual(2, fight.Fighters.Count);
+            VerifyFighterStatistics("a Syldon drill sergeant", fight, 0, 0, 0, 0, 616920, 0, 0, 0);
+            var fighter = VerifyFighterStatistics("Khadaji", fight, 616920, 0, 0, 0, 0, 0, 0, 0);
+
+            var stats = fighter.OffensiveStatistics.HitStatsByType;
+            Assert.IsTrue(stats.ContainsKey(BizObjects.Converters.AttackType.DamageOverTime));
+            var dotStats = stats[BizObjects.Converters.AttackType.DamageOverTime];
+            Assert.AreEqual(616920, dotStats.Total);
+        }
+
+        [TestMethod]
+        public void KhronickDotDamage()
+        {
+            var battle = SetupNewBattle();
+
+            AddBattleLine(battle, "[Mon Oct 26 20:21:49 2020] A Syldon drill sergeant has taken 49611 damage from Phase Spider Blood by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:21:55 2020] A Syldon drill sergeant has taken 44906 damage from Phase Spider Blood by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:01 2020] A Syldon drill sergeant has taken 12022 damage from Phase Spider Blood by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:01 2020] A Syldon drill sergeant has taken 49133 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:07 2020] A Syldon drill sergeant has taken 49611 damage from Phase Spider Blood by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:07 2020] A Syldon drill sergeant has taken 9732 damage from Enalam's Curse by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:14 2020] A Syldon drill sergeant has taken 53030 damage from Phase Spider Blood by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:14 2020] A Syldon drill sergeant has taken 12037 damage from Enalam's Curse by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:19 2020] A Syldon drill sergeant has taken 10839 damage from Phase Spider Blood by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:19 2020] A Syldon drill sergeant has taken 46108 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:26 2020] A Syldon drill sergeant has taken 11923 damage from Phase Spider Blood by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:26 2020] A Syldon drill sergeant has taken 10542 damage from Enalam's Curse by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:32 2020] A Syldon drill sergeant has taken 54740 damage from Phase Spider Blood by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:32 2020] A Syldon drill sergeant has taken 41621 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:38 2020] A Syldon drill sergeant has taken 11135 damage from Phase Spider Blood by Khronick.");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:38 2020] A Syldon drill sergeant has taken 44728 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:44 2020] A Syldon drill sergeant has taken 44672 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:50 2020] A Syldon drill sergeant has taken 49020 damage from Enalam's Curse by Khronick. (Critical)");
+            AddBattleLine(battle, "[Mon Oct 26 20:22:56 2020] A Syldon drill sergeant has taken 11510 damage from Enalam's Curse by Khronick.");
+
+            Assert.AreEqual(1, battle.Skirmishes.Count);
+            var skirmish = battle.Skirmishes.First() as Skirmish;
+            VerifySkirmishStats(skirmish, 616920, 0, 0, 0);
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            var fight = VerifyFightStatistics("a Syldon drill sergeant", skirmish, 616920, 0, 0, 0);
+
+            Assert.AreEqual(2, fight.Fighters.Count);
+            VerifyFighterStatistics("a Syldon drill sergeant", fight, 0, 0, 0, 0, 616920, 0, 0, 0);
+            var fighter = VerifyFighterStatistics("Khronick", fight, 616920, 0, 0, 0, 0, 0, 0, 0);
+
+            var stats = fighter.OffensiveStatistics.HitStatsByType;
+            Assert.IsTrue(stats.ContainsKey(BizObjects.Converters.AttackType.DamageOverTime));
+            var dotStats = stats[BizObjects.Converters.AttackType.DamageOverTime];
+            Assert.AreEqual(616920, dotStats.Total);
+        }
+
         private Battle SetupNewBattle()
         {
             return new Battle(YouAre);
