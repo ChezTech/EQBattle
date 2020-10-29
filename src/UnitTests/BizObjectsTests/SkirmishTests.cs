@@ -43,11 +43,17 @@ namespace BizObjectsTests
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:16 2019] Khronick feels the touch of recuperation. Movanna healed Khronick for 1827 (23605) hit points by Word of Recuperation.");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:16 2019] Movanna feels the touch of recuperation. Movanna healed herself for 23605 hit points by Word of Recuperation.");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:16 2019] You feel the touch of recuperation. Movanna healed you for 20053 (23605) hit points by Word of Recuperation.");
+
+            // NOTE: This is an interesting fight, this anonymous DOT gets assigned to the latest fight (Harvester Collyx) because we don't have any similar DOT to match it with (yet)
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:16 2019] Movanna has taken 3000 damage by Noxious Visions.");
+
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:02:56 2019] Movanna crushes Gomphus for 322 points of damage. (Riposte)");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:03:01 2019] Khronick healed you over time for 1518 hit points by Healing Counterbias Effect.");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:03:19 2019] Harvester Collyx has taken 8206 damage from Blood of Jaled'Dar by Khronick. (Critical)");
+
+            // Now, we see a similar DOT. We should track anon DOT's that we don't match "with strong conviction" and retro change the Attacker/Fight
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:03:30 2019] Khronick has taken 1950 damage from Noxious Visions by Gomphus.");
+
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:03:53 2019] You kick Harvester Collyx for 13333 points of damage. (Riposte Critical)");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:03:53 2019] You have slain Harvester Collyx!");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:04:04 2019] Gomphus hits Movanna for 2076 points of damage.");
@@ -55,22 +61,25 @@ namespace BizObjectsTests
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:04:36 2019] Gomphus hits Khronick for 6177 points of damage.");
             AddSkirmishTrackLine(skirmish, charTracker, "[Tue May 28 06:04:36 2019] Khronick has been slain by Gomphus!");
 
+
+
+
+
             // Skirmish stats
             VerifySkirmishStats(skirmish, 42707, 56200, 2, 3);
 
             // Skirmish Fighters
-            Assert.AreEqual(6, skirmish.Fighters.Count());
+            Assert.AreEqual(5, skirmish.Fighters.Count());
             VerifyFighterStatistics("Khadaji", skirmish, 14540, 0, 0, 1, 0, 21571, 1, 0);
             VerifyFighterStatistics("Movanna", skirmish, 322, 54682, 0, 0, 11512, 23605, 1, 1);
             VerifyFighterStatistics("Khronick", skirmish, 8206, 1518, 0, 0, 8127, 11024, 0, 1);
             VerifyFighterStatistics("Gomphus", skirmish, 14073, 0, 1, 2, 1529, 0, 0, 0);
-            VerifyFighterStatistics("Harvester Collyx", skirmish, 2566, 0, 1, 0, 21539, 0, 0, 1);
-            VerifyFighterStatistics("Unknown", skirmish, 3000, 0, 0, 0, 0, 0, 0, 0);
+            VerifyFighterStatistics("Harvester Collyx", skirmish, 5566, 0, 1, 0, 21539, 0, 0, 1);
 
             // Skirmish Fights
             Assert.AreEqual(2, skirmish.Fights.Count);
-            VerifyFightStatistics("Gomphus", skirmish, 18602, 56200, 1, 2);
-            VerifyFightStatistics("Harvester Collyx", skirmish, 24105, 0, 1, 1);
+            VerifyFightStatistics("Gomphus", skirmish, 15602, 56200, 1, 2);
+            VerifyFightStatistics("Harvester Collyx", skirmish, 27105, 0, 1, 1);
         }
 
         [TestMethod]
@@ -611,17 +620,91 @@ namespace BizObjectsTests
         {
             var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
 
-            // Scenario where:
-            // mob dies
-            // dot hits a PC after death with corpse as attacker
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:26 2020] An ancient gnarlroot smashes Nuananne for 12 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:27 2020] You crush an ancient gnarlroot for 34 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:27 2020] Nuananne slashes an ancient gnarlroot for 34 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:27 2020] An ancient gnarlroot has been slain by Nuananne!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:28 2020] Nuananne bashes a dark shadeling for 12 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:28 2020] A dark shadeling hits Nuananne for 9 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:30 2020] You have taken 5 damage from Infectious Cloud by an ancient gnarlroot's corpse.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:30 2020] A dark shadeling bashes Nuananne for 7 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Thu Jul 30 20:44:36 2020] You have taken 5 damage from Infectious Cloud by an ancient gnarlroot's corpse.");
 
+            VerifySkirmishStats(skirmish, 118, 0, 0, 1);
 
-            //Assert.Fail();
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            Assert.AreEqual(4, skirmish.Fighters.Count());
 
+            var fight = VerifyFightStatistics("an ancient gnarlroot", skirmish, 90, 0, 0, 1);
+            Assert.AreEqual(3, fight.Fighters.Count());
+            VerifyFighterStatistics("an ancient gnarlroot", fight, 22, 0, 0, 0, 68, 0, 0, 1);
+            VerifyFighterStatistics("Nuananne", fight, 34, 0, 0, 1, 12, 0, 0, 0);
+            VerifyFighterStatistics("Khadaji", fight, 34, 0, 0, 0, 10, 0, 0, 0);
+
+            fight = VerifyFightStatistics("a dark shadeling", skirmish, 28, 0, 0, 0);
+            Assert.AreEqual(2, fight.Fighters.Count());
+            VerifyFighterStatistics("a dark shadeling", fight, 16, 0, 0, 0, 12, 0, 0, 0);
+            VerifyFighterStatistics("Nuananne", fight, 12, 0, 0, 0, 16, 0, 0, 0);
         }
 
         [TestMethod]
-        public void PosthumousDotDamageOnGroupxxxx3()
+        public void PosthumousDotDamageAnoymousAssociateWithPreviousDotDamage()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            // Scenario where:
+            // mob dies
+            // anonymous dot hits a merc after death
+            // assgin damage to similar DoT
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] Ilyiche has taken 28350 damage from Aura of the Kar`Zok by a Kar`Zok scourge.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] Khadajitwo crushes a Kar`Zok scourge for 28651 points of damage. (Critical Flurry)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] A Kar`Zok scourge has been slain by Khadajitwo!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:04 2020] Vryklak has taken 28350 damage by Aura of the Kar`Zok.");
+
+            VerifySkirmishStats(skirmish, 85351, 0, 0, 1);
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            Assert.AreEqual(4, skirmish.Fighters.Count());
+
+            var fight = VerifyFightStatistics("a Kar`Zok scourge", skirmish, 85351, 0, 0, 1);
+            Assert.AreEqual(4, fight.Fighters.Count());
+            VerifyFighterStatistics("a Kar`Zok scourge", fight, 56700, 0, 0, 0, 28651, 0, 0, 1);
+            VerifyFighterStatistics("Ilyiche", fight, 0, 0, 0, 0, 28350, 0, 0, 0);
+            VerifyFighterStatistics("Khadajitwo", fight, 28651, 0, 0, 1, 0, 0, 0, 0);
+            VerifyFighterStatistics("Vryklak", fight, 0, 0, 0, 0, 28350, 0, 0, 0);
+        }
+
+        [TestMethod]
+        public void PosthumousDotDamageAnoymousAssociateWithNamedDotDamage()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            // Scenario where:
+            // mob dies
+            // anonymous dot hits a merc after death
+            // assgin damage to similar DoT
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] Khadajitwo crushes a Kar`Zok scourge for 28651 points of damage. (Critical Flurry)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] A Kar`Zok scourge has been slain by Khadajitwo!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:04 2020] Bloodyassassin has taken 28800 damage from Aura of the Kar`Zok by a Kar`Zok scourge's corpse.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:04 2020] Vryklak has taken 28350 damage by Aura of the Kar`Zok.");
+
+            VerifySkirmishStats(skirmish, 85801, 0, 0, 1);
+
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            Assert.AreEqual(4, skirmish.Fighters.Count());
+
+            var fight = VerifyFightStatistics("a Kar`Zok scourge", skirmish, 85801, 0, 0, 1);
+            Assert.AreEqual(4, fight.Fighters.Count());
+            VerifyFighterStatistics("a Kar`Zok scourge", fight, 57150, 0, 0, 0, 28651, 0, 0, 1);
+            VerifyFighterStatistics("Khadajitwo", fight, 28651, 0, 0, 1, 0, 0, 0, 0);
+            VerifyFighterStatistics("Bloodyassassin", fight, 0, 0, 0, 0, 28800, 0, 0, 0);
+            VerifyFighterStatistics("Vryklak", fight, 0, 0, 0, 0, 28350, 0, 0, 0);
+        }
+
+        [TestMethod]
+        public void PosthumousDotDamageAnoymousAssociateWithSameFight()
         {
             var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
 
@@ -631,10 +714,55 @@ namespace BizObjectsTests
             // assign that damage to the new fight? Or, if no new fight to the old fight.
             // anon DoT damage should go to current fight, or if none, to the last fight, it shouldn't cause a new fight to happen. Or, if these is no fight at all, it should start one
 
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] Khadajitwo crushes a Kar`Zok scourge for 28651 points of damage. (Critical Flurry)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] A Kar`Zok scourge has been slain by Khadajitwo!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:04 2020] Vryklak has taken 28350 damage by Aura of the Kar`Zok.");
 
-            //Assert.Fail();
+            VerifySkirmishStats(skirmish, 57001, 0, 0, 1);
 
+            Assert.AreEqual(1, skirmish.Fights.Count);
+            Assert.AreEqual(3, skirmish.Fighters.Count());
+
+            var fight = VerifyFightStatistics("a Kar`Zok scourge", skirmish, 57001, 0, 0, 1);
+            Assert.AreEqual(3, fight.Fighters.Count());
+            VerifyFighterStatistics("a Kar`Zok scourge", fight, 28350, 0, 0, 0, 28651, 0, 0, 1);
+            VerifyFighterStatistics("Khadajitwo", fight, 28651, 0, 0, 1, 0, 0, 0, 0);
+            VerifyFighterStatistics("Vryklak", fight, 0, 0, 0, 0, 28350, 0, 0, 0);
         }
+
+        [TestMethod]
+        public void PosthumousDotDamageAnoymousAssociateWithNewFight()
+        {
+            var skirmish = SetupNewSkirmish(out CharacterTracker charTracker);
+
+            // Scenario where:
+            // mob dies
+            // anonymous dot hits a merc after death
+            // assign that damage to the new fight? Or, if no new fight to the old fight.
+            // anon DoT damage should go to current fight, or if none, to the last fight, it shouldn't cause a new fight to happen. Or, if these is no fight at all, it should start one
+
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] Khadajitwo crushes a Kar`Zok scourge for 28651 points of damage. (Critical Flurry)");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] A Kar`Zok scourge has been slain by Khadajitwo!");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:02 2020] You kick a Wulthan grand inquisitor for 19656 points of damage.");
+            AddSkirmishTrackLine(skirmish, charTracker, "[Sat Oct 10 12:53:04 2020] Vryklak has taken 28350 damage by Aura of the Kar`Zok.");
+
+            VerifySkirmishStats(skirmish, 76657, 0, 0, 1);
+
+            Assert.AreEqual(2, skirmish.Fights.Count);
+            Assert.AreEqual(5, skirmish.Fighters.Count());
+
+            var fight = VerifyFightStatistics("a Kar`Zok scourge", skirmish, 28651, 0, 0, 1);
+            Assert.AreEqual(2, fight.Fighters.Count());
+            VerifyFighterStatistics("a Kar`Zok scourge", fight, 0, 0, 0, 0, 28651, 0, 0, 1);
+            VerifyFighterStatistics("Khadajitwo", fight, 28651, 0, 0, 1, 0, 0, 0, 0);
+
+            fight = VerifyFightStatistics("a Wulthan grand inquisitor", skirmish, 48006, 0, 0, 0);
+            Assert.AreEqual(3, fight.Fighters.Count());
+            VerifyFighterStatistics("a Wulthan grand inquisitor", fight, 28350, 0, 0, 0, 19656, 0, 0, 0);
+            VerifyFighterStatistics("Khadaji", fight, 19656, 0, 0, 0, 0, 0, 0, 0);
+            VerifyFighterStatistics("Vryklak", fight, 0, 0, 0, 0, 28350, 0, 0, 0);
+        }
+
 
         [TestMethod]
         public void AnonymousDOTDamageWhileMobStillAlive()

@@ -251,11 +251,11 @@ namespace BizObjects.Battle
             // Search through our fights to find one that has the same DamageBy
             var mobFight = Fights.LastOrDefault(x => x.Statistics.Hit.Lines.Any(y => y.DamageBy == line.DamageBy));
 
-            // if we find a dead mob who has used that Dot in the fight, then we know we've got the right one
-            // If a group member has the same type of DoT as we do, that's the same mob
-            // If can happen that we don't take the DoT damage until after they die, in which case we're just matching the mob
+            // So, we didn't find any fight that matches the type of DoT damage for this line
+            // We need to assign it to some fight, so let's assign it to the current fight (even if that fight is "over", i.e. mob is slain)
+            if (mobFight == null)
+                mobFight = Fights.LastOrDefault();
 
-            // If we found a fight where the mob did a similar DoT DamageBy type, then assign that mob as the attacker of this line
             if (mobFight != null)
             {
                 fight = mobFight;
