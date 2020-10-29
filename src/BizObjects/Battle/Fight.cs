@@ -103,30 +103,6 @@ namespace BizObjects.Battle
                 PrimaryMob = topFighter.Character;
         }
 
-        /// <Summary>
-        /// Figures out if this fight already has a similar as the specified line.
-        /// Bases it on Defender, DamageBy (really a spell name, e.g. DoT damage), and matching amount
-        /// This is to help match Anonymous DoT damage (usually of a dead mob) with previous DoT damage
-        /// If `looseMatch` is specified, only matches based on DamageBy. This picks up Merc DoT damage which doesn't specify an Attacker
-        /// </Summary>
-        public override bool SimilarDamage(Hit line, bool looseMatch = false)
-        {
-            return looseMatch
-                ? Statistics
-                    .Lines
-                    .Select(x => x as Hit)
-                    .Where(x => x != null)
-                    .Any(x => x.DamageBy == line.DamageBy)
-                : Fighters
-                    .FirstOrDefault(x => x.Character == line.Defender)
-                    ?.DefensiveStatistics
-                    .Lines
-                    .Select(x => x as Hit)
-                    .Where(x => x != null)
-                    .Any(x => x.DamageBy == line.DamageBy && x.Damage == line.Damage)
-                    ?? false;
-        }
-
         private string DebuggerDisplay
         {
             get

@@ -295,73 +295,6 @@ namespace BizObjectsTests
         }
 
         [TestMethod]
-        public void CheckSimilarFightNoLines()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite."));
-
-            Assert.IsFalse(fight.SimilarDamage(line as Hit));
-        }
-
-        [TestMethod]
-        public void CheckSimilarFightNoMatch()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:02 2019] You kick a sandspinner stalker for 967 points of damage. (Riposte)");
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:03 2019] You have taken 2080 damage from Paralyzing Bite."));
-
-            Assert.IsFalse(fight.SimilarDamage(line as Hit));
-        }
-
-        [TestMethod]
-        public void CheckSimilarFight()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2080 damage from Paralyzing Bite."));
-
-            Assert.IsTrue(fight.SimilarDamage(line as Hit));
-        }
-
-        [TestMethod]
-        public void CheckNotSimilarFight()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            AddFightTrackLine(fight, charTracker, "[Mon May 27 06:57:09 2019] You have taken 2080 damage from Paralyzing Bite by a sandspinner stalker.");
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 06:57:15 2019] You have taken 2081 damage from Paralyzing Bite."));
-
-            Assert.IsFalse(fight.SimilarDamage(line as Hit));
-        }
-
-        [TestMethod]
-        public void CheckSimilarFightLoose()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            AddFightTrackLine(fight, charTracker, "[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.");
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Noxious Visions."));
-
-            Assert.IsFalse(fight.SimilarDamage(line as Hit));
-            Assert.IsTrue(fight.SimilarDamage(line as Hit, true));
-        }
-
-        [TestMethod]
-        public void CheckNotSimilarFightLoose()
-        {
-            var fight = SetupNewFight(out CharacterTracker charTracker);
-
-            AddFightTrackLine(fight, charTracker, "[Mon May 27 09:56:45 2019] You have taken 1950 damage from Noxious Visions by Gomphus.");
-            ILine line = _parser.ParseLine(new LogDatum("[Mon May 27 09:56:47 2019] Movanna has taken 3000 damage by Putrid Visions."));
-
-            Assert.IsFalse(fight.SimilarDamage(line as Hit));
-            Assert.IsFalse(fight.SimilarDamage(line as Hit, true));
-        }
-
-        [TestMethod]
         public void TestFivePointPalmSameDamage()
         {
             var fight = SetupNewFight(out CharacterTracker charTracker);
@@ -459,7 +392,137 @@ namespace BizObjectsTests
             Assert.AreEqual(1, fighter.DefensiveStatistics.Heal.Count);
         }
 
-        private Fight SetupNewFight(out CharacterTracker charTracker)
+        [TestMethod]
+        public void YouDiedDueToDot()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            //[Sun Sep 27 09:46:53 2020] Embalming Goo begins casting Fink's Diseased Touch.
+            //[Sun Sep 27 09:46:53 2020] You are touched by poison.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo hits YOU for 45317 points of damage. (Strikethrough)
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo hits YOU for 20482 points of damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo tries to hit YOU, but misses!
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo hits YOU for 47387 points of damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:55 2020] Embalming Goo bashes YOU for 5995 points of damage. (Strikethrough)
+            //[Sun Sep 27 09:46:56 2020] You magically mend your wounds and heal considerable damage.
+            //[Sun Sep 27 09:46:57 2020] Embalming Goo tries to hit YOU, but misses!
+            //[Sun Sep 27 09:46:57 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:57 2020] Embalming Goo hits YOU for 32900 points of damage. (Strikethrough)
+            //[Sun Sep 27 09:46:57 2020] Embalming Goo is pierced by YOUR thorns for 7023 points of non-melee damage.
+            //[Sun Sep 27 09:46:57 2020] Embalming Goo hits YOU for 45317 points of damage. (Strikethrough)
+            //[Sun Sep 27 09:46:58 2020] You have taken 56889 damage from Fink's Diseased Touch by Embalming Goo.
+            //[Sun Sep 27 09:47:04 2020] You have taken 56889 damage from Fink's Diseased Touch by Embalming Goo.
+            //[Sun Sep 27 09:47:05 2020] You have been knocked unconscious!
+            //[Sun Sep 27 09:47:05 2020] You may not use that command while dead.
+            //[Sun Sep 27 09:47:10 2020] You have taken 56889 damage from Fink's Diseased Touch by Embalming Goo.
+            //[Sun Sep 27 09:47:10 2020] You died.
+
+            // Can we assign my death to last damage line, hence last mob?
+
+
+        }
+
+        [TestMethod]
+        public void OtherDiedDueToDot()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora is tormented by Skullmasta's frost for 313 points of non-melee damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora punches Skullmasta for 23943 points of damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora is tormented by Skullmasta's frost for 313 points of non-melee damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora punches Skullmasta for 18149 points of damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora is tormented by Skullmasta's frost for 313 points of non-melee damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora punches Skullmasta for 45192 points of damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora is tormented by Skullmasta's frost for 313 points of non-melee damage.
+            //[Sun Sep 20 11:05:14 2020] Tormented Adalora punches Skullmasta for 8490 points of damage.
+            //[Sun Sep 20 11:05:18 2020] Skullmasta has taken 55364 damage from Dread Admiral's Curse by Tormented Adalora.
+            //[Sun Sep 20 11:05:24 2020] Skullmasta has taken 55364 damage from Dread Admiral's Curse by Tormented Adalora.
+            //[Sun Sep 20 11:05:24 2020] Skullmasta died.
+
+        }
+
+        [TestMethod]
+        public void MobDiedDueToDot()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            //[Sat Sep 05 21:14:21 2020] Kelanna hit a filthy ape for 8138 points of poison damage by Bite of the Shissar Poison Strike.
+            //[Sat Sep 05 21:14:21 2020] A filthy ape has taken 2252 damage from Jugular Gash Rk.II by Kelanna.
+            //[Sat Sep 05 21:14:21 2020] A filthy ape died.
+
+        }
+
+        [TestMethod]
+        public void YouDiedDueToDamageShield()
+        {
+            var fight = SetupNewFight(out CharacterTracker charTracker);
+
+            //[Thu Oct 08 21:47:11 2020] You activate Vigorous Shuriken Rk.II.
+            //[Thu Oct 08 21:47:11 2020] You hit an ember trooper for 1440 points of physical damage by Vigorous Shuriken Rk.II.
+            //[Thu Oct 08 21:47:11 2020] An ember trooper is struck from a distance by a razor-sharp shuriken.
+            //[Thu Oct 08 21:47:11 2020] An ember trooper begins casting Cooling Crust.
+            //[Thu Oct 08 21:47:14 2020] An ember trooper tries to pierce YOU, but YOU riposte!
+            //[Thu Oct 08 21:47:14 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:14 2020] You try to crush an ember trooper, but an ember trooper's magical skin absorbs the blow! (Riposte Strikethrough)
+            //[Thu Oct 08 21:47:14 2020] An ember trooper's magical skin absorbs the damage of YOUR thorns.
+            //[Thu Oct 08 21:47:14 2020] An ember trooper pierces YOU for 6334 points of damage. (Riposte Strikethrough)
+            //[Thu Oct 08 21:47:14 2020] An ember trooper tries to pierce YOU, but YOU riposte!
+            //[Thu Oct 08 21:47:14 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:14 2020] You try to crush an ember trooper, but an ember trooper's magical skin absorbs the blow! (Riposte Strikethrough)
+            //[Thu Oct 08 21:47:14 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:14 2020] You try to crush an ember trooper, but an ember trooper's magical skin absorbs the blow! (Riposte Strikethrough)
+            //[Thu Oct 08 21:47:14 2020] An ember trooper tries to hit YOU, but misses!
+            //[Thu Oct 08 21:47:14 2020] An ember trooper tries to hit YOU, but misses!
+            //[Thu Oct 08 21:47:15 2020] Auto attack is on.
+            //[Thu Oct 08 21:47:15 2020] An ember trooper tries to bash YOU, but misses!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to kick an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to kick an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] The spirit of Master Wu fills you!  You gain 3 additional attack(s).
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to kick an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to kick an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to kick an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow! (Strikethrough)
+            //[Thu Oct 08 21:47:15 2020] The spirit of Master Wu fills you!  You gain 2 additional attack(s).
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow! (Strikethrough)
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to crush an ember trooper, but an ember trooper's magical skin absorbs the blow! (Strikethrough)
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to crush an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] You can use the ability Hoshkar's Fang Rk. II again in 0 minute(s) 3 seconds.
+            //[Thu Oct 08 21:47:15 2020] You can use the ability Vigorous Shuriken Rk. II again in 0 minute(s) 2 seconds.
+            //[Thu Oct 08 21:47:15 2020] You can use the ability Zan Fi's Whistle again in 3 minute(s) 51 seconds.
+            //[Thu Oct 08 21:47:15 2020] You begin casting Two-Finger Wasp Touch VII.
+            //[Thu Oct 08 21:47:15 2020] an ember trooper is crippled by a two-finger wasp touch.
+            //[Thu Oct 08 21:47:15 2020] You activate Firestorm of Fists Rk.II.
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] YOU are pierced by an ember trooper's thorns for 11971 points of non-melee damage!
+            //[Thu Oct 08 21:47:15 2020] An ember trooper says, 'An Ember must be strong and perceptive to survive. I am clearly both.'
+            //[Thu Oct 08 21:47:15 2020] You have been knocked unconscious!
+            //[Thu Oct 08 21:47:15 2020] You have been slain by an ember trooper!
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] An ember trooper flinches, 'What was that? Ah, I see you.'
+            //[Thu Oct 08 21:47:15 2020] You try to strike an ember trooper, but an ember trooper's magical skin absorbs the blow!
+            //[Thu Oct 08 21:47:15 2020] an ember trooper is struck by fists from every direction.
+
+        }
+
+    private Fight SetupNewFight(out CharacterTracker charTracker)
         {
             var charResolver = new CharacterResolver();
             charTracker = new CharacterTracker(YouAre, charResolver);

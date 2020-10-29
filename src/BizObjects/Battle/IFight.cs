@@ -21,7 +21,6 @@ namespace BizObjects.Battle
         void AddLine(ILine line);
         void AddLine(Attack line);
         void AddLine(Heal line);
-        bool SimilarDamage(Hit line, bool looseMatch = false);
     }
 
     public interface ISkirmish : IFight

@@ -45,10 +45,6 @@ namespace BizObjects.Battle
         public abstract void AddLine(Attack line);
         public abstract void AddLine(Heal line);
 
-        public virtual bool SimilarDamage(Hit line, bool looseMatch = false)
-        {
-            throw new NotImplementedException();
-        }
         protected void AddFighterLine(Character fighterChar, Action<Fighter> addLine)
         {
             var fighter = _fighters.GetOrAdd(fighterChar, k =>
