@@ -59,6 +59,7 @@ namespace BizObjectsTests
         public void FightThreeOfTheSameMobsWithBreaksGiveThreeSkirmishes()
         {
             var battle = SetupNewBattle();
+            battle.SkirmishGap = new TimeSpan(0, 0, 6);
 
             AddBattleLine(battle, "[Fri May 24 18:25:00 2019] Jebartik hit a cliknar scout drone for 3000 points of magic damage by Companion's Strike XIII.");
             AddBattleLine(battle, "[Fri May 24 18:25:00 2019] Eruzen hit a cliknar scout drone for 70859 points of fire damage by Spear of Magma Rk. II. (Critical Twincast)");
@@ -137,6 +138,7 @@ namespace BizObjectsTests
         public void PullBeforeTheFightShouldBeTogetherEvenWithGap()
         {
             var battle = SetupNewBattle();
+            battle.SkirmishGap = new TimeSpan(0, 0, 6);
 
             AddBattleLine(battle, "[Fri Apr 26 09:25:35 2019] You hit a cliknar adept for 2 points of magic damage by Distant Strike I.");
 
@@ -156,6 +158,7 @@ namespace BizObjectsTests
         public void PullWithSmallGapShouldHaveStatsSeparated()
         {
             var battle = SetupNewBattle();
+            battle.SkirmishGap = new TimeSpan(0, 0, 6);
 
             AddBattleLine(battle, "[Mon May 27 07:25:30 2019] You hit a cliknar skirmish drone for 2 points of magic damage by Distant Strike I.");
             AddBattleLine(battle, "[Mon May 27 07:25:32 2019] A cliknar skirmish drone tries to bite YOU, but YOU dodge!");
@@ -183,6 +186,7 @@ namespace BizObjectsTests
         public void PullWithinGapOfFirstSkirmishShouldMoveToNextSkirmish()
         {
             var battle = SetupNewBattle();
+            battle.SkirmishGap = new TimeSpan(0, 0, 6);
 
             // First Skirmish/Fight
             AddBattleLine(battle, "[Mon May 27 07:30:03 2019] A cliknar battle drone bites YOU for 992 points of damage.");
@@ -209,6 +213,7 @@ namespace BizObjectsTests
         public void PullBetweenGapsOfEitherSkirmishShouldMoveToNextSkirmish()
         {
             var battle = SetupNewBattle();
+            battle.SkirmishGap = new TimeSpan(0, 0, 6);
 
             // First Skirmish/Fight
             AddBattleLine(battle, "[Mon May 27 07:30:03 2019] A cliknar battle drone bites YOU for 992 points of damage.");

@@ -27,7 +27,7 @@ namespace BizObjects.Battle
         public readonly YouResolver YouAre;
         public static readonly CharacterResolver CharResolver = new CharacterResolver(); // Uck, a global singleton, or better spin, a DI singleton :p
         private readonly CharacterTracker _charTracker;
-        private readonly TimeSpan _skirmishGap = new TimeSpan(0, 0, 8); // Make this configurable
+        public TimeSpan SkirmishGap { get; set; } = new TimeSpan(0, 0, 8); // Make this configurable
 
         private ISkirmish _currentSkirmish;
 
@@ -146,7 +146,7 @@ namespace BizObjects.Battle
             // Maybe this is a special case .. if you get rezzed and still fighting the same mob...
 
             // If it's been enough time since the last attack and this attack, then a new Skirmish is needed
-            if (line.Time - _currentSkirmish.LastAttackTime > _skirmishGap)
+            if (line.Time - _currentSkirmish.LastAttackTime > SkirmishGap)
                 return true;
 
             // We want to allow loot lines on a fight even when the fight is over (the mob is dead)
