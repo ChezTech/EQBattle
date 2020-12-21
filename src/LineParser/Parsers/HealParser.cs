@@ -10,7 +10,7 @@ namespace LineParser.Parsers
 {
     public class HealParser : IParser
     {
-        private readonly Regex RxHeal = new Regex(@"^(.+\. )?(.*?)(?: (has been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$", RegexOptions.Compiled); // https://regex101.com/r/eBfX2c/3
+        private readonly Regex RxHeal = new Regex(@"^(.+\. )?(.*?)(?: (has been|have been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$", RegexOptions.Compiled); // https://regex101.com/r/eBfX2c/6
         private readonly Regex RxYouAreHealed = new Regex(@"^You have been healed for (\d+) points of damage\.$", RegexOptions.Compiled); // https://regex101.com/r/2Stapt/1
         private readonly Regex RxCompleteHeal = new Regex(@"^(.+) (is|are) completely healed\.$", RegexOptions.Compiled); // https://regex101.com/r/2CHSPg/2/
         private readonly YouResolver YouAre;
@@ -58,7 +58,10 @@ namespace LineParser.Parsers
             var flavor = match.Groups[1].Value;
             var healer = match.Groups[2].Value;
             var patient = match.Groups[4].Value;
-            // Mordsith has been healed ...
+            
+            // "has been" || "have been"
+            // Mordsith has been healed over time by ....
+            // You have been healed over time by ...
             if (match.Groups[3].Success)
             {
                 patient = healer;

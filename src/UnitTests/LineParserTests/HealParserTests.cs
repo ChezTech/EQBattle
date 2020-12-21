@@ -28,6 +28,13 @@ namespace LineParserTests
         [DataRow("[Fri May 24 18:23:33 2019] Harmonious Prana healed Eruzen over time for 556 (3849) hit points by Zealous Elixir Rk. II.", "Harmonious Prana", "Eruzen", 556, 3849, "Zealous Elixir Rk. II", true, null)]
         [DataRow("[Fri May 24 18:23:40 2019] Vatalae has been healed with frenzied life-giving energy. Harmonious Prana healed Vatalae for 21367 (24855) hit points by Frenzied Renewal Rk. II.", "Harmonious Prana", "Vatalae", 21367, 24855, "Frenzied Renewal Rk. II", false, null)]
 
+        [DataRow("[Fri Dec 18 23:24:21 2020] You have been healed over time for 6434 hit points by Roar of the Lion 1.", "Unknown", "Khadaji", 6434, -1, "Roar of the Lion 1", true, null)]
+        [DataRow("[Sat Dec 19 20:36:18 2020] Khronick healed you over time for 12868 hit points by Roar of the Lion 1. (Critical)", "Khronick", "Khadaji", 12868, -1, "Roar of the Lion 1", true, "Critical")]
+        [DataRow("[Sat Dec 19 20:29:08 2020] You healed Khadaji over time for 2084 hit points by Incapable Health.", "Khadaji", "Khadaji", 2084, -1, "Incapable Health", true, null)]
+        [DataRow("[Sat Dec 19 20:36:18 2020] You healed Khadaji for 34146 (42603) hit points by Promised Remedy Trigger II.", "Khadaji", "Khadaji", 34146, 42603, "Promised Remedy Trigger II", false, null)]
+        [DataRow("[Sat Dec 19 20:05:20 2020] Draach healed himself for 2253 hit points by Vampiric Draw.", "Draach", "Draach", 2253, -1, "Vampiric Draw", false, null)]
+        [DataRow("[Sat Dec 19 20:05:22 2020] You healed Vatalae over time for 12093 (12868) hit points by Roar of the Lion 1. (Critical)", "Khadaji", "Vatalae", 12093, 12868, "Roar of the Lion 1", true, "Critical")]
+
         // Old school log messages
         [DataRow("[Fri May 09 22:42:30 2003] You have been healed for 1451 points of damage.", "Unknown", "Khadaji", 1451, -1, null, false, null)]
         // [Fri May 09 22:57:10 2003] Nair is washed over by the healing wave of Prexus.
