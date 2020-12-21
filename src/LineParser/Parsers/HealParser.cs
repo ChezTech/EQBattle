@@ -10,8 +10,7 @@ namespace LineParser.Parsers
 {
     public class HealParser : IParser
     {
-        private readonly Regex RxHeal;
-        private readonly string rgexHeal = @"^(.+\. )?(.*?)(?: (has been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$"; // https://regex101.com/r/eBfX2c/3
+        private readonly Regex RxHeal = new Regex(@"^(.+\. )?(.*?)(?: (has been))? healed (.*?)(?: (over time))? for (\d+)(?: \((\d+)\))? hit points by (.+)\.(?: \((.+)\))?$", RegexOptions.Compiled); // https://regex101.com/r/eBfX2c/3
         private readonly Regex RxYouAreHealed = new Regex(@"^You have been healed for (\d+) points of damage\.$", RegexOptions.Compiled); // https://regex101.com/r/2Stapt/1
         private readonly Regex RxCompleteHeal = new Regex(@"^(.+) (is|are) completely healed\.$", RegexOptions.Compiled); // https://regex101.com/r/2CHSPg/2/
         private readonly YouResolver YouAre;
@@ -19,7 +18,6 @@ namespace LineParser.Parsers
         public HealParser(YouResolver youAre)
         {
             YouAre = youAre;
-            RxHeal = new Regex(rgexHeal, RegexOptions.Compiled);
         }
 
         public bool TryParse(LogDatum logDatum, out ILine lineEntry)
