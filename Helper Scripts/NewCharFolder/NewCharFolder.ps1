@@ -81,6 +81,8 @@ $BaseCharServerIni = Join-Path -Path $BaseEQFolder -ChildPath ($BoxCharName + "_
 $UIBaseCharServerIni = Join-Path -Path $BaseEQFolder -ChildPath ("UI_" + $BoxCharName + "_" + $ServerName + ".ini")
 # C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest\UI_Aiyya_test.ini
 
+# Used for sym-link vs hard-link
+$HardExtCollection = ".exe", ".dll"
 
 # -------------------------------------------------
 # Make sure the New Character's .ini files exist in the original folder
@@ -105,40 +107,89 @@ if (!(Test-Path -Path $UIBaseCharServerIni))
 	New-Item -ItemType File -Path $UIBaseCharServerIni
 }
 
-
 # -------------------------------------------------
-# Create the folder
+# Create the new character's folder
 if (!(Test-Path -Path $BoxEQFolder))
 {
     $null = New-Item -ItemType Directory -Path $BoxEQFolder
 }
 
 # -------------------------------------------------
+function New-SymLink
+{
+    param
+    (
+        $Path, # The new file/folder
+        $Original # The real file/folder for the link
+    )
+
+    # If the path already exists ... don't do anything
+    if (Test-Path -Path $Path)
+    {
+        return
+    }
+
+    # Figure out which type of link to use
+    if ($Original.Attributes -eq "Directory")
+    {
+        $linkType = "SymbolicLink"
+    }
+    ElseIf ($HardExtCollection -Contains $Original.Extension)
+    {
+        $linkType = "HardLink"
+    }
+    Else 
+    {
+        $linkType = "SymbolicLink"
+    }
+
+    # Create the link        
+    $null = New-Item -ItemType $linkType -Path $Path -Target $Original.FullName
+}
+
+# -------------------------------------------------
+# Handle the "LaunchPad.libs" folder differently.
+# It tracks the last used EQ account the Launcher opened
+# If we sym-link the whole thing, it'll change for each character we launch.
+# Instead we want to copy just the Cache part of this folder (sym-link the rest), so the Launcher last account remains consistent.
+function Copy-LaunchPadDir
+{
+    param(
+        $Source, # LaunchPad EQ folder
+        $Target # Character LaunchPad folder destination
+        )
+
+    $files = Get-ChildItem -Path $Source
+    foreach ($file in $files)
+    {
+        $symFilePath = Join-Path -Path $Target -ChildPath $file.Name
+
+        if ($file.Attributes -eq "Directory" -and $file.Name -eq "LaunchPad.Cache")
+        {
+            # Regular copy this whole directory, and continue on
+            Copy-Item -Path $file.FullName -Destination $symFilePath -Recurse
+            continue
+        }
+
+        New-SymLink -Original $file -Path $symFilePath
+    }
+}
+
+# -------------------------------------------------
 # Make sym links for each file and folder
-
-$HardExtCollection = ".exe", ".dll"
-
 $EQFiles = Get-ChildItem -Path $BaseEQFolder
 foreach ($file in $EQFiles)
 {
     $boxFilePath = Join-Path -Path $BoxEQFolder -ChildPath $file.Name
-    if (!(Test-Path -Path $boxFilePath))
+
+    # Our special case for "LaunchPad.libs"
+    if ($file.Attributes -eq "Directory" -and $file.Name -eq "LaunchPad.libs")
     {
-        if ($file.Attributes -eq "Directory")
-        {
-            $linkType = "SymbolicLink"
-        }
-        ElseIf ($HardExtCollection -Contains $file.Extension)
-        {
-            $linkType = "HardLink"
-        }
-        Else 
-        {
-            $linkType = "SymbolicLink"
-        }
-        
-        $null = New-Item -ItemType $linkType -Path $boxFilePath -Target $file.FullName
+        Copy-LaunchPadDir -Source $file.FullName -Target $boxFilePath
+        continue
     }
+
+    New-SymLink -Original $file -Path $boxFilePath
 }
 
 
@@ -152,7 +203,8 @@ if (Test-Path -Path $BoxEQClient)
 }
 
 # Now, make the symlink from the new folder's 'eqclient.ini' to the base folder's named 'eqclient.ini'
-$null = New-Item -ItemType SymbolicLink -Path $BoxEQClient -Target $BaseCharEQClient
+$OriginalBaseCharEQClient = Get-Item -Path $BaseCharEQClient
+New-SymLink -Original $OriginalBaseCharEQClient -Path $BoxEQClient
 
 # Verify
 Get-Item $BoxEQClient | Select-Object Name,LinkType,Target
