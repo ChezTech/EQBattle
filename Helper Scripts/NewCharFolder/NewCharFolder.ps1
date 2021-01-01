@@ -52,6 +52,14 @@ if(-not (Test-Administrator))
     exit
 }
 
+if (!($BoxCharName))
+{
+    $Message = "Please provide an EQ character name"
+    
+    Write-Host $Message -ForegroundColor Red -BackgroundColor Black
+    exit
+}
+
 # -------------------------------------------------
 # Define variables
 
